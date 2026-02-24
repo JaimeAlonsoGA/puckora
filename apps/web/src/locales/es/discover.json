@@ -1,0 +1,33 @@
+{
+    "title": "Descubrir",
+    "subtitle": "Encuentra tu próxima oportunidad de producto",
+    "inspiring": "Encontrando tu próxima oportunidad...",
+    "inspireMeButton": "Inspírame",
+    "inspireMeSubtitle": "Ideas de productos con IA basadas en tu perfil",
+    "trendingTitle": "Oportunidades en tendencia",
+    "trendingEmpty": "Vuelve pronto — actualizamos los productos en tendencia a diario.",
+    "categoriesTitle": "Navegar por Categorías",
+    "seasonal": {
+        "q4Title": "Se acerca la temporada navideña Q4",
+        "q4Body": "Los productos de regalo suelen dispararse de octubre a diciembre.",
+        "primeTitle": "Ventana de Prime Day",
+        "primeBody": "Los vendedores que publican antes de Prime Day capturan el impulso orgánico posterior.",
+        "backToSchoolTitle": "Temporada de regreso a clases",
+        "backToSchoolBody": "Los artículos escolares tienden a crecer de agosto a septiembre."
+    },
+    "suggestion": {
+        "confidence": "{{value}}% confianza",
+        "researchThis": "Investigar esto",
+        "rationale": "¿Por qué esto?"
+    },
+    "results": {
+        "analyze": "Analizar",
+        "source": "Buscar proveedores",
+        "calculate": "Calcular costo",
+        "save": "Guardar"
+    },
+    "proGate": {
+        "moreIdeas": "Ver las 5 ideas con Pro",
+        "upgradeLabel": "Actualizar a Pro"
+    }
+}

@@ -1,0 +1,48 @@
+{
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "search": "Buscar",
+    "loading": "Cargando...",
+    "error": "Se produjo un error",
+    "empty": "No se encontraron resultados",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "close": "Cerrar",
+    "apply": "Aplicar",
+    "reset": "Restablecer",
+    "yes": "Sí",
+    "no": "No",
+    "or": "o",
+    "and": "y",
+    "of": "de",
+    "perPage": "por página",
+    "learnMore": "Saber más",
+    "viewAll": "Ver todo",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Copiado!",
+    "optional": "Opcional",
+    "required": "Obligatorio",
+    "new": "Nuevo",
+    "beta": "Beta",
+    "status": {
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "pending": "Pendiente",
+        "success": "Éxito",
+        "failed": "Fallido"
+    },
+    "pagination": {
+        "showing": "Mostrando {{from}}–{{to}} de {{total}}",
+        "loadMore": "Cargar más"
+    },
+    "validation": {
+        "required": "Este campo es obligatorio",
+        "invalidEmail": "Introduce un correo electrónico válido",
+        "minLength": "Debe tener al menos {{min}} caracteres",
+        "maxLength": "Debe tener como máximo {{max}} caracteres"
+    }
+}

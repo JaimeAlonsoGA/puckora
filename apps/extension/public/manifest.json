@@ -1,0 +1,61 @@
+{
+    "manifest_version": 3,
+    "name": "Silkflow",
+    "version": "0.1.0",
+    "description": "Amazon FBA product research — Silkflow companion extension",
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "https://www.amazon.com/*",
+        "https://www.amazon.co.uk/*",
+        "https://www.amazon.de/*",
+        "https://www.amazon.fr/*",
+        "https://www.amazon.co.jp/*",
+        "https://www.amazon.ca/*",
+        "https://www.amazon.com.au/*"
+    ],
+    "background": {
+        "service_worker": "src/background/service-worker.js",
+        "type": "module"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.amazon.com/s*",
+                "https://www.amazon.co.uk/s*"
+            ],
+            "js": [
+                "src/content/amazon-search.js"
+            ],
+            "run_at": "document_idle"
+        },
+        {
+            "matches": [
+                "https://www.amazon.com/dp/*",
+                "https://www.amazon.co.uk/dp/*"
+            ],
+            "js": [
+                "src/content/amazon-product.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_popup": "src/popup/index.html",
+        "default_title": "Silkflow",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "32": "icons/icon32.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "icons": {
+        "16": "icons/icon16.png",
+        "32": "icons/icon32.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    }
+}

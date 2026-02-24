@@ -1,0 +1,33 @@
+{
+    "title": "Discover",
+    "subtitle": "Find your next product opportunity",
+    "inspiring": "Finding your next opportunity...",
+    "inspireMeButton": "Inspire me",
+    "inspireMeSubtitle": "AI-powered product ideas based on your profile",
+    "trendingTitle": "Trending Opportunities",
+    "trendingEmpty": "Check back soon — we refresh trending products daily.",
+    "categoriesTitle": "Browse Categories",
+    "seasonal": {
+        "q4Title": "Q4 Holiday Season approaching",
+        "q4Body": "Gift-able products historically spike in October–December.",
+        "primeTitle": "Prime Day window",
+        "primeBody": "Sellers who list before Prime Day capture the post-event organic boost.",
+        "backToSchoolTitle": "Back-to-school season",
+        "backToSchoolBody": "School supplies and organisation products trend August–September."
+    },
+    "suggestion": {
+        "confidence": "{{value}}% confidence",
+        "researchThis": "Research this",
+        "rationale": "Why this?"
+    },
+    "results": {
+        "analyze": "Analyze",
+        "source": "Find suppliers",
+        "calculate": "Calculate cost",
+        "save": "Save"
+    },
+    "proGate": {
+        "moreIdeas": "See all 5 ideas with Pro",
+        "upgradeLabel": "Upgrade to Pro"
+    }
+}

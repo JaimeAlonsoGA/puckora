@@ -1,0 +1,79 @@
+{
+    "title": "Product Research",
+    "subtitle": "Find profitable Amazon products using keyword, ASIN, or category search",
+    "filters": {
+        "title": "Filters",
+        "price": "Price Range",
+        "bsr": "BSR Range",
+        "reviews": "Min. Reviews",
+        "rating": "Min. Rating",
+        "sellers": "Max. Sellers",
+        "reset": "Reset filters",
+        "apply": "Apply filters"
+    },
+    "results": {
+        "empty": "No products found. Try a different search term.",
+        "count": "{{count}} products found",
+        "sortBy": "Sort by"
+    },
+    "table": {
+        "product": "Product",
+        "price": "Price",
+        "bsr": "BSR",
+        "reviews": "Reviews",
+        "rating": "Rating",
+        "sellers": "Sellers",
+        "monthlySales": "Est. Sales/mo",
+        "revenue": "Est. Revenue"
+    },
+    "searchPlaceholder": "Search by keyword, ASIN, or category...",
+    "exportCsv": "Export CSV",
+    "saveProduct": "Save product",
+    "analyzeProduct": "Analyze",
+    "viewOnAmazon": "View on Amazon",
+    "tabs": {
+        "search": "Keyword Search",
+        "spapi": "SP-API Lookup"
+    },
+    "cta": {
+        "analyze": "Analyze",
+        "source": "Source",
+        "calculate": "Calculate",
+        "save": "Save"
+    },
+    "spApi": {
+        "title": "SP-API Lookup",
+        "subtitle": "Fetch live catalog, pricing and fee data directly from Amazon SP-API",
+        "asinsLabel": "ASINs",
+        "asinsHint": "Comma, newline or space separated · max 20",
+        "asinsPlaceholder": "B08XYZ12345, B09ABC67890…",
+        "marketplace": "Marketplace",
+        "priceContext": "Price Context",
+        "priceContextHint": "Used for fee estimation",
+        "lookupCta": "Lookup",
+        "lookupCtaCount": "Lookup ({{count}})",
+        "lookupCtaLoading": "Looking up…",
+        "invalidAsins": "No valid ASINs found. Each must be exactly 10 alphanumeric characters.",
+        "resultsCount": "{{count}} ASINs · {{marketplace}}",
+        "emptyTitle": "No data yet",
+        "emptyBody": "Enter ASINs above and click Lookup to fetch live SP-API data.",
+        "errorFallback": "SP-API lookup failed. Check your credentials and try again.",
+        "exportCsv": "Export CSV",
+        "columns": {
+            "asin": "ASIN",
+            "title": "Title",
+            "brand": "Brand",
+            "category": "Category",
+            "bsr": "BSR",
+            "buyBox": "Buy Box",
+            "lowestNew": "Lowest New",
+            "sellers": "Sellers",
+            "referral": "Referral Fee",
+            "fbaFee": "FBA Fee",
+            "totalFees": "Total Fees",
+            "netRev": "Net Revenue",
+            "margin": "Margin",
+            "source": "Source"
+        }
+    }
+}

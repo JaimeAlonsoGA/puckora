@@ -1,0 +1,32 @@
+{
+    "free": "Gratis",
+    "starter": "Básico",
+    "pro": "Pro",
+    "agency": "Agencia",
+    "upgrade": "Mejorar plan",
+    "manageBilling": "Gestionar facturación",
+    "currentPlan": "Plan actual",
+    "limit": {
+        "reached": "Has alcanzado el límite de tu plan",
+        "searches": "{{used}} / {{total}} búsquedas usadas",
+        "analyses": "{{used}} / {{total}} análisis usados",
+        "savedProducts": "{{used}} / {{total}} productos guardados"
+    },
+    "cta": {
+        "upgrade": "Mejorar a {{plan}}",
+        "unlockFeature": "Mejora tu plan para desbloquear esta función",
+        "viewPlans": "Ver todos los planes"
+    },
+    "badge": {
+        "mostPopular": "Más popular",
+        "bestValue": "Mejor valor"
+    },
+    "billing": {
+        "monthly": "Mensual",
+        "yearly": "Anual",
+        "savePercent": "Ahorra un {{percent}}%",
+        "perMonth": "/mes",
+        "perYear": "/año",
+        "cancelAnytime": "Cancela cuando quieras"
+    }
+}

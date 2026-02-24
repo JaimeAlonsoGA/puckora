@@ -1,0 +1,15 @@
+{
+    "name": "@repo/types",
+    "version": "0.0.1",
+    "private": true,
+    "license": "MIT",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "*",
+        "typescript": "^5.4.0"
+    }
+}

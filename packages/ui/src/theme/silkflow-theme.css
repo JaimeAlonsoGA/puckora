@@ -1,0 +1,46 @@
+/* ─── Silkflow Theme v2 ──────────────────────────────────────────────────────
+   CSS custom properties for use outside Tailwind.
+   Matches :root block in globals.css exactly.
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+    /* Surfaces */
+    --sf-bg: #FFFFFF;
+    --sf-surface: #F7F7F4;
+    --sf-surface-alt: #F0EFE9;
+
+    /* Borders — ultramarine only */
+    --sf-border: rgba(55, 48, 163, 0.15);
+    --sf-border-strong: #3730A3;
+
+    /* Gold — primary brand */
+    --sf-gold: #A67C00;
+    --sf-gold-dark: #855F00;
+    --sf-gold-bg: rgba(166, 124, 0, 0.07);
+
+    /* Scarlet — secondary accent */
+    --sf-scarlet: #C0152A;
+    --sf-scarlet-dark: #960F20;
+    --sf-scarlet-bg: rgba(192, 21, 42, 0.07);
+
+    /* Purple — tertiary accent */
+    --sf-purple: #6B1D8A;
+    --sf-purple-dark: #521669;
+    --sf-purple-bg: rgba(107, 29, 138, 0.07);
+
+    /* Text */
+    --sf-text: #111111;
+    --sf-text-sub: #555555;
+    --sf-text-muted: #999999;
+    --sf-text-inv: #FFFFFF;
+
+    /* Semantic */
+    --sf-success: #1A6B3C;
+    --sf-warning: #92500A;
+    --sf-error: #A31525;
+    --sf-info: #1B3FA8;
+
+    --sf-success-bg: rgba(26, 107, 60, 0.06);
+    --sf-warning-bg: rgba(146, 80, 10, 0.07);
+    --sf-error-bg: rgba(163, 21, 37, 0.06);
+    --sf-info-bg: rgba(27, 63, 168, 0.06);
+}

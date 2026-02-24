@@ -1,0 +1,38 @@
+{
+    "name": "silkflow",
+    "type": "module",
+    "private": true,
+    "workspaces": [
+        "apps/web",
+        "apps/extension",
+        "packages/*"
+    ],
+    "packageManager": "npm@10.9.2",
+    "scripts": {
+        "setup": "node scripts/setup-env.js",
+        "predev": "npm run setup",
+        "dev": "concurrently \"turbo run dev --filter=web --filter=@silkflow/extension\" \"npm run dev:scraper\"",
+        "dev:all": "concurrently \"turbo run dev --filter=web --filter=@silkflow/extension\" \"npm run dev:scraper\"",
+        "dev:web": "turbo run dev --filter=web",
+        "dev:extension": "turbo run dev --filter=@silkflow/extension",
+        "prebuild": "npm run setup",
+        "build": "turbo run build",
+        "lint": "turbo run lint",
+        "typecheck": "turbo run typecheck",
+        "dev:scraper": "bash apps/scraper/dev.sh",
+        "gen:types": "npx supabase gen types typescript --project-id \"$PROJECT_REF\" --schema public > packages/types/src/database.types.ts",
+        "gen:index": "npx tsx scripts/generate-index.ts",
+        "deploy:functions": "bash scripts/deploy-functions.sh",
+        "deploy:scraper": "bash scripts/deploy-scraper.sh",
+        "i18n:types": "npx tsx scripts/i18n-generate-types.ts",
+        "i18n:check": "npx tsx scripts/i18n-check.ts",
+        "i18n:sync": "npx tsx scripts/i18n-sync.ts",
+        "i18n:sync:clean": "npx tsx scripts/i18n-sync.ts -- --clean"
+    },
+    "devDependencies": {
+        "@types/glob": "^8.1.0",
+        "concurrently": "^8.2.2",
+        "pg": "^8.18.0",
+        "turbo": "^2.5.0"
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "title": "Productos Guardados",
+    "subtitle": "Gestiona y hace seguimiento de tus oportunidades de producto guardadas",
+    "empty": {
+        "title": "Aún no hay productos guardados",
+        "subtitle": "Guarda productos desde las páginas de Investigación o Analizador para seguirlos aquí",
+        "cta": "Encontrar productos"
+    },
+    "tabs": {
+        "saved": "Guardados",
+        "compare": "Comparar",
+        "notes": "Notas"
+    },
+    "card": {
+        "savedOn": "Guardado el {{date}}",
+        "notes": "Notas",
+        "addNote": "Añadir nota...",
+        "tags": "Etiquetas",
+        "addTag": "Añadir etiqueta",
+        "remove": "Eliminar",
+        "analyze": "Analizar",
+        "viewOnAmazon": "Amazon",
+        "viewOnAlibaba": "Alibaba"
+    },
+    "tags": {
+        "placeholder": "Añade una etiqueta y pulsa Enter",
+        "manage": "Gestionar etiquetas"
+    },
+    "compare": {
+        "title": "Comparar productos",
+        "addProduct": "Añadir producto a comparar",
+        "clear": "Limpiar todo",
+        "maxReached": "Puedes comparar hasta {{max}} productos a la vez"
+    },
+    "sort": {
+        "newest": "Más recientes primero",
+        "oldest": "Más antiguos primero",
+        "price": "Precio",
+        "margin": "Margen"
+    },
+    "filters": {
+        "allTags": "Todas las etiquetas",
+        "search": "Buscar productos guardados..."
+    }
+}

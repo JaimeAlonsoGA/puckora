@@ -1,0 +1,41 @@
+{
+    "title": "Supplier Bridge",
+    "subtitle": "Find and vet Alibaba suppliers for your product",
+    "searchPlaceholder": "Search suppliers by product or keyword...",
+    "filters": {
+        "verified": "Verified only",
+        "tradeAssurance": "Trade Assurance",
+        "minYears": "Min. years active",
+        "maxMoq": "Max. MOQ"
+    },
+    "card": {
+        "verified": "Verified",
+        "tradeAssurance": "Trade Assurance",
+        "yearsActive": "{{count}} yrs",
+        "moq": "Min. Order Qty",
+        "responseRate": "Response rate",
+        "contact": "Contact supplier",
+        "viewProfile": "View profile",
+        "requestQuote": "Request quote",
+        "calculateCost": "Calculate cost"
+    },
+    "search": "Search",
+    "table": {
+        "supplier": "Supplier",
+        "location": "Location",
+        "moq": "MOQ",
+        "price": "Unit Price",
+        "years": "Years",
+        "responseRate": "Response",
+        "tradeAssurance": "Trade Assurance"
+    },
+    "results": {
+        "empty": "No suppliers found. Try different keywords.",
+        "count": "{{count}} suppliers found"
+    },
+    "compare": {
+        "title": "Compare Suppliers",
+        "add": "Add to compare",
+        "clear": "Clear comparison"
+    }
+}

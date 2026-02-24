@@ -1,0 +1,46 @@
+{
+    "title": "Competitor Review Analyzer",
+    "subtitle": "Discover product pain points and market gaps from competitor reviews",
+    "form": {
+        "asin": "Competitor ASIN",
+        "asinPlaceholder": "e.g. B08XYZ1234",
+        "submit": "Analyze reviews",
+        "analyze": "Analyze",
+        "submitting": "Starting analysis..."
+    },
+    "status": {
+        "pending": "Waiting...",
+        "scraping": "Scraping reviews...",
+        "analyzing": "Analyzing with AI...",
+        "complete": "Analysis complete",
+        "failed": "Analysis failed"
+    },
+    "results": {
+        "reviewsAnalyzed": "{{count}} reviews analyzed",
+        "generatedOn": "Generated {{date}}"
+    },
+    "painPoint": {
+        "title": "Pain Points",
+        "mentions": "mentions",
+        "severity": "Severity",
+        "sentiment": "Sentiment",
+        "quotes": "Sample quotes"
+    },
+    "report": {
+        "opportunities": "Top Opportunities",
+        "summary": "Executive Summary",
+        "keywords": "Recurring Keywords",
+        "download": "Download report",
+        "share": "Share"
+    },
+    "history": {
+        "title": "Previous analyses",
+        "empty": "No analyses yet",
+        "rerun": "Re-run"
+    },
+    "errors": {
+        "notFound": "ASIN not found on Amazon",
+        "tooFewReviews": "This product doesn't have enough reviews to analyze",
+        "rateLimited": "Too many analyses. Please wait before trying again"
+    }
+}

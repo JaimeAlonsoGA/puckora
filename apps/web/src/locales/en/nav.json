@@ -1,0 +1,20 @@
+{
+    "home": "Home",
+    "discover": "Discover",
+    "research": "Product Research",
+    "analyzer": "Product Analyzer",
+    "calculator": "Cost Calculator",
+    "sourcing": "Supplier Bridge",
+    "tracker": "Saved Products",
+    "categories": "Category Navigator",
+    "competitor": "Competitor Intel",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "logout": "Log out",
+    "profile": "Profile",
+    "sections": {
+        "explore": "EXPLORE",
+        "decide": "DECIDE",
+        "manage": "MANAGE"
+    }
+}

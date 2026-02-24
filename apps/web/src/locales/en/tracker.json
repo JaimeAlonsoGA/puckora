@@ -1,0 +1,45 @@
+{
+    "title": "Saved Products",
+    "subtitle": "Track and manage your saved product opportunities",
+    "empty": {
+        "title": "No saved products yet",
+        "subtitle": "Save products from the Research or Analyzer pages to track them here",
+        "cta": "Find products"
+    },
+    "tabs": {
+        "saved": "Saved",
+        "compare": "Compare",
+        "notes": "Notes"
+    },
+    "card": {
+        "savedOn": "Saved {{date}}",
+        "notes": "Notes",
+        "addNote": "Add note...",
+        "tags": "Tags",
+        "addTag": "Add tag",
+        "remove": "Remove",
+        "analyze": "Analyze",
+        "viewOnAmazon": "Amazon",
+        "viewOnAlibaba": "Alibaba"
+    },
+    "tags": {
+        "placeholder": "Add a tag and press Enter",
+        "manage": "Manage tags"
+    },
+    "compare": {
+        "title": "Compare Products",
+        "addProduct": "Add product to compare",
+        "clear": "Clear all",
+        "maxReached": "You can compare up to {{max}} products at once"
+    },
+    "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "price": "Price",
+        "margin": "Margin"
+    },
+    "filters": {
+        "allTags": "All tags",
+        "search": "Search saved products..."
+    }
+}
