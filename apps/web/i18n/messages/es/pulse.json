@@ -1,0 +1,58 @@
+{
+    "pulse": {
+        "title": "Pulse",
+        "description": "Encuentra lo que China está vendiendo bien hoy, luego verifica si Amazon lo quiere.",
+        "search": {
+            "placeholder": "¿Qué producto estás explorando? p.ej. cepillo para gatos, molde de silicona",
+            "button": "Buscar",
+            "searching": "Buscando proveedores…",
+            "hint": "Busca productos de tendencia en el mayor mercado mayorista de China.",
+            "refresh": "Actualizar"
+        },
+        "results": {
+            "count": "{count} proveedores encontrados",
+            "countOne": "1 proveedor encontrado",
+            "sortedBy": "Ordenado por demanda",
+            "empty": "Aún no hay resultados — ingresa una palabra clave arriba para comenzar.",
+            "noMatch": "No se encontraron resultados para \"{keyword}\". Intenta con una palabra clave más amplia.",
+            "error": "Algo salió mal mientras se buscaba. Por favor, inténtalo de nuevo."
+        },
+        "card": {
+            "orders": "{count} pedidos",
+            "repurchase": "{rate} recompra",
+            "moq": "MOQ {quantity}",
+            "perUnit": "por unidad",
+            "bulkFrom": "Desde {price} en {qty}+",
+            "viewOnSource": "Ver en 1688",
+            "saveSupplier": "Guardar proveedor",
+            "saved": "Guardado",
+            "location": "{city}, China",
+            "checkDemand": "Verificar demanda en Amazon",
+            "noImage": "Sin imagen"
+        },
+        "badges": {
+            "certifiedFactory": "Fábrica certificada",
+            "support247": "Soporte 24/7",
+            "freeReturns": "Devoluciones gratuitas",
+            "payLater": "Paga después de la entrega",
+            "hotSeller": "Producto popular",
+            "highRepurchase": "Alta fidelidad"
+        },
+        "demand": {
+            "loading": "Verificando demanda en Amazon…",
+            "notFound": "No hay coincidencias exactas en Amazon",
+            "notFoundHint": "Podría ser una oportunidad no explotada.",
+            "found": "Encontrado en Amazon",
+            "topResult": "Mejor resultado",
+            "bsr": "Ranking de ventas #{rank}",
+            "bsrCategory": "#{rank} en {category}",
+            "brand": "Marca: {brand}",
+            "viewOnAmazon": "Ver en Amazon"
+        },
+        "opportunity": {
+            "high": "Oportunidad caliente",
+            "medium": "Vale la pena explorar",
+            "low": "Producto de nicho"
+        }
+    }
+}

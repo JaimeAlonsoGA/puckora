@@ -1,0 +1,43 @@
+{
+    "settings": {
+        "title": "Configuración",
+        "description": "Administra tu cuenta, marketplace y preferencias.",
+        "profile": {
+            "title": "Perfil",
+            "description": "Tu nombre y avatar.",
+            "fullName": "Nombre completo",
+            "fullNamePlaceholder": "Ingresa tu nombre",
+            "avatar": "Avatar",
+            "changeAvatar": "Cambiar avatar"
+        },
+        "marketplace": {
+            "title": "Marketplace",
+            "description": "Elige tu marketplace de Amazon predeterminado. Esto afecta todos los datos de investigación de productos.",
+            "label": "Marketplace predeterminado"
+        },
+        "language": {
+            "title": "Idioma",
+            "description": "Cambia el idioma de la interfaz.",
+            "label": "Idioma de la interfaz",
+            "en": "English",
+            "es": "Español"
+        },
+        "plan": {
+            "title": "Suscripción",
+            "description": "Tu plan actual y uso.",
+            "currentPlan": "Plan actual",
+            "free": "Gratis",
+            "starter": "Starter",
+            "pro": "Pro",
+            "agency": "Agency",
+            "manageBilling": "Administrar facturación",
+            "upgradePlan": "Mejorar plan"
+        },
+        "auth": {
+            "title": "Autenticación",
+            "description": "Administra tus métodos de inicio de sesión.",
+            "connectedWith": "Conectado con {provider}",
+            "signOutConfirm": "¿Estás seguro de que deseas cerrar sesión?"
+        }
+    }
+}

@@ -1,0 +1,128 @@
+import { chromium, type Browser, type BrowserContext, type Page } from 'playwright'
+import { CONFIG } from './config'
+
+const USER_AGENTS = [
+  // Chrome 133 — Windows
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+  // Chrome 133 — macOS
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+  // Chrome 132 — Windows
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36',
+  // Firefox 134 — Windows
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',
+  // Safari 18 — macOS
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Safari/605.1.15',
+]
+
+const VIEWPORTS = [
+  { width: 1920, height: 1080 },
+  { width: 1440, height: 900 },
+  { width: 1366, height: 768 },
+  { width: 1536, height: 864 },
+]
+
+export async function launchBrowser(): Promise<Browser> {
+  return chromium.launch({
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-blink-features=AutomationControlled',
+      '--disable-dev-shm-usage',
+      '--disable-infobars',
+      '--window-size=1920,1080',
+      '--disable-features=IsolateOrigins,site-per-process',
+    ],
+    ...(CONFIG.proxy_url ? { proxy: { server: CONFIG.proxy_url } } : {}),
+  })
+}
+
+/** Single long-lived context — reused across all category scrapes. */
+let sharedCtx: BrowserContext | null = null
+
+export async function getSharedContext(browser: Browser): Promise<BrowserContext> {
+  if (sharedCtx) return sharedCtx
+
+  const ua = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)]
+  const vp = VIEWPORTS[Math.floor(Math.random() * VIEWPORTS.length)]
+
+  sharedCtx = await browser.newContext({
+    userAgent: ua,
+    viewport: vp,
+    locale: 'en-US',
+    timezoneId: 'America/New_York',
+    extraHTTPHeaders: {
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'sec-ch-ua': '"Chromium";v="133", "Google Chrome";v="133", "Not-A.Brand";v="8"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'Upgrade-Insecure-Requests': '1',
+    },
+  })
+
+  await sharedCtx.addInitScript(() => {
+    // Remove automation signals
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
+
+    // Spoof plugins (headless Chrome has 0 plugins)
+    Object.defineProperty(navigator, 'plugins', {
+      get: () => {
+        const arr = [
+          { name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer', description: 'Portable Document Format', length: 1 },
+          { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai', description: '', length: 1 },
+          { name: 'Native Client', filename: 'internal-nacl-plugin', description: '', length: 2 },
+        ]
+        return { ...arr, length: arr.length, item: (i: number) => arr[i], namedItem: (n: string) => arr.find(p => p.name === n) ?? null }
+      }
+    })
+
+    // Spoof languages
+    Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] })
+
+      // Spoof window.chrome (absent in headless)
+      ; (window as any).chrome = {
+        app: { isInstalled: false },
+        runtime: {},
+        loadTimes: () => ({}),
+        csi: () => ({}),
+      }
+
+    // Spoof permissions
+    const origQuery = window.navigator.permissions?.query.bind(window.navigator.permissions)
+    if (origQuery) {
+      (window.navigator.permissions as any).query = (params: any) =>
+        params.name === 'notifications'
+          ? Promise.resolve({ state: Notification.permission } as PermissionStatus)
+          : origQuery(params)
+    }
+  })
+
+  // Block fonts and trackers only
+  await sharedCtx.route('**/*.{woff,woff2,ttf,otf,eot}', r => r.abort())
+  await sharedCtx.route('**/pixel.advertising.amazon.com/**', r => r.abort())
+
+  // Warmup — visit amazon.com homepage to acquire session cookies before any scraping
+  const warmupPage = await sharedCtx.newPage()
+  try {
+    await warmupPage.goto('https://www.amazon.com', { waitUntil: 'domcontentloaded', timeout: 30_000 })
+    await warmupPage.evaluate(() => window.scrollBy({ top: 300, behavior: 'smooth' }))
+    await warmupPage.waitForTimeout(1_500 + Math.random() * 1_000)
+  } catch { /* non-fatal */ } finally {
+    await warmupPage.close()
+  }
+
+  return sharedCtx
+}
+
+export function resetSharedContext(): void {
+  if (sharedCtx) { sharedCtx.close().catch(() => { }); sharedCtx = null }
+}
+
+export async function newContext(browser: Browser): Promise<{ page: Page; ctx: BrowserContext }> {
+  const ctx = await getSharedContext(browser)
+  const page = await ctx.newPage()
+  return { page, ctx }
+}
+

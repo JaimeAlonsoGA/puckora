@@ -1,0 +1,14 @@
+{
+    "errors": {
+        "notFound": {
+            "title": "Página no encontrada",
+            "description": "La página que buscas no existe.",
+            "goHome": "Ir al inicio"
+        },
+        "generic": {
+            "title": "Algo salió mal",
+            "description": "Ocurrió un error inesperado. Por favor, intenta de nuevo.",
+            "retry": "Intentar de nuevo"
+        }
+    }
+}

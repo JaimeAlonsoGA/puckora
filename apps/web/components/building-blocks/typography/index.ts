@@ -1,0 +1,7 @@
+export { Display } from '@puckora/web/components/building-blocks/typography/display'
+export { Heading } from '@puckora/web/components/building-blocks/typography/heading'
+export { Subheading } from '@puckora/web/components/building-blocks/typography/subheading'
+export { Body } from '@puckora/web/components/building-blocks/typography/body'
+export { Caption } from '@puckora/web/components/building-blocks/typography/caption'
+export { Label } from '@puckora/web/components/building-blocks/typography/label'
+export { Mono } from '@puckora/web/components/building-blocks/typography/mono'

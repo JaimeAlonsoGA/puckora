@@ -1,41 +1,42 @@
 {
-    "extends": "@repo/typescript-config/react.json",
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "target": "ES2022",
-        "useDefineForClassFields": true,
-        "lib": [
-            "ES2022",
-            "DOM",
-            "DOM.Iterable"
-        ],
+        "jsx": "preserve",
         "module": "ESNext",
-        "skipLibCheck": true,
         "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
+        "allowJs": true,
         "noEmit": true,
-        "jsx": "react-jsx",
-        "strict": true,
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
-        "noFallthroughCasesInSwitch": true,
-        "types": [
-            "vite/client"
+        "incremental": true,
+        "plugins": [
+            {
+                "name": "next"
+            }
         ],
-        "baseUrl": ".",
         "paths": {
             "@/*": [
-                "./src/*"
+                "./*"
+            ],
+            "@puckora/types": [
+                "../../packages/types/src"
+            ],
+            "@puckora/types/*": [
+                "../../packages/types/src/*"
+            ],
+            "@puckora/utils": [
+                "../../packages/utils/src"
+            ],
+            "@puckora/ui": [
+                "../../packages/ui/src"
             ]
         }
     },
     "include": [
-        "src"
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".next/types/**/*.ts"
     ],
-    "references": [
-        {
-            "path": "./tsconfig.node.json"
-        }
+    "exclude": [
+        "node_modules"
     ]
 }

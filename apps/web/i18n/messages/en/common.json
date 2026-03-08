@@ -1,0 +1,28 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "loading": "Loading…",
+        "error": "Something went wrong",
+        "success": "Saved successfully",
+        "signOut": "Sign out",
+        "upgrade": "Upgrade",
+        "back": "Back",
+        "confirm": "Confirm",
+        "delete": "Delete",
+        "edit": "Edit",
+        "close": "Close",
+        "search": "Search",
+        "noResults": "No results found",
+        "retry": "Retry"
+    },
+    "planGate": {
+        "featureUnavailable": "This feature requires an upgraded plan.",
+        "limitReached": "You've reached your plan limit of {limit}.",
+        "upgrade": "Upgrade plan"
+    },
+    "nav": {
+        "pulse": "Pulse",
+        "settings": "Settings"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "puckora",
+    "version": "0.0.1",
+    "description": "Amazon FBA product research assistant",
+    "permissions": [],
+    "action": {
+        "default_popup": "popup.html"
+    }
+}

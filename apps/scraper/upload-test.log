@@ -1,0 +1,1451 @@
+
+────────────────────────────────────────────────────────────
+  Puckora — Best Sellers Scraper v2
+────────────────────────────────────────────────────────────
+
+2026-03-08 12:41:52 ⚠  UPLOAD-TEST MODE — scraping 1 categories, DB writes ON, full console output
+2026-03-08 12:41:52 ℹ  No proxy — using local IP
+2026-03-08 12:41:54 ✓  Loaded 1000 categories from Supabase
+2026-03-08 12:41:54 ℹ  Categories to scrape: 1
+2026-03-08 12:41:54 ℹ  Est. time (scrape only): ~0h
+
+────────────────────────────────────────────────────────────
+  Phase 1 — Scraping Best Sellers Pages
+────────────────────────────────────────────────────────────
+
+[░░░░░░░░░░░░░░░░░░░░]   0%  ✓0 ✗0  ETA —
+2026-03-08 12:42:01 ✓  
+  Category 23709663011 (Tops) — 41 products scraped
+2026-03-08 12:42:09 ✓  Scraping complete — 1 categories | 41 unique ASINs | 0 failed
+
+────────────────────────────────────────────────────────────
+  Phase 2 — SP-API Enrichment
+────────────────────────────────────────────────────────────
+
+2026-03-08 12:42:09 ℹ  ASINs to enrich: 41
+2026-03-08 12:42:09 ⚠  UPLOAD-TEST — SP-API calls ARE made and results WILL be written to DB
+2026-03-08 12:42:09 ⬡  Enriching B07NYT8T9T — getCatalogItem
+2026-03-08 12:42:11 ⬡  Access token refreshed
+2026-03-08 12:42:12 ⬡  Enriching B07Q15PX6C — getCatalogItem
+2026-03-08 12:42:13 ⬡  Enriching B0GKQJYR51 — getCatalogItem
+2026-03-08 12:42:14 ⬡  Enriching B0F44CP6NH — getCatalogItem
+2026-03-08 12:42:16 ⬡  Enriching B0FGFSSYQX — getCatalogItem
+2026-03-08 12:42:17 ⬡  Enriching B0BSDW381D — getCatalogItem
+2026-03-08 12:42:19 ⬡  Enriching B0DYL9RT74 — getCatalogItem
+2026-03-08 12:42:20 ⬡  Enriching B0C773ZWGW — getCatalogItem
+2026-03-08 12:42:22 ⬡  Enriching B0F5BXNJJW — getCatalogItem
+2026-03-08 12:42:23 ⬡  Enriching B0D1DQNQ59 — getCatalogItem
+2026-03-08 12:42:25 ⬡  Enriching B08X2GPK5J — getCatalogItem
+2026-03-08 12:42:27 ⬡  Enriching B0C77644HH — getCatalogItem
+2026-03-08 12:42:28 ⬡  Enriching B0DYWQZMLR — getCatalogItem
+2026-03-08 12:42:30 ⬡  Enriching B0BBYBC8Z3 — getCatalogItem
+2026-03-08 12:42:31 ⬡  Enriching B08L48Y2Q2 — getCatalogItem
+2026-03-08 12:42:33 ⬡  Enriching B0CH1S5LD5 — getCatalogItem
+2026-03-08 12:42:35 ⬡  Enriching B09KTTW7C3 — getCatalogItem
+2026-03-08 12:42:36 ⬡  Enriching B08X3VCCQK — getCatalogItem
+2026-03-08 12:42:38 ⬡  Enriching B00UF4VQHW — getCatalogItem
+2026-03-08 12:42:40 ⬡  Enriching B076J22B57 — getCatalogItem
+2026-03-08 12:42:41 ⬡  Enriching B0969PX3XV — getCatalogItem
+2026-03-08 12:42:43 ⬡  Enriching B0CKBZQVXN — getCatalogItem
+2026-03-08 12:42:44 ⬡  Enriching B0F95YLM6C — getCatalogItem
+2026-03-08 12:42:46 ⬡  Enriching B0F2K26449 — getCatalogItem
+2026-03-08 12:42:47 ⬡  Enriching B0B19WH314 — getCatalogItem
+2026-03-08 12:42:49 ⬡  Enriching B00UF4VXQQ — getCatalogItem
+2026-03-08 12:42:50 ⬡  Enriching B01B8NK9WQ — getCatalogItem
+2026-03-08 12:42:52 ⬡  Enriching B09Y49ZKLK — getCatalogItem
+2026-03-08 12:42:53 ⬡  Enriching B0BZG885X7 — getCatalogItem
+2026-03-08 12:42:55 ⬡  Enriching B08L49FF7X — getCatalogItem
+2026-03-08 12:42:56 ⬡  Enriching B08L49HKF8 — getCatalogItem
+2026-03-08 12:42:58 ⬡  Enriching B07DN671L2 — getCatalogItem
+2026-03-08 12:42:59 ⬡  Enriching B0B2P64B91 — getCatalogItem
+2026-03-08 12:43:01 ⬡  Enriching B0DQRH6JNN — getCatalogItem
+2026-03-08 12:43:02 ⬡  Enriching B08S7QGD7K — getCatalogItem
+2026-03-08 12:43:04 ⬡  Enriching B0B9KC5ZKK — getCatalogItem
+2026-03-08 12:43:05 ⬡  Enriching B00X6FW5DG — getCatalogItem
+2026-03-08 12:43:07 ⬡  Enriching B09HY55FWJ — getCatalogItem
+2026-03-08 12:43:08 ⬡  Enriching B08L486BGD — getCatalogItem
+2026-03-08 12:43:10 ⬡  Enriching B077RSDRYY — getCatalogItem
+2026-03-08 12:43:11 ⬡  Enriching B09CTH2ST9 — getCatalogItem
+2026-03-08 12:43:13 ℹ  Pre-fetching fee estimates for 33 ASINs (2 batch calls)...
+2026-03-08 12:43:16 ⬡  Fee batch 1/2 — 20 ASINs
+2026-03-08 12:43:18 ⚠  Fee estimate error for B07DN671L2: There is an client-side error. Please verify your inputs.
+2026-03-08 12:43:18 ⚠  Fee estimate error for B0DQRH6JNN: There is an client-side error. Please verify your inputs.
+2026-03-08 12:43:18 ⚠  Fee estimate error for B09HY55FWJ: There is an client-side error. Please verify your inputs.
+2026-03-08 12:43:18 ⚠  Fee estimate error for B077RSDRYY: There is an client-side error. Please verify your inputs.
+2026-03-08 12:43:18 ⬡  Fee batch 2/2 — 13 ASINs
+
+  ▸ PRODUCT — B07NYT8T9T
+    ── SCRAPED ──          
+    Best Seller Rank       #1 in 23709663011
+    Scraped Name           Made in USA Girls Bikini Top for Girls UPF50+ Sun Protection Toddler Bathing Suit Rash ...
+    Price                  $22.99
+    Rating                 4.3 / 5
+    Review Count           567
+    Product URL            https://www.amazon.com/dp/B07NYT8T9T
+    ── SP-API ──           
+    Title (SP-API)         Made in USA Girls Bikini Top for Girls UPF50+ Sun Protection Toddler Bathing Suit Rash ...
+    Brand                  City Threads
+    Manufacturer           City Threads
+    Model Number           CT-BTS-544-12
+    Package Quantity       null
+    Color                  Water Tie-dye
+    Main Image URL         https://m.media-amazon.com/images/I/711vn6e-MWL.jpg
+    Bullet Points          [5 items]
+                            • HIGH QUALITY and SPF/UPF 50+ protection on the timeless classic look. Perfect fo
+                            • MIX AND MATCH with swim briefs, swim boy shorts or jammer bottoms
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 22.3 × 15.69 × 1.6
+    Package Weight (kg)    0.03
+    ── FEES ──             
+    FBA Fulfillment Fee    $3.51
+    Referral Fee           $3.91
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.658Z
+    → B07NYT8T9T in 23709663011 rank #1 (organic)
+
+  ▸ PRODUCT — B07Q15PX6C
+    ── SCRAPED ──          
+    Best Seller Rank       #2 in 23709663011
+    Scraped Name           Made in USA Girls Flounce Bikini Top UPF50+ Sun Protection Toddler Bathing Suit Rash Gu...
+    Price                  $24.95
+    Rating                 4.4 / 5
+    Review Count           400
+    Product URL            https://www.amazon.com/dp/B07Q15PX6C
+    ── SP-API ──           
+    Title (SP-API)         Made in USA Girls Flounce Bikini Top UPF50+ Sun Protection Toddler Bathing Suit Rash Gu...
+    Brand                  City Threads
+    Manufacturer           City Threads
+    Model Number           CT-FBT-BK-14
+    Package Quantity       1
+    Color                  Black
+    Main Image URL         https://m.media-amazon.com/images/I/61A5WyvTBEL.jpg
+    Bullet Points          [5 items]
+                            • High quality and SPF/UPF 50+ protection on the timeless classic look. Perfect fo
+                            • MIX AND MATCH with swim briefs, swim boy shorts or jammer bottoms
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 24.3 × 16.39 × 2.89
+    Package Weight (kg)    0.046
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.72
+    Referral Fee           $4.24
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.709Z
+    → B07Q15PX6C in 23709663011 rank #2 (organic)
+
+  ▸ PRODUCT — B0GKQJYR51
+    ── SCRAPED ──          
+    Best Seller Rank       #3 in 23709663011
+    Scraped Name           Lands' End Girls Chlorine Resistant Contrast Racer Back Bikini Top Medium Rainbow Stripes
+    Price                  $27.95
+    Rating                 null
+    Review Count           null
+    Product URL            https://www.amazon.com/dp/B0GKQJYR51
+    ── SP-API ──           
+    Title (SP-API)         Lands' End Girls Chlorine Resistant Contrast Racer Back Bikini Top Medium Rainbow Stripes
+    Brand                  Lands' End
+    Manufacturer           null
+    Model Number           557579
+    Package Quantity       1
+    Color                  Rainbow Stripes
+    Main Image URL         https://m.media-amazon.com/images/I/61+X0HPP2oL.jpg
+    Bullet Points          [5 items]
+                            • NEW SPORTY DESIGN: Racerback styling perfect for active swimmers; Athletic const
+                            • MULTI-COLOR BINDING: Creates mix-and-match fun with bottoms; Versatile color bin
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       0.4536
+    Package L × W × H (cm) 15.24 × 12.7 × 2.54
+    Package Weight (kg)    0.068
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.3
+    Referral Fee           $4.75
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.710Z
+    → B0GKQJYR51 in 23709663011 rank #3 (organic)
+
+  ▸ PRODUCT — B0F44CP6NH
+    ── SCRAPED ──          
+    Best Seller Rank       #4 in 23709663011
+    Scraped Name           RuffleButts Girls UPF50+ Sun Protected Short Sleeve Rash Guard Bikini - Red Vintage Pol...
+    Price                  $44
+    Rating                 4.5 / 5
+    Review Count           229
+    Product URL            https://www.amazon.com/dp/B0F44CP6NH
+    ── SP-API ──           
+    Title (SP-API)         RuffleButts Girls UPF50+ Sun Protected Short Sleeve Rash Guard Bikini - Red Vintage Pol...
+    Brand                  RuffleButts
+    Manufacturer           null
+    Model Number           1SW0719-00
+    Package Quantity       null
+    Color                  Red Vintage Polka Dot
+    Main Image URL         https://m.media-amazon.com/images/I/71My6Zh3aTL.jpg
+    Bullet Points          [4 items]
+                            • Fabric Features: 4-way stretch,Resists pilling,Resists snagging,UPF 50+ sun prot
+                            • Enhancements: Bow detail,Full seat coverage,Ruffle detail,Signature rear ruffles
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 27.94 × 22.86 × 1.27
+    Package Weight (kg)    0.1361
+    ── FEES ──             
+    FBA Fulfillment Fee    $3.59
+    Referral Fee           $7.48
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.711Z
+    → B0F44CP6NH in 23709663011 rank #4 (organic)
+
+  ▸ PRODUCT — B0FGFSSYQX
+    ── SCRAPED ──          
+    Best Seller Rank       #5 in 23709663011
+    Scraped Name           Destira Cutie Fruity Gilrs Bikini Top Only Swimsuit - Red Strawberry and Watermelon wit...
+    Price                  $38.95
+    Rating                 4.5 / 5
+    Review Count           229
+    Product URL            https://www.amazon.com/dp/B0FGFSSYQX
+    ── SP-API ──           
+    Title (SP-API)         Destira Cutie Fruity Gilrs Bikini Top Only Swimsuit - Red Strawberry and Watermelon wit...
+    Brand                  Destira
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       null
+    Color                  Cutie Fruity
+    Main Image URL         https://m.media-amazon.com/images/I/61NbcR3HPxL.jpg
+    Bullet Points          [5 items]
+                            • DESTIRA NOW HAS SWIMWEAR: From the mat to the pool, we’ve got her summer covered
+                            • ICONIC DESTIRA COMFORT: Made in the USA, these girls swim tops are designed with
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 22.3 × 17.3 × 2.5
+    Package Weight (kg)    0.07
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.5
+    Referral Fee           $6.62
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.712Z
+    → B0FGFSSYQX in 23709663011 rank #5 (organic)
+
+  ▸ PRODUCT — B0BSDW381D
+    ── SCRAPED ──          
+    Best Seller Rank       #6 in 23709663011
+    Scraped Name           Solid Angle Bikini
+    Price                  $25.99
+    Rating                 4.5 / 5
+    Review Count           229
+    Product URL            https://www.amazon.com/dp/B0BSDW381D
+    ── SP-API ──           
+    Title (SP-API)         Solid Angle Bikini
+    Brand                  Kanu Surf
+    Manufacturer           Kanu Surf
+    Model Number           1151-BLACK-8
+    Package Quantity       1
+    Color                  Solid Black
+    Main Image URL         https://m.media-amazon.com/images/I/61mMKeJ7E1L.jpg
+    Bullet Points          [4 items]
+                            • High Quality UPF 50+ Nylon Tricot
+                            • Lined front & back
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 19.9 × 12.4 × 6.2
+    Package Weight (kg)    0.084
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.72
+    Referral Fee           $4.42
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.713Z
+    → B0BSDW381D in 23709663011 rank #6 (organic)
+    → B0BSDW381D in 23709664011 rank #152 (organic)
+
+  ▸ PRODUCT — B0DYL9RT74
+    ── SCRAPED ──          
+    Best Seller Rank       #7 in 23709663011
+    Scraped Name           Trina Turk, Forehand Top, Love All Pink, 0
+    Price                  $248
+    Rating                 5 / 5
+    Review Count           3
+    Product URL            https://www.amazon.com/dp/B0DYL9RT74
+    ── SP-API ──           
+    Title (SP-API)         Trina Turk, Forehand Top, Love All Pink, 0
+    Brand                  Trina Turk
+    Manufacturer           Trina Turk
+    Model Number           2502107UI1
+    Package Quantity       1
+    Color                  Love All Pink
+    Main Image URL         https://m.media-amazon.com/images/I/81ARnGNDsBL.jpg
+    Bullet Points          [4 items]
+                            • Scoop necline
+                            • Scalloped hem
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 33.71 × 23.29 × 6.2
+    Package Weight (kg)    0.259
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.86
+    Referral Fee           $42.16
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.714Z
+    → B0DYL9RT74 in 23709663011 rank #7 (organic)
+
+  ▸ PRODUCT — B0C773ZWGW
+    ── SCRAPED ──          
+    Best Seller Rank       #8 in 23709663011
+    Scraped Name           Happy Nation Racerback Swim Bikini Top, Sour Yellow, Large
+    Price                  $20
+    Rating                 5 / 5
+    Review Count           3
+    Product URL            https://www.amazon.com/dp/B0C773ZWGW
+    ── SP-API ──           
+    Title (SP-API)         Happy Nation Racerback Swim Bikini Top, Sour Yellow, Large
+    Brand                  Happy Nation
+    Manufacturer           Happy Nation
+    Model Number           11206330
+    Package Quantity       1
+    Color                  Sour Yellow
+    Main Image URL         https://m.media-amazon.com/images/I/61y9x-25dkL.jpg
+    Bullet Points          [3 items]
+                            • Racerback Swim Bikini Top
+                            • Removable Padding, Scoop Neck, Racerback Strappy Detail
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 15 × 14.8 × 3
+    Package Weight (kg)    0.05
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.5
+    Referral Fee           $2
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.715Z
+    → B0C773ZWGW in 23709663011 rank #8 (organic)
+
+  ▸ PRODUCT — B0F5BXNJJW
+    ── SCRAPED ──          
+    Best Seller Rank       #9 in 23709663011
+    Scraped Name           KNIX Kt Triangle Bikini Top - Bikini Top for Teens - UPF 50+ Fabric, Removable Cups, Ma...
+    Price                  $45
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0F5BXNJJW
+    ── SP-API ──           
+    Title (SP-API)         KNIX Kt Triangle Bikini Top - Bikini Top for Teens - UPF 50+ Fabric, Removable Cups, Ma...
+    Brand                  KNIX
+    Manufacturer           Knixteen
+    Model Number           null
+    Package Quantity       null
+    Color                  Marina
+    Main Image URL         https://m.media-amazon.com/images/I/618WFBdnBML.jpg
+    Bullet Points          [5 items]
+                            • Supportive Criss-Cross Straps: back straps cross for a secure feel, built to sta
+                            • Customizable Coverage: includes removable cups and is fully lined, giving you th
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    19.68 × 62.23 × 1.27
+    Item Weight (kg)       null
+    Package L × W × H (cm) 27 × 22 × 3
+    Package Weight (kg)    0.1
+    ── FEES ──             
+    FBA Fulfillment Fee    $5.17
+    Referral Fee           $7.65
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.716Z
+    → B0F5BXNJJW in 23709663011 rank #9 (organic)
+
+  ▸ PRODUCT — B0D1DQNQ59
+    ── SCRAPED ──          
+    Best Seller Rank       #10 in 23709663011
+    Scraped Name           Princess Polly Kellan Cream Crinkle V Neck Tie Detail Crop Top
+    Price                  $45
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0D1DQNQ59
+    ── SP-API ──           
+    Title (SP-API)         Princess Polly Kellan Cream Crinkle V Neck Tie Detail Crop Top
+    Brand                  Princess Polly
+    Manufacturer           Princess Polly
+    Model Number           PPEA02857
+    Package Quantity       1
+    Color                  Ivory
+    Main Image URL         https://m.media-amazon.com/images/I/61HdNYfhx1L.jpg
+    Bullet Points          [5 items]
+                            • Crop top, crinkle material
+                            • Adjustable shoulder straps
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 29.21 × 27.13 × 3.61
+    Package Weight (kg)    0.1
+    ── FEES ──             
+    FBA Fulfillment Fee    $5.87
+    Referral Fee           $7.65
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.717Z
+    → B0D1DQNQ59 in 23709663011 rank #10 (organic)
+
+  ▸ PRODUCT — B08X2GPK5J
+    ── SCRAPED ──          
+    Best Seller Rank       #11 in 23709663011
+    Scraped Name           Lilly Pulitzer Janney Top Resort White MD
+    Price                  $68
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B08X2GPK5J
+    ── SP-API ──           
+    Title (SP-API)         Lilly Pulitzer Janney Top Resort White MD
+    Brand                  Lilly Pulitzer
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       null
+    Color                  White
+    Main Image URL         https://m.media-amazon.com/images/I/71beYzTBz3S.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 28.8 × 21.89 × 7.19
+    Package Weight (kg)    0.141
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.51
+    Referral Fee           $11.56
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.717Z
+    → B08X2GPK5J in 23709663011 rank #11 (organic)
+
+  ▸ PRODUCT — B0C77644HH
+    ── SCRAPED ──          
+    Best Seller Rank       #12 in 23709663011
+    Scraped Name           Happy Nation Bandeau Swim Bikini Top, Beach Glass Tie Dye, Medium
+    Price                  $20
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0C77644HH
+    ── SP-API ──           
+    Title (SP-API)         Happy Nation Bandeau Swim Bikini Top, Beach Glass Tie Dye, Medium
+    Brand                  Happy Nation
+    Manufacturer           Happy Nation
+    Model Number           11206331
+    Package Quantity       1
+    Color                  Beach Glass Tie Dye
+    Main Image URL         https://m.media-amazon.com/images/I/81fJk7U3sfL.jpg
+    Bullet Points          [4 items]
+                            • Bandeau Swim Bikini Top
+                            • Removable Padding
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 16.7 × 12.4 × 4.1
+    Package Weight (kg)    0.07
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.5
+    Referral Fee           $2
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.719Z
+    → B0C77644HH in 23709663011 rank #12 (organic)
+
+  ▸ PRODUCT — B0DYWQZMLR
+    ── SCRAPED ──          
+    Best Seller Rank       #13 in 23709663011
+    Scraped Name           Cuup The Balconette - Swim - 7, Bloom Cloud
+    Price                  $98
+    Rating                 1 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0DYWQZMLR
+    ── SP-API ──           
+    Title (SP-API)         Cuup The Balconette - Swim - 7, Bloom Cloud
+    Brand                  Cuup
+    Manufacturer           CUUP
+    Model Number           06453
+    Package Quantity       1
+    Color                  Bloom Cloud
+    Main Image URL         https://m.media-amazon.com/images/I/710Rs8fVGIL.jpg
+    Bullet Points          [5 items]
+                            • Wide-set straps and a straight neckline with cups that flatter, gently lift, and
+                            • Flexible, lightweight underwire is distraction-free&mdash;no poking, no digging
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 33.02 × 30.48 × 3.81
+    Package Weight (kg)    0.3629
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.4
+    Referral Fee           $16.66
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.720Z
+    → B0DYWQZMLR in 23709663011 rank #13 (organic)
+
+  ▸ PRODUCT — B0BBYBC8Z3
+    ── SCRAPED ──          
+    Best Seller Rank       #14 in 23709663011
+    Scraped Name           Anne Klein Printed ITY 3/4 SLV WRAP TOP
+    Price                  $79
+    Rating                 1 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0BBYBC8Z3
+    ── SP-API ──           
+    Title (SP-API)         Anne Klein Printed ITY 3/4 SLV WRAP TOP
+    Brand                  Anne Klein
+    Manufacturer           Anne Klein
+    Model Number           10825186-AF0
+    Package Quantity       1
+    Color                  Retro Olive/Black
+    Main Image URL         https://m.media-amazon.com/images/I/611lUaguLIL.jpg
+    Bullet Points          [1 items]
+                            • PRINTED ITY 3/4 SLV WRAP TOP
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 26.2 × 22.8 × 4.1
+    Package Weight (kg)    0.413
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.13
+    Referral Fee           $13.43
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.721Z
+    → B0BBYBC8Z3 in 23709663011 rank #14 (organic)
+
+  ▸ PRODUCT — B08L48Y2Q2
+    ── SCRAPED ──          
+    Best Seller Rank       #15 in 23709663011
+    Scraped Name           O'Neill Kids Alexa Tile Knot Top Set Canyon Clay 7 Big Kids
+    Price                  $56
+    Rating                 5 / 5
+    Review Count           2
+    Product URL            https://www.amazon.com/dp/B08L48Y2Q2
+    ── SP-API ──           
+    Title (SP-API)         O'Neill Kids Alexa Tile Knot Top Set Canyon Clay 7 Big Kids
+    Brand                  O'NEILL
+    Manufacturer           O'Neill Kids
+    Model Number           SP1874018-CLA
+    Package Quantity       1
+    Color                  Canyon Clay
+    Main Image URL         https://m.media-amazon.com/images/I/819RU9SHjUS.jpg
+    Bullet Points          [5 items]
+                            • Get summer-ready in the O'Neill Alexa Tile Knot Top Set.
+                            • Tri-top design.
+    Product Type           BRA_UNDERWEAR_SET
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 20.4 × 18.29 × 2.79
+    Package Weight (kg)    0.1
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.76
+    Referral Fee           $9.52
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.722Z
+    → B08L48Y2Q2 in 23709663011 rank #15 (organic)
+
+  ▸ PRODUCT — B0CH1S5LD5
+    ── SCRAPED ──          
+    Best Seller Rank       #16 in 23709663011
+    Scraped Name           Flowy Center Ring Top, Fuschia
+    Price                  null
+    Rating                 5 / 5
+    Review Count           2
+    Product URL            https://www.amazon.com/dp/B0CH1S5LD5
+    ── SP-API ──           
+    Title (SP-API)         Flowy Center Ring Top, Fuschia
+    Brand                  BODYZONE
+    Manufacturer           BodyZone
+    Model Number           16005SLFU
+    Package Quantity       1
+    Color                  Fuschia
+    Main Image URL         https://m.media-amazon.com/images/I/711-Tqugj9L.jpg
+    Bullet Points          [2 items]
+                            • 2 way stretch Nylon-Spandex
+                            • Light Weight
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 11.6 × 9.1 × 2.9
+    Package Weight (kg)    0.03
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.722Z
+    → B0CH1S5LD5 in 23709663011 rank #16 (organic)
+
+  ▸ PRODUCT — B09KTTW7C3
+    ── SCRAPED ──          
+    Best Seller Rank       #17 in 23709663011
+    Scraped Name           Vince Camuto Riviera Solids Molded Bikini Top w/Soft Cups Red Sunset MD
+    Price                  $78
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B09KTTW7C3
+    ── SP-API ──           
+    Title (SP-API)         Vince Camuto Riviera Solids Molded Bikini Top w/Soft Cups Red Sunset MD
+    Brand                  Vince Camuto
+    Manufacturer           null
+    Model Number           V21560-839
+    Package Quantity       null
+    Color                  Red Sunset
+    Main Image URL         https://m.media-amazon.com/images/I/51n-XnuVqwL.jpg
+    Bullet Points          [5 items]
+                            • Bring Mediterranean luxe to your swim style with the Vince Camuto Riviera Solids
+                            • Bikini top in a molded design that reduces seams.
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 22.4 × 10.4 × 4.2
+    Package Weight (kg)    0.082
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.76
+    Referral Fee           $13.26
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.723Z
+    → B09KTTW7C3 in 23709663011 rank #17 (organic)
+
+  ▸ PRODUCT — B08X3VCCQK
+    ── SCRAPED ──          
+    Best Seller Rank       #18 in 23709663011
+    Scraped Name           Made in USA Little Girls Bikini Top Made with Recycled Fabric for Girls UPF50+ Sun Prot...
+    Price                  $17.07
+    Rating                 3.2 / 5
+    Review Count           9
+    Product URL            https://www.amazon.com/dp/B08X3VCCQK
+    ── SP-API ──           
+    Title (SP-API)         Made in USA Little Girls Bikini Top Made with Recycled Fabric for Girls UPF50+ Sun Prot...
+    Brand                  City Threads
+    Manufacturer           City Threads
+    Model Number           23817270034595
+    Package Quantity       1
+    Color                  Navy
+    Main Image URL         https://m.media-amazon.com/images/I/612gMwFv2-L.jpg
+    Bullet Points          [5 items]
+                            • HIGH QUALITY RECYCLED MATERIAL and SPF/UPF 50+ protection on the timeless classi
+                            • MIX AND MATCH with swim briefs, swim boy shorts or jammer bottoms
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 14 × 12.4 × 2.9
+    Package Weight (kg)    0.039
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.3
+    Referral Fee           $1.71
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.724Z
+    → B08X3VCCQK in 23709663011 rank #18 (organic)
+
+  ▸ PRODUCT — B00UF4VQHW
+    ── SCRAPED ──          
+    Best Seller Rank       #19 in 23709663011
+    Scraped Name           Vivian's Fashions Top - Crop Top, Long Sleeve (Yellow, Medium)
+    Price                  null
+    Rating                 5 / 5
+    Review Count           2
+    Product URL            https://www.amazon.com/dp/B00UF4VQHW
+    ── SP-API ──           
+    Title (SP-API)         Vivian's Fashions Top - Crop Top, Long Sleeve (Yellow, Medium)
+    Brand                  Vivian's Fashions
+    Manufacturer           null
+    Model Number           VF3007-YELLOW-M
+    Package Quantity       1
+    Color                  Yellow
+    Main Image URL         https://m.media-amazon.com/images/I/61xjsjIRkDL.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 23.4 × 19.4 × 3.2
+    Package Weight (kg)    0.157
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.724Z
+    → B00UF4VQHW in 23709663011 rank #19 (organic)
+
+  ▸ PRODUCT — B076J22B57
+    ── SCRAPED ──          
+    Best Seller Rank       #20 in 23709663011
+    Scraped Name           ARENA Carbonics Cross Back Bikini Top for Women and Girls Casual Pool or Beach Swimwear
+    Price                  null
+    Rating                 5 / 5
+    Review Count           2
+    Product URL            https://www.amazon.com/dp/B076J22B57
+    ── SP-API ──           
+    Title (SP-API)         ARENA Carbonics Cross Back Bikini Top for Women and Girls Casual Pool or Beach Swimwear
+    Brand                  ARENA
+    Manufacturer           null
+    Model Number           000661-516-26
+    Package Quantity       null
+    Color                  Shadow Grey-leaf
+    Main Image URL         https://m.media-amazon.com/images/I/717K6isic7L.jpg
+    Bullet Points          [5 items]
+                            • CHLORINE-RESISTANCE: Made with 100% Polyester MaxLife fabric, this bikini top sw
+                            • FEMININE & SPORTY DESIGN: Featuring a front-lined tie-back and a cross-back with
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 15.49 × 10.41 × 4.32
+    Package Weight (kg)    0.091
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.725Z
+    → B076J22B57 in 23709663011 rank #20 (organic)
+
+  ▸ PRODUCT — B0969PX3XV
+    ── SCRAPED ──          
+    Best Seller Rank       #21 in 23709663011
+    Scraped Name           Free People Snowbunny Girlfriend Rib Top Ivory SM (Women's 4-6)
+    Price                  null
+    Rating                 null
+    Review Count           null
+    Product URL            https://www.amazon.com/dp/B0969PX3XV
+    ── SP-API ──           
+    Title (SP-API)         Free People Snowbunny Girlfriend Rib Top Ivory SM (Women's 4-6)
+    Brand                  Free People
+    Manufacturer           null
+    Model Number           OB1330012
+    Package Quantity       null
+    Color                  Ivory
+    Main Image URL         https://m.media-amazon.com/images/I/71YSeudn4qL.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    35.56 × 25.4 × 5.08
+    Item Weight (kg)       null
+    Package L × W × H (cm) 25.2 × 22.5 × 4.39
+    Package Weight (kg)    0.15
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.725Z
+    → B0969PX3XV in 23709663011 rank #21 (organic)
+
+  ▸ PRODUCT — B0CKBZQVXN
+    ── SCRAPED ──          
+    Best Seller Rank       #22 in 23709663011
+    Scraped Name           Skin Organic Cotton Caylie Top Eclipse 3 (LG)
+    Price                  $90
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0CKBZQVXN
+    ── SP-API ──           
+    Title (SP-API)         Skin Organic Cotton Caylie Top Eclipse 3 (LG)
+    Brand                  Skin
+    Manufacturer           null
+    Model Number           O3J101
+    Package Quantity       null
+    Color                  Eclipse
+    Main Image URL         https://m.media-amazon.com/images/I/71onCeTuIGL.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 30.2 × 25.6 × 1.5
+    Package Weight (kg)    0.141
+    ── FEES ──             
+    FBA Fulfillment Fee    $3.85
+    Referral Fee           $15.3
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.726Z
+    → B0CKBZQVXN in 23709663011 rank #22 (organic)
+
+  ▸ PRODUCT — B0F95YLM6C
+    ── SCRAPED ──          
+    Best Seller Rank       #23 in 23709663011
+    Scraped Name           L*Space Sander Top - French Blue-L
+    Price                  $99
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0F95YLM6C
+    ── SP-API ──           
+    Title (SP-API)         L*Space Sander Top - French Blue-L
+    Brand                  L*Space
+    Manufacturer           null
+    Model Number           SANTP25-BOP-FRE
+    Package Quantity       null
+    Color                  French Blue
+    Main Image URL         https://m.media-amazon.com/images/I/714qENQ6UGL.jpg
+    Bullet Points          [4 items]
+                            • Fabric: Lightweight stretch crochet
+                            • Cropped length
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    30.48 × 38.1 × 2.54
+    Item Weight (kg)       null
+    Package L × W × H (cm) 32.59 × 28.6 × 3.91
+    Package Weight (kg)    0.1
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.4
+    Referral Fee           $16.83
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.726Z
+    → B0F95YLM6C in 23709663011 rank #23 (organic)
+
+  ▸ PRODUCT — B0F2K26449
+    ── SCRAPED ──          
+    Best Seller Rank       #24 in 23709663011
+    Scraped Name           Trina Turk, Cayley 2 Top, Multi, 2
+    Price                  $248
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0F2K26449
+    ── SP-API ──           
+    Title (SP-API)         Trina Turk, Cayley 2 Top, Multi, 2
+    Brand                  Trina Turk
+    Manufacturer           Trina Turk
+    Model Number           2503122JQ1
+    Package Quantity       1
+    Color                  Multi
+    Main Image URL         https://m.media-amazon.com/images/I/819ekggRcBL.jpg
+    Bullet Points          [3 items]
+                            • Boxy fit
+                            • Umbrella jacquard
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 28.3 × 22.2 × 4.5
+    Package Weight (kg)    0.159
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.13
+    Referral Fee           $42.16
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.726Z
+    → B0F2K26449 in 23709663011 rank #24 (organic)
+
+  ▸ PRODUCT — B0B19WH314
+    ── SCRAPED ──          
+    Best Seller Rank       #25 in 23709663011
+    Scraped Name           Bobeau Short Sleeve Swing Top Aqua Space Dye LG
+    Price                  $58
+    Rating                 5 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0B19WH314
+    ── SP-API ──           
+    Title (SP-API)         Bobeau Short Sleeve Swing Top Aqua Space Dye LG
+    Brand                  Bobeau
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       null
+    Color                  Aqua Space Dye
+    Main Image URL         https://m.media-amazon.com/images/I/81PLBXahXPL.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 36.6 × 27 × 6.5
+    Package Weight (kg)    0.24
+    ── FEES ──             
+    FBA Fulfillment Fee    $7.16
+    Referral Fee           $9.86
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.727Z
+    → B0B19WH314 in 23709663011 rank #25 (organic)
+
+  ▸ PRODUCT — B00UF4VXQQ
+    ── SCRAPED ──          
+    Best Seller Rank       #26 in 23709663011
+    Scraped Name           Vivian's Fashions Top - Crop Top, Long Sleeve (Yellow, X-Large)
+    Price                  null
+    Rating                 4 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B00UF4VXQQ
+    ── SP-API ──           
+    Title (SP-API)         Vivian's Fashions Top - Crop Top, Long Sleeve (Yellow, X-Large)
+    Brand                  Vivian's Fashions
+    Manufacturer           null
+    Model Number           VF3007-YELLOW-XL
+    Package Quantity       1
+    Color                  Yellow
+    Main Image URL         https://m.media-amazon.com/images/I/61xjsjIRkDL.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 23.4 × 19.4 × 3.2
+    Package Weight (kg)    0.157
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.727Z
+    → B00UF4VXQQ in 23709663011 rank #26 (organic)
+
+  ▸ PRODUCT — B01B8NK9WQ
+    ── SCRAPED ──          
+    Best Seller Rank       #27 in 23709663011
+    Scraped Name           Rip Curl Juniors Daydream Embroidery Top, Natural, Small
+    Price                  $46
+    Rating                 4 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B01B8NK9WQ
+    ── SP-API ──           
+    Title (SP-API)         Rip Curl Juniors Daydream Embroidery Top, Natural, Small
+    Brand                  Rip Curl
+    Manufacturer           Rip Curl Juniors Sportswear
+    Model Number           GSHIE7
+    Package Quantity       1
+    Color                  Natural
+    Main Image URL         https://m.media-amazon.com/images/I/41jsHVs4u1L.jpg
+    Bullet Points          [2 items]
+                            • Embroidery detail, keyhole with button closure
+                            • 25.5 inch
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    18.03 × 16 × 4.83
+    Item Weight (kg)       null
+    Package L × W × H (cm) 18.03 × 16 × 4.83
+    Package Weight (kg)    0.1361
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.72
+    Referral Fee           $7.82
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.728Z
+    → B01B8NK9WQ in 23709663011 rank #27 (organic)
+
+  ▸ PRODUCT — B09Y49ZKLK
+    ── SCRAPED ──          
+    Best Seller Rank       #28 in 23709663011
+    Scraped Name           line and dot Hailee Floral Print Top Yellow Multi MD
+    Price                  $95
+    Rating                 null
+    Review Count           null
+    Product URL            https://www.amazon.com/dp/B09Y49ZKLK
+    ── SP-API ──           
+    Title (SP-API)         line and dot Hailee Floral Print Top Yellow Multi MD
+    Brand                  Line & Dot
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       1
+    Color                  Yellow Multi
+    Main Image URL         https://m.media-amazon.com/images/I/61Un5cgB4cL.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 30.99 × 21.01 × 5.99
+    Package Weight (kg)    0.15
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.4
+    Referral Fee           $16.15
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.728Z
+    → B09Y49ZKLK in 23709663011 rank #28 (organic)
+
+  ▸ PRODUCT — B0BZG885X7
+    ── SCRAPED ──          
+    Best Seller Rank       #29 in 23709663011
+    Scraped Name           Ronny Kobo Valentina Top, Tie Dye Blue, Medium
+    Price                  $398
+    Rating                 null
+    Review Count           null
+    Product URL            https://www.amazon.com/dp/B0BZG885X7
+    ── SP-API ──           
+    Title (SP-API)         Ronny Kobo Valentina Top, Tie Dye Blue, Medium
+    Brand                  Ronny Kobo
+    Manufacturer           Ronny Kobo
+    Model Number           303763CDC
+    Package Quantity       1
+    Color                  Tie Dye Blue
+    Main Image URL         https://m.media-amazon.com/images/I/71tQA459EfL.jpg
+    Bullet Points          [2 items]
+                            • Oversized Fit
+                            • Breathable
+    Product Type           APPAREL
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 42.49 × 21.01 × 5.41
+    Package Weight (kg)    0.24
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.86
+    Referral Fee           $67.66
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.730Z
+    → B0BZG885X7 in 23709663011 rank #29 (organic)
+
+  ▸ PRODUCT — B08L49FF7X
+    ── SCRAPED ──          
+    Best Seller Rank       #30 in 23709663011
+    Scraped Name           O'Neill Kids Lilia Stripe Knot Top Cruz Stripe 12 Big Kids
+    Price                  $56
+    Rating                 1 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B08L49FF7X
+    ── SP-API ──           
+    Title (SP-API)         O'Neill Kids Lilia Stripe Knot Top Cruz Stripe 12 Big Kids
+    Brand                  O'NEILL
+    Manufacturer           O'Neill Kids
+    Model Number           SP1874006-MUL
+    Package Quantity       1
+    Color                  Multi Cruz Stripe
+    Main Image URL         https://m.media-amazon.com/images/I/81HqIqYoTFS.jpg
+    Bullet Points          [0 items]
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 40.69 × 20.6 × 3.81
+    Package Weight (kg)    0.118
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.3
+    Referral Fee           $9.52
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.730Z
+    → B08L49FF7X in 23709663011 rank #30 (organic)
+
+  ▸ PRODUCT — B08L49HKF8
+    ── SCRAPED ──          
+    Best Seller Rank       #31 in 23709663011
+    Scraped Name           O'Neill Kids Cruz Stripe Braided Strap Set Multi Cruz Stripe 8 Big Kids
+    Price                  $49.5
+    Rating                 1 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B08L49HKF8
+    ── SP-API ──           
+    Title (SP-API)         O'Neill Kids Cruz Stripe Braided Strap Set Multi Cruz Stripe 8 Big Kids
+    Brand                  O'NEILL
+    Manufacturer           O'Neill Kids
+    Model Number           SP1874005-MUL
+    Package Quantity       1
+    Color                  Multi Cruz Stripe
+    Main Image URL         https://m.media-amazon.com/images/I/81RMvZLueUS.jpg
+    Bullet Points          [0 items]
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 19.81 × 18.11 × 3.61
+    Package Weight (kg)    0.082
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.72
+    Referral Fee           $8.42
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.731Z
+    → B08L49HKF8 in 23709663011 rank #31 (organic)
+
+  ▸ PRODUCT — B07DN671L2
+    ── SCRAPED ──          
+    Best Seller Rank       #32 in 23709663011
+    Scraped Name           Sweetheart Vixen Tie Top in Black Polka Dot
+    Price                  $45
+    Rating                 1 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B07DN671L2
+    ── SP-API ──           
+    Title (SP-API)         Sweetheart Vixen Tie Top in Black Polka Dot
+    Brand                  Double Trouble Apparel
+    Manufacturer           Double Trouble Apparel
+    Model Number           null
+    Package Quantity       null
+    Color                  Black
+    Main Image URL         https://m.media-amazon.com/images/I/61nvaklDrvL.jpg
+    Bullet Points          [1 items]
+                            • Sweetheart bust line
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) null
+    Package Weight (kg)    null
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.731Z
+    → B07DN671L2 in 23709663011 rank #32 (organic)
+
+  ▸ PRODUCT — B0B2P64B91
+    ── SCRAPED ──          
+    Best Seller Rank       #33 in 23709663011
+    Scraped Name           Lilly Pulitzer Dicola Top Boca Blue XS
+    Price                  $70
+    Rating                 1 / 5
+    Review Count           1
+    Product URL            https://www.amazon.com/dp/B0B2P64B91
+    ── SP-API ──           
+    Title (SP-API)         Lilly Pulitzer Dicola Top Boca Blue XS
+    Brand                  Lilly Pulitzer
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       null
+    Color                  Boca Blue
+    Main Image URL         https://m.media-amazon.com/images/I/71mG1c-GgoL.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 37.39 × 22.4 × 5.31
+    Package Weight (kg)    0.181
+    ── FEES ──             
+    FBA Fulfillment Fee    $6.51
+    Referral Fee           $11.9
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.732Z
+    → B0B2P64B91 in 23709663011 rank #33 (organic)
+
+  ▸ PRODUCT — B0DQRH6JNN
+    ── SCRAPED ──          
+    Best Seller Rank       #34 in 23709663011
+    Scraped Name           O'NEILL Quinn Tropical Pismo Top BLK S
+    Price                  $49.5
+    Rating                 4.2 / 5
+    Review Count           14
+    Product URL            https://www.amazon.com/dp/B0DQRH6JNN
+    ── SP-API ──           
+    Title (SP-API)         O'NEILL Quinn Tropical Pismo Top BLK S
+    Brand                  O'NEILL
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       1
+    Color                  Black
+    Main Image URL         https://m.media-amazon.com/images/I/61qbh3bKiUL.jpg
+    Bullet Points          [0 items]
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) null
+    Package Weight (kg)    null
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.733Z
+    → B0DQRH6JNN in 23709663011 rank #34 (organic)
+
+  ▸ PRODUCT — B08S7QGD7K
+    ── SCRAPED ──          
+    Best Seller Rank       #35 in 23709663011
+    Scraped Name           KIDPIK Ribbed Coco Top Limelight-Prism Pink | S (7-8)
+    Price                  $19.95
+    Rating                 4.2 / 5
+    Review Count           14
+    Product URL            https://www.amazon.com/dp/B08S7QGD7K
+    ── SP-API ──           
+    Title (SP-API)         KIDPIK Ribbed Coco Top Limelight-Prism Pink | S (7-8)
+    Brand                  KIDPIK
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       null
+    Color                  Limelight-prism Pink
+    Main Image URL         https://m.media-amazon.com/images/I/81yMEg4n1wL.jpg
+    Bullet Points          [0 items]
+    Product Type           COORDINATED_OUTFIT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    22.86 × 22.86 × 1.27
+    Item Weight (kg)       null
+    Package L × W × H (cm) 23.9 × 19.99 × 3.61
+    Package Weight (kg)    0.231
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.66
+    Referral Fee           $2
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.734Z
+    → B08S7QGD7K in 23709663011 rank #35 (organic)
+
+  ▸ PRODUCT — B0B9KC5ZKK
+    ── SCRAPED ──          
+    Best Seller Rank       #36 in 23709663011
+    Scraped Name           Bcx Juniors Strappy 3/4 Sleeve Top
+    Price                  null
+    Rating                 5 / 5
+    Review Count           5
+    Product URL            https://www.amazon.com/dp/B0B9KC5ZKK
+    ── SP-API ──           
+    Title (SP-API)         Bcx Juniors Strappy 3/4 Sleeve Top
+    Brand                  BCX
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       null
+    Color                  Charcoal
+    Main Image URL         https://m.media-amazon.com/images/I/61cr0yJrEDL.jpg
+    Bullet Points          [0 items]
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) null
+    Package Weight (kg)    null
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.734Z
+    → B0B9KC5ZKK in 23709663011 rank #36 (organic)
+
+  ▸ PRODUCT — B00X6FW5DG
+    ── SCRAPED ──          
+    Best Seller Rank       #37 in 23709663011
+    Scraped Name           Island Escape Tahiti Tropical Garden Floral Bandini Top (14, Blue)
+    Price                  null
+    Rating                 5 / 5
+    Review Count           5
+    Product URL            https://www.amazon.com/dp/B00X6FW5DG
+    ── SP-API ──           
+    Title (SP-API)         Island Escape Tahiti Tropical Garden Floral Bandini Top (14, Blue)
+    Brand                  Island Escape
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       1
+    Color                  Blue
+    Main Image URL         https://m.media-amazon.com/images/I/91PHowYV23L.jpg
+    Bullet Points          [0 items]
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 18.03 × 14.99 × 5.33
+    Package Weight (kg)    0.1361
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.735Z
+    → B00X6FW5DG in 23709663011 rank #37 (organic)
+
+  ▸ PRODUCT — B09HY55FWJ
+    ── SCRAPED ──          
+    Best Seller Rank       #38 in 23709663011
+    Scraped Name           Luli Fama Stardust - Triangle Top - S/Black
+    Price                  $94
+    Rating                 5 / 5
+    Review Count           5
+    Product URL            https://www.amazon.com/dp/B09HY55FWJ
+    ── SP-API ──           
+    Title (SP-API)         Luli Fama Stardust - Triangle Top - S/Black
+    Brand                  Luli Fama
+    Manufacturer           null
+    Model Number           L68921G-001-S-2022
+    Package Quantity       null
+    Color                  Black-l689-21g-001
+    Main Image URL         https://m.media-amazon.com/images/I/61TVtWCSv+L.jpg
+    Bullet Points          [0 items]
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) null
+    Package Weight (kg)    null
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.735Z
+    → B09HY55FWJ in 23709663011 rank #38 (organic)
+
+  ▸ PRODUCT — B08L486BGD
+    ── SCRAPED ──          
+    Best Seller Rank       #39 in 23709663011
+    Scraped Name           O'Neill Kids Cruz Stripe Multi Cruz Stripe 14 Big Kids
+    Price                  $49.5
+    Rating                 null
+    Review Count           null
+    Product URL            https://www.amazon.com/dp/B08L486BGD
+    ── SP-API ──           
+    Title (SP-API)         O'Neill Kids Cruz Stripe Multi Cruz Stripe 14 Big Kids
+    Brand                  O'NEILL
+    Manufacturer           O'Neill Kids
+    Model Number           SP1874005-MUL
+    Package Quantity       1
+    Color                  Multi Cruz Stripe
+    Main Image URL         https://m.media-amazon.com/images/I/81RMvZLueUS.jpg
+    Bullet Points          [0 items]
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 20.19 × 18.21 × 3.81
+    Package Weight (kg)    0.109
+    ── FEES ──             
+    FBA Fulfillment Fee    $4.72
+    Referral Fee           $8.42
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.736Z
+    → B08L486BGD in 23709663011 rank #39 (organic)
+
+  ▸ PRODUCT — B077RSDRYY
+    ── SCRAPED ──          
+    Best Seller Rank       #40 in 23709663011
+    Scraped Name           Sweetheart Vixen Tie Top in Black
+    Price                  $45
+    Rating                 null
+    Review Count           null
+    Product URL            https://www.amazon.com/dp/B077RSDRYY
+    ── SP-API ──           
+    Title (SP-API)         Sweetheart Vixen Tie Top in Black
+    Brand                  Double Trouble Apparel
+    Manufacturer           null
+    Model Number           null
+    Package Quantity       null
+    Color                  Black
+    Main Image URL         https://m.media-amazon.com/images/I/51kQkVRbypL.jpg
+    Bullet Points          [1 items]
+                            • Sweetheart Vixen Tie Top in Black
+    Product Type           SHIRT
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) null
+    Package Weight (kg)    null
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.737Z
+    → B077RSDRYY in 23709663011 rank #40 (organic)
+
+  ▸ PRODUCT — B09CTH2ST9
+    ── SCRAPED ──          
+    Best Seller Rank       #41 in 23709663011
+    Scraped Name           Becca by Rebecca Virtue Blue Agate Kimberly Asymmetrical Top Multi/Orchid SM
+    Price                  null
+    Rating                 null
+    Review Count           null
+    Product URL            https://www.amazon.com/dp/B09CTH2ST9
+    ── SP-API ──           
+    Title (SP-API)         Becca by Rebecca Virtue Blue Agate Kimberly Asymmetrical Top Multi/Orchid SM
+    Brand                  BECCA
+    Manufacturer           null
+    Model Number           283227
+    Package Quantity       null
+    Color                  Orchid
+    Main Image URL         https://m.media-amazon.com/images/I/61MBP6MTUWL.jpg
+    Bullet Points          [0 items]
+    Product Type           SWIMWEAR
+    Browse Node ID         23709663011
+    ── DIMENSIONS ──       
+    Item L × W × H (cm)    null
+    Item Weight (kg)       null
+    Package L × W × H (cm) 17.81 × 13.59 × 4.19
+    Package Weight (kg)    0.091
+    ── FEES ──             
+    FBA Fulfillment Fee    null
+    Referral Fee           null
+    ── STATUS ──           
+    Scrape Status          enriched
+    Enriched At            2026-03-08T12:43:18.737Z
+    → B09CTH2ST9 in 23709663011 rank #41 (organic)
+2026-03-08 12:43:19 ✗  upsertRanks batch: ON CONFLICT DO UPDATE command cannot affect row a second time
+
+────────────────────────────────────────────────────────────
+  Summary
+────────────────────────────────────────────────────────────
+
+  ┌─────────────────────────────────────────────┐
+  │  Categories scraped:         1              │
+  │  Categories failed:          0              │
+  │  Unique ASINs found:        41              │
+  │  ASINs enriched (ok):       41              │
+  │  ASINs enriched (fail):      0              │
+  │  Best seller edges:         41              │
+  │  Organic edges (total):     42              │
+  │                                             │
+  │  ✓ DB writes — upload-test mode            │
+  └─────────────────────────────────────────────┘
+

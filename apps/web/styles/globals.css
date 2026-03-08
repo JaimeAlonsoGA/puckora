@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Explicit sources required for Tailwind v4 in a monorepo — without these
+   the auto-detection heuristic can miss files outside the CSS entry directory
+   and produce an empty stylesheet (no utilities, no theme vars). */
+@source "../app";
+@source "../components";
+@source "../hooks";
+@source "../lib";
+@source "../../../packages";
+
+@import "./tokens.css";

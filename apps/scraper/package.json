@@ -1,0 +1,27 @@
+{
+  "name": "puckora-scraper",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "scrape": "tsx index.ts",
+    "scrape:test": "tsx index.ts --test 5",
+    "scrape:debug": "tsx index.ts --upload-test 1",
+    "scrape:upload-test": "tsx index.ts --upload-test 10",
+    "scrape:resume": "tsx index.ts --resume",
+    "import": "tsx import-categories.ts",
+    "import:dry": "tsx import-categories.ts --dry-run"
+  },
+  "dependencies": {
+    "@puckora/types": "*",
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^16.4.0",
+    "playwright": "^1.41.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.3.3"
+  }
+}

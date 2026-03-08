@@ -1,0 +1,28 @@
+{
+    "common": {
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "loading": "Cargando…",
+        "error": "Algo salió mal",
+        "success": "Guardado correctamente",
+        "signOut": "Cerrar sesión",
+        "upgrade": "Mejorar plan",
+        "back": "Volver",
+        "confirm": "Confirmar",
+        "delete": "Eliminar",
+        "edit": "Editar",
+        "close": "Cerrar",
+        "search": "Buscar",
+        "noResults": "No se encontraron resultados",
+        "retry": "Reintentar"
+    },
+    "planGate": {
+        "featureUnavailable": "Esta función requiere un plan de nivel superior.",
+        "limitReached": "Has alcanzado tu límite de {limit} en este plan.",
+        "upgrade": "Mejorar plan"
+    },
+    "nav": {
+        "pulse": "Pulse",
+        "settings": "Configuración"
+    }
+}

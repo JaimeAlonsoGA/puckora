@@ -1,0 +1,58 @@
+{
+    "pulse": {
+        "title": "Pulse",
+        "description": "Find what China is selling well today, then check if Amazon wants it.",
+        "search": {
+            "placeholder": "What product are you exploring? e.g. cat brush, silicone mold",
+            "button": "Search",
+            "searching": "Searching suppliers…",
+            "hint": "Searches trending products from China's largest wholesale marketplace.",
+            "refresh": "Refresh"
+        },
+        "results": {
+            "count": "{count} suppliers found",
+            "countOne": "1 supplier found",
+            "sortedBy": "Sorted by demand",
+            "empty": "No results yet — enter a keyword above to start.",
+            "noMatch": "No results found for \"{keyword}\". Try a broader keyword.",
+            "error": "Something went wrong while searching. Please try again."
+        },
+        "card": {
+            "orders": "{count} orders",
+            "repurchase": "{rate} repurchase",
+            "moq": "MOQ {quantity}",
+            "perUnit": "per unit",
+            "bulkFrom": "From {price} at {qty}+",
+            "viewOnSource": "View on 1688",
+            "saveSupplier": "Save supplier",
+            "saved": "Saved",
+            "location": "{city}, China",
+            "checkDemand": "Check Amazon demand",
+            "noImage": "No image"
+        },
+        "badges": {
+            "certifiedFactory": "Certified Factory",
+            "support247": "24/7 Support",
+            "freeReturns": "Free Returns",
+            "payLater": "Pay After Delivery",
+            "hotSeller": "Hot Seller",
+            "highRepurchase": "High Loyalty"
+        },
+        "demand": {
+            "loading": "Checking Amazon demand…",
+            "notFound": "No exact match on Amazon",
+            "notFoundHint": "Could be an untapped opportunity.",
+            "found": "Found on Amazon",
+            "topResult": "Top result",
+            "bsr": "Best Seller Rank #{rank}",
+            "bsrCategory": "#{rank} in {category}",
+            "brand": "Brand: {brand}",
+            "viewOnAmazon": "View on Amazon"
+        },
+        "opportunity": {
+            "high": "Hot opportunity",
+            "medium": "Worth exploring",
+            "low": "Niche product"
+        }
+    }
+}

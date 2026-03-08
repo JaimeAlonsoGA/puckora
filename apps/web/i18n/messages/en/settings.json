@@ -1,0 +1,43 @@
+{
+    "settings": {
+        "title": "Settings",
+        "description": "Manage your account, marketplace, and preferences.",
+        "profile": {
+            "title": "Profile",
+            "description": "Your display name and avatar.",
+            "fullName": "Full name",
+            "fullNamePlaceholder": "Enter your name",
+            "avatar": "Avatar",
+            "changeAvatar": "Change avatar"
+        },
+        "marketplace": {
+            "title": "Marketplace",
+            "description": "Choose your default Amazon marketplace. This affects all product research data.",
+            "label": "Default marketplace"
+        },
+        "language": {
+            "title": "Language",
+            "description": "Change the interface language.",
+            "label": "Interface language",
+            "en": "English",
+            "es": "Español"
+        },
+        "plan": {
+            "title": "Subscription",
+            "description": "Your current plan and usage.",
+            "currentPlan": "Current plan",
+            "free": "Free",
+            "starter": "Starter",
+            "pro": "Pro",
+            "agency": "Agency",
+            "manageBilling": "Manage billing",
+            "upgradePlan": "Upgrade plan"
+        },
+        "auth": {
+            "title": "Authentication",
+            "description": "Manage your sign-in methods.",
+            "connectedWith": "Connected with {provider}",
+            "signOutConfirm": "Are you sure you want to sign out?"
+        }
+    }
+}
