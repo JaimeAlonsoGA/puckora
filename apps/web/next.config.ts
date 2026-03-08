@@ -1,11 +1,5 @@
-import dotenv from 'dotenv'
-import path from 'path'
 import type { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
-
-// Load the single root .env shared across the monorepo.
-// Must happen before Next.js inlines NEXT_PUBLIC_* vars at build time.
-dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
 

@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv'
-import { resolve } from 'path'
 
-// Load the single root .env shared across the monorepo
-dotenv.config({ path: resolve(__dirname, '../../.env') })
+// Loads .env from the current working directory (apps/scraper/.env).
+// Run `npm run env:sync` from the repo root to regenerate from root .env.
+dotenv.config()
 
 function require_env(key: string): string {
   const v = process.env[key]
@@ -15,11 +15,11 @@ export const CONFIG = {
   supabase_url: require_env('NEXT_PUBLIC_SUPABASE_URL'),
   supabase_key: require_env('SUPABASE_SERVICE_ROLE_KEY'),
 
-  // SP-API (shared naming with the web app)
-  sp_client_id: require_env('SP_API_CLIENT_ID'),
-  sp_client_secret: require_env('SP_API_CLIENT_SECRET'),
-  sp_refresh_token: require_env('SP_API_REFRESH_TOKEN'),
-  sp_marketplace_id: process.env['SP_API_MARKETPLACE_ID'] ?? 'ATVPDKIKX0DER',  // US default
+  // SP-API
+  sp_client_id: require_env('SP_CLIENT_ID'),
+  sp_client_secret: require_env('SP_CLIENT_SECRET'),
+  sp_refresh_token: require_env('SP_REFRESH_TOKEN'),
+  sp_marketplace_id: process.env['SP_MARKETPLACE_ID'] ?? 'ATVPDKIKX0DER',  // US default
 
   // Optional proxy
   proxy_url: process.env['PROXY_URL'] ?? '',

@@ -21,11 +21,11 @@ const EXPIRY_BUFFER_S = 60
 let tokenCache: LwaTokenCache | null = null
 
 function getCredentials() {
-    const clientId = process.env.SP_API_CLIENT_ID
-    const clientSecret = process.env.SP_API_CLIENT_SECRET
+    const clientId = process.env.SP_CLIENT_ID
+    const clientSecret = process.env.SP_CLIENT_SECRET
     if (!clientId || !clientSecret) {
         throw new Error(
-            'SP_API_CLIENT_ID and SP_API_CLIENT_SECRET environment variables are required for SP-API',
+            'SP_CLIENT_ID and SP_CLIENT_SECRET environment variables are required for SP-API',
         )
     }
     return { clientId, clientSecret }
@@ -37,7 +37,7 @@ function getCredentials() {
  */
 async function fetchAccessToken(): Promise<LwaTokenCache> {
     const { clientId, clientSecret } = getCredentials()
-    const refreshToken = process.env.SP_API_REFRESH_TOKEN
+    const refreshToken = process.env.SP_REFRESH_TOKEN
 
     const body = new URLSearchParams({
         grant_type: refreshToken ? 'refresh_token' : 'client_credentials',
