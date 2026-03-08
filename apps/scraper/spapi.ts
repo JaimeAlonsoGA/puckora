@@ -188,7 +188,6 @@ export async function getCatalogItem(asin: string): Promise<CatalogItemResult | 
   // ── Summaries ───────────────────────────────────────────────────────────────
   const summary = raw.summaries?.find(s => s.marketplaceId === CONFIG.sp_marketplace_id)
     ?? raw.summaries?.[0]
-
   // ── Attributes ──────────────────────────────────────────────────────────────
   const attrs = raw.attributes ?? {}
 
@@ -271,7 +270,12 @@ export async function getCatalogItem(asin: string): Promise<CatalogItemResult | 
     pkg_weight_kg: pkgDims.weight_kg,
 
     category_ranks,
-    listing_date: summary?.listingDate ?? null,
+    listing_date: (() => {
+      const raw = (attrs['product_site_launch_date'] ?? [])[0]?.value
+      if (!raw) return null
+      const d = new Date(raw as string)
+      return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10)
+    })(),
   }
 }
 

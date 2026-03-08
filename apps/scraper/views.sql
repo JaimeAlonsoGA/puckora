@@ -3,8 +3,7 @@
 -- Run in Supabase SQL Editor after core migration
 --
 -- Delivers:
---   1. extract_asin_age_months(asin)  — helper function
---   2. product_financials             — the finance view
+--   1. product_financials  — the finance view
 -- ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -15,24 +14,8 @@ alter table public.amazon_products
   add column if not exists listing_date date;
 
 
--- ─── HELPER: ASIN AGE IN MONTHS ──────────────────────────────────────────────
---
--- NOTE (2026-03-08): The ASIN base-34 encoding scheme for dates is not reliably
--- documented. We use listing_date from SP-API summaries.listingDate instead —
--- the actual date Amazon first listed the product, directly from the catalog.
--- Returns NULL for products scraped before this field was added to the pipeline.
-
-create or replace function public.extract_asin_age_months(asin text)
-returns integer
-language sql
-immutable
-as $$
-  select null::integer
-$$;
-
-comment on function public.extract_asin_age_months(text) is
-  'Stub — kept for backward compat. Age is now computed from listing_date column.
-   product_financials uses listing_date directly; this function always returns NULL.';
+-- Drop the old ASIN-decode helper — listing_date is the definitive source now.
+drop function if exists public.extract_asin_age_months(text);
 
 
 -- ─── VIEW: PRODUCT FINANCIALS ────────────────────────────────────────────────
@@ -61,19 +44,22 @@ comment on function public.extract_asin_age_months(text) is
 -- Coefficients calibrated by category depth as volume tier proxy:
 --   depth 1–2  (top-level dept)   A = 350,000  B = 0.93
 --   depth 3–4  (mid-level)        A = 120,000  B = 0.91
---   depth 5–6  (subcategory)      A =  35,000  B = 0.88
---   depth 7–8  (deep leaf)        A =   8,000  B = 0.85
---   depth 9+   (very deep leaf)   A =   2,000  B = 0.82
+--   depth 5–6  (subcategory)      A =  25,000  B = 0.88  (was 35k)
+--   depth 7–8  (deep leaf)        A =   4,000  B = 0.84  (was 8k)
+--   depth 9+   (very deep leaf)   A =     600  B = 0.80  (was 2k)
+--   Calibrated 2026-03-08: depth 9+ rank #1 = ~600 units/month, cross-checked
+--   against review velocity for B07NYT8T9T (567 reviews / 85 months / 0.02 = 333).
+--   Post-run calibration: for each tier, find median review_count/age/0.02 at rank ~50.
 --
 -- Review velocity: monthly_units = review_count / age_months / review_rate
 --   review_rate = 0.02 (industry consensus: ~2% of buyers leave a review)
---   Only computed when extract_asin_age_months() returns non-null (B0 ASINs)
+--   Only computed when listing_date is present (populated by SP-API product_site_launch_date)
 --
 -- Blended weights (dynamic):
 --   Default          bsr=0.65  review=0.35
 --   review_count<20  bsr=0.95  review=0.05   (not enough reviews to trust)
 --   rank>5000        bsr=0.45  review=0.55   (BSR unreliable in long tail)
---   age unknown      bsr=1.00  review=0.00   (non-B0 ASIN, no age available)
+--   age unknown      bsr=1.00  review=0.00   (listing_date unavailable)
 --
 -- product_type_mismatch:
 --   true when Amazon's organic rank has placed a non-swimwear product_type into
@@ -109,6 +95,7 @@ with base as (
     p.pkg_length_cm,
     p.pkg_width_cm,
     p.pkg_height_cm,
+    p.listing_date,
 
     -- ASIN age — computed from listing_date (populated by SP-API summaries.listingDate)
     -- NULL for products scraped before the listing_date column was added
@@ -145,23 +132,22 @@ with base as (
     end                                   as amazon_fee_pct,
 
     -- ── BSR power law coefficients by depth tier ─────────────────────────────
-    -- FIX (2026-03-08): Expanded from 3 tiers to 5. depth 9+ leaf categories
-    -- (e.g. "Girls > Bikinis > Tops") had A=35,000 which inflated estimates by
-    -- ~15× — a rank #7 product was showing $1.5M/month. Now depth 9+ uses A=2,000.
+    -- Calibrated 2026-03-08 against review velocity data.
+    -- depth 9+ uses A=600, B=0.80: rank#1→600, rank#5→186, rank#10→119 units/month.
     case
       when ac.depth <= 2 then 350000.0
       when ac.depth <= 4 then 120000.0
-      when ac.depth <= 6 then  35000.0
-      when ac.depth <= 8 then   8000.0
-      else                      2000.0
+      when ac.depth <= 6 then  25000.0
+      when ac.depth <= 8 then   4000.0
+      else                        600.0
     end                                   as bsr_a,
 
     case
       when ac.depth <= 2 then 0.93
       when ac.depth <= 4 then 0.91
       when ac.depth <= 6 then 0.88
-      when ac.depth <= 8 then 0.85
-      else                    0.82
+      when ac.depth <= 8 then 0.84
+      else                    0.80
     end                                   as bsr_b,
 
     -- ── Data-quality: product type vs category mismatch ──────────────────────
@@ -320,6 +306,18 @@ select
 
   -- ── Meta ──────────────────────────────────────────────────────────────────
   b.product_age_months,
+  b.listing_date,
+
+  -- Reviews acquired per month since listing (proxy for sales velocity)
+  -- Null when listing_date or review_count is unavailable
+  case
+    when b.product_age_months is not null
+     and b.review_count is not null
+     and b.review_count > 0
+      then round((b.review_count::numeric / b.product_age_months), 2)
+    else null
+  end                                     as review_rate_per_month,
+
   b.pkg_weight_kg,
   b.pkg_length_cm,
   b.pkg_width_cm,
@@ -374,7 +372,9 @@ comment on view public.product_financials is
 --   GROUP BY category_id, category_path
 --   ORDER BY total_monthly_revenue DESC;
 --
--- Sanity-check extract_asin_age_months:
---   SELECT extract_asin_age_months('B0DYL9RT74');   -- expect positive integer ~18–36
---   SELECT extract_asin_age_months('B07NYT8T9T');   -- expect NULL (non-B0 prefix)
---   SELECT extract_asin_age_months('B0F5BXNJJW');   -- expect positive integer
+-- Review velocity for a single ASIN (reviews/month since listing → inferred sales):
+--   SELECT asin, title, listing_date, product_age_months, review_count,
+--          review_rate_per_month,
+--          round(review_rate_per_month / 0.02) AS implied_monthly_sales
+--   FROM product_financials
+--   WHERE asin = 'B0FGFSSYQX';

@@ -12,13 +12,26 @@ function jitter(): Promise<void> {
   return sleep(ms)
 }
 
-/** Simulate a human reading the page — random scroll then pause. */
-async function humanize(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    const distance = 200 + Math.floor(Math.random() * 600)
-    window.scrollBy({ top: distance, behavior: 'smooth' })
+/** Slowly scroll the full page in 400px increments to trigger lazy-loaded prices. */
+async function slowScroll(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    await new Promise<void>(resolve => {
+      const step = 400
+      const delay = 120 // ms between steps
+      let current = 0
+      const max = document.body.scrollHeight
+      const timer = setInterval(() => {
+        current += step
+        window.scrollBy({ top: step, behavior: 'smooth' })
+        if (current >= max) {
+          clearInterval(timer)
+          resolve()
+        }
+      }, delay)
+    })
   })
-  await sleep(400 + Math.random() * 600)
+  // Extra wait for price elements to render after scroll completes
+  await sleep(800)
 }
 
 export async function scrapeCategory(
@@ -38,9 +51,7 @@ export async function scrapeCategory(
       timeout: 30_000,
     })
     await page.waitForSelector('[data-asin]', { timeout: 15_000 }).catch(() => { })
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-    await page.waitForTimeout(2000)
-    await humanize(page)
+    await slowScroll(page)
 
     const html1 = await page.content()
 
@@ -70,9 +81,7 @@ export async function scrapeCategory(
       const url2 = category.bestsellers_url.replace('?pg=1', '?pg=2')
       await page.goto(url2, { waitUntil: 'domcontentloaded', timeout: 30_000 })
       await page.waitForSelector('[data-asin]', { timeout: 15_000 }).catch(() => { })
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-      await page.waitForTimeout(2000)
-      await humanize(page)
+      await slowScroll(page)
 
       const html2 = await page.content()
       if (!isBlocked(html2)) {

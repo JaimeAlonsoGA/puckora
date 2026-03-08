@@ -253,22 +253,46 @@ async function main() {
 
       if (IS_TEST || IS_UPLOAD_TEST) {
         const bsEdge = bestSellerEdges.find(e => e.asin === asin)
-        log.enrichCard(
+        const cat = categories.find(c => c.id === bsEdge?.category_id)
+        log.enrichCardVerbose({
           asin,
-          bsEdge?.rank ?? 0,
-          bsEdge?.category_id ?? 'unknown',
-          product.title ?? null,
-          product.brand ?? null,
-          product.price ?? null,
-          product.rating ?? null,
-          product.review_count ?? null,
-          product.fba_fee ?? null,
-          product.referral_fee ?? null,
-          product.product_type ?? null,
-          { l: product.item_length_cm ?? null, w: product.item_width_cm ?? null, h: product.item_height_cm ?? null, wt: product.item_weight_kg ?? null },
-          product.scrape_status,
-          ranks.length,
-        )
+          bsRank: bsEdge?.rank ?? 0,
+          categoryId: bsEdge?.category_id ?? 'unknown',
+          categoryPath: cat?.full_path ?? cat?.name ?? '',
+          // scraped
+          scrapedName: scraped.name,
+          scrapedPrice: scraped.price,
+          rating: product.rating ?? null,
+          reviewCount: product.review_count ?? null,
+          productUrl: scraped.product_url,
+          // SP-API catalog
+          title: product.title ?? null,
+          brand: product.brand ?? null,
+          manufacturer: product.manufacturer ?? null,
+          modelNumber: product.model_number ?? null,
+          color: product.color ?? null,
+          packageQuantity: product.package_quantity ?? null,
+          productType: product.product_type ?? null,
+          browseNodeId: product.browse_node_id ?? null,
+          listingDate: catalog?.listing_date ?? null,
+          bulletPoints: catalog?.bullet_points ?? [],
+          // dims
+          itemL: product.item_length_cm ?? null,
+          itemW: product.item_width_cm ?? null,
+          itemH: product.item_height_cm ?? null,
+          itemWt: product.item_weight_kg ?? null,
+          pkgL: product.pkg_length_cm ?? null,
+          pkgW: product.pkg_width_cm ?? null,
+          pkgH: product.pkg_height_cm ?? null,
+          pkgWt: product.pkg_weight_kg ?? null,
+          // fees
+          spApiPrice: catalog?.list_price ?? null,
+          fbaFee: product.fba_fee ?? null,
+          referralFee: product.referral_fee ?? null,
+          // ranks
+          organicRanks: ranks,
+          status: product.scrape_status,
+        })
       }
 
     } catch (err) {
@@ -306,14 +330,14 @@ async function main() {
 
   log.section('Summary')
   log.summary({
-    scrapedOk:        scraped_ok,
-    scrapedFail:      scraped_fail,
-    uniqueAsins:      uniqueAsins.length,
-    enrichedOk:       enriched_ok,
-    enrichedFail:     enriched_fail,
-    bestSellerEdges:  bestSellerEdges.length,
-    organicEdges:     organicEdges.length,
-    elapsedMs:        Date.now() - start.getTime(),
+    scrapedOk: scraped_ok,
+    scrapedFail: scraped_fail,
+    uniqueAsins: uniqueAsins.length,
+    enrichedOk: enriched_ok,
+    enrichedFail: enriched_fail,
+    bestSellerEdges: bestSellerEdges.length,
+    organicEdges: organicEdges.length,
+    elapsedMs: Date.now() - start.getTime(),
   }, runMode)
 }
 

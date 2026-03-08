@@ -228,6 +228,7 @@ export type Database = {
           confidence: string | null
           daily_velocity: number | null
           fba_fee: number | null
+          listing_date: string | null
           main_image_url: string | null
           monthly_net: number | null
           monthly_revenue: number | null
@@ -249,6 +250,7 @@ export type Database = {
           rating: number | null
           referral_fee: number | null
           review_count: number | null
+          review_rate_per_month: number | null
           title: string | null
           total_amazon_fees: number | null
           w_bsr: number | null
@@ -281,7 +283,6 @@ export type Database = {
       }
     }
     Functions: {
-      extract_asin_age_months: { Args: { asin: string }; Returns: number }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

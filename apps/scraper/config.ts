@@ -19,7 +19,7 @@ export const CONFIG = {
   sp_client_id: require_env('SP_CLIENT_ID'),
   sp_client_secret: require_env('SP_CLIENT_SECRET'),
   sp_refresh_token: require_env('SP_REFRESH_TOKEN'),
-  sp_marketplace_id: process.env['SP_MARKETPLACE_ID'] ?? 'ATVPDKIKX0DER',  // US default
+  sp_marketplace_id: process.env['SP_MARKETPLACE_ID'] || 'ATVPDKIKX0DER',  // US default
 
   // Optional proxy
   proxy_url: process.env['PROXY_URL'] ?? '',
