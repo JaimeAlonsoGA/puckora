@@ -106,19 +106,40 @@ export async function loadCategoriesFromSupabase(
   supabase: import('./db').DB,
   opts: { singleId?: string } = {}
 ): Promise<CategoryNode[]> {
-  let query = supabase
-    .from('amazon_categories')
-    .select('id, name, full_path, depth, bestsellers_url')
-    .eq('marketplace', CONFIG.marketplace)
-    .order('depth', { ascending: false })
+  if (opts.singleId) {
+    const { data, error } = await supabase
+      .from('amazon_categories')
+      .select('id, name, full_path, depth, bestsellers_url')
+      .eq('marketplace', CONFIG.marketplace)
+      .eq('id', opts.singleId)
+    if (error) throw new Error(`Failed to load categories: ${error.message}`)
+    if (!data?.length) throw new Error('No categories found — run the import script first')
+    return data.map(r => ({ id: r.id, name: r.name, full_path: r.full_path, depth: r.depth, bestsellers_url: r.bestsellers_url ?? '' }))
+  }
 
-  if (opts.singleId) query = query.eq('id', opts.singleId)
+  // Paginate in 1000-row pages — PostgREST default cap is 1000
+  const PAGE = 1000
+  const all: Array<{ id: string; name: string; full_path: string; depth: number; bestsellers_url: string | null }> = []
+  let from = 0
+  while (true) {
+    const { data, error } = await supabase
+      .from('amazon_categories')
+      .select('id, name, full_path, depth, bestsellers_url')
+      .eq('marketplace', CONFIG.marketplace)
+      .eq('is_leaf', true)
+      .in('scrape_status', ['pending', 'failed'])
+      .order('depth', { ascending: false })
+      .range(from, from + PAGE - 1)
+    if (error) throw new Error(`Failed to load categories: ${error.message}`)
+    if (!data?.length) break
+    all.push(...data)
+    if (data.length < PAGE) break   // last page
+    from += PAGE
+  }
 
-  const { data, error } = await query
-  if (error) throw new Error(`Failed to load categories: ${error.message}`)
-  if (!data?.length) throw new Error('No categories found — run the import script first')
+  if (!all.length) throw new Error('No categories found — run the import script first')
 
-  return data.map(r => ({
+  return all.map(r => ({
     id: r.id,
     name: r.name,
     full_path: r.full_path,

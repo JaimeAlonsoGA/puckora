@@ -57,3 +57,6 @@ coverage/
 
 # cache
 .cache/
+
+# sensible file 
+amazon-browse-nodes.xlsx
