@@ -147,6 +147,7 @@ interface RawCatalogResponse {
     color?: string
     browseClassification?: { classificationId: string; displayName: string }
     websiteDisplayGroup?: string
+    listingDate?: string   // ISO date string e.g. '2023-11-14'
   }>
   attributes?: Record<string, Array<{ value: unknown; language_tag?: string; marketplace_id?: string }>>
   dimensions?: Array<{
@@ -270,6 +271,7 @@ export async function getCatalogItem(asin: string): Promise<CatalogItemResult | 
     pkg_weight_kg: pkgDims.weight_kg,
 
     category_ranks,
+    listing_date: summary?.listingDate ?? null,
   }
 }
 

@@ -53,7 +53,6 @@ create table public.amazon_products (
   price             numeric(10,2),         -- buy box / listed price, USD
   rating            numeric(3,2),          -- e.g. 4.5
   review_count      integer,
-  image_url         text,                  -- thumbnail from Best Sellers page
   product_url       text,
 
   -- ── From SP-API getCatalogItem ─────────────────────────────────────────────
@@ -82,6 +81,9 @@ create table public.amazon_products (
   -- ── From SP-API getMyFeesEstimates ───────────────────────────────────────────────
   fba_fee numeric(8,2),         -- FBAPerUnitFulfillmentFee
   referral_fee        numeric(8,2),         -- ReferralFee (category % of sale price)
+
+  -- ── Listing date from SP-API summaries.listingDate ───────────────────────
+  listing_date        date,                 -- date product first appeared on Amazon
 
   -- ── Enrichment lifecycle ───────────────────────────────────────────────────
   scrape_status     text        not null default 'scraped',  -- 'scraped'|'enriched'|'enrichment_failed'

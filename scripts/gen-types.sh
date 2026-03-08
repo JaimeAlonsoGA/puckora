@@ -19,6 +19,6 @@ else
 fi
 
 echo "🔄 Generating index.ts..."
-npx ts-node --esm "$PROJECT_ROOT/scripts/gen-index.ts"
+npx tsx "$PROJECT_ROOT/scripts/gen-index.ts"
 
 echo "✅ Type generation complete!"

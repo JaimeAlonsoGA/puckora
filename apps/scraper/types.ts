@@ -70,6 +70,9 @@ export interface CatalogItemResult {
   pkg_height_cm: number | null
   pkg_weight_kg: number | null
 
+  // Date the listing first appeared on Amazon (from SP-API summaries.listingDate)
+  listing_date: string | null
+
   // All category ranks this ASIN appears in
   category_ranks: Array<{ classificationId: string; rank: number }>
 }

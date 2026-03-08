@@ -70,6 +70,7 @@ async function enrichAsin(
 
     fba_fee: feeResult?.fba_fee ?? null,
     referral_fee: feeResult?.referral_fee ?? null,
+    listing_date: catalog?.listing_date ?? null,
 
     scrape_status: catalog ? 'enriched' : 'enrichment_failed',
     enriched_at: now,
@@ -87,71 +88,13 @@ async function enrichAsin(
   return { product, ranks }
 }
 
-// ─── TEST MODE LOGGER ────────────────────────────────────────────────────────
-
-function logProductFull(product: ProductRow, bestSellerRank: number, categoryId: string, organicRanks: CategoryRankRow[]) {
-  log.product(`PRODUCT — ${product.asin}`, {
-    '── SCRAPED ──': '',
-    'Best Seller Rank': `#${bestSellerRank} in ${categoryId}`,
-    'Scraped Name': product.title ?? '(no title)',
-    'Price': product.price !== null ? `$${product.price}` : null,
-    'Rating': product.rating !== null ? `${product.rating} / 5` : null,
-    'Review Count': product.review_count?.toLocaleString() ?? null,
-    'Product URL': product.product_url,
-
-    '── SP-API ──': '',
-    'Title (SP-API)': product.title,
-    'Brand': product.brand,
-    'Manufacturer': product.manufacturer,
-    'Model Number': product.model_number,
-    'Package Quantity': product.package_quantity,
-    'Color': product.color,
-    'Main Image URL': product.main_image_url,
-    'Bullet Points': product.bullet_points,
-    'Product Type': product.product_type,
-    'Browse Node ID': product.browse_node_id,
-    '── DIMENSIONS ──': '',
-    'Item L × W × H (cm)': product.item_length_cm !== null
-      ? `${product.item_length_cm} × ${product.item_width_cm} × ${product.item_height_cm}`
-      : null,
-    'Item Weight (kg)': product.item_weight_kg,
-    'Package L × W × H (cm)': product.pkg_length_cm !== null
-      ? `${product.pkg_length_cm} × ${product.pkg_width_cm} × ${product.pkg_height_cm}`
-      : null,
-    'Package Weight (kg)': product.pkg_weight_kg,
-
-    '── FEES ──': '',
-    'FBA Fulfillment Fee': product.fba_fee !== null ? `$${product.fba_fee}` : null,
-    'Referral Fee': product.referral_fee !== null ? `$${product.referral_fee}` : null,
-
-    '── STATUS ──': '',
-    'Scrape Status': product.scrape_status,
-    'Enriched At': product.enriched_at,
-  })
-
-  if (organicRanks.length > 0) {
-    console.log(`\n    ${'ORGANIC CATEGORY RANKS'.padEnd(30)} (${organicRanks.length} total from SP-API)`)
-    organicRanks.slice(0, 10).forEach(r => {
-      log.edge(r.asin, r.category_id, r.rank, r.rank_type)
-    })
-    if (organicRanks.length > 10) console.log(`    ... and ${organicRanks.length - 10} more`)
-  } else {
-    console.log(`\n    No organic ranks returned from SP-API`)
-  }
-}
-
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 
 async function main() {
   console.log()
-  log.section('Puckora — Best Sellers Scraper v2')
-
-  if (IS_TEST) {
-    log.warn(`TEST MODE — scraping ${TEST_LIMIT} categories, no DB writes, full console output`)
-  }
-  if (IS_UPLOAD_TEST) {
-    log.warn(`UPLOAD-TEST MODE — scraping ${UPLOAD_TEST_LIMIT} categories, DB writes ON, full console output`)
-  }
+  const runMode: 'full' | 'test' | 'upload-test' = IS_TEST ? 'test' : IS_UPLOAD_TEST ? 'upload-test' : 'full'
+  const badge = IS_TEST ? 'TEST — no DB writes' : IS_UPLOAD_TEST ? 'UPLOAD-TEST' : undefined
+  log.section('Puckora — Best Sellers Scraper v2', badge)
 
   // Validate env
   try {
@@ -201,12 +144,12 @@ async function main() {
 
   // ─── PHASE 1: SCRAPE ───────────────────────────────────────────────────────
 
-  log.section('Phase 1 — Scraping Best Sellers Pages')
+  log.section('Phase 1 — Scraping Best Sellers Pages', badge)
 
   let scraped_ok = 0, scraped_fail = 0
 
   for (const category of categories) {
-    log.progress(scraped_ok + scraped_fail, categories.length, scraped_ok, scraped_fail, eta(scraped_ok + scraped_fail, categories.length, start))
+    log.progress(scraped_ok + scraped_fail, categories.length, scraped_ok, scraped_fail, eta(scraped_ok + scraped_fail, categories.length, start), category.name)
 
     const products = await scrapeCategory(browser, category)
 
@@ -218,9 +161,7 @@ async function main() {
       scraped_ok++
       cp.scraped_ids.push(category.id)
 
-      if (IS_TEST || IS_UPLOAD_TEST) {
-        log.success(`\n  Category ${category.id} (${category.name}) — ${products.length} products scraped`)
-      }
+      log.scrape(category.id, category.name, category.full_path, products.length)
 
       // Collect unique ASINs + best-seller edges
       const now = new Date().toISOString()
@@ -250,7 +191,7 @@ async function main() {
 
   // ─── PHASE 2: ENRICH ───────────────────────────────────────────────────────
 
-  log.section('Phase 2 — SP-API Enrichment')
+  log.section('Phase 2 — SP-API Enrichment', badge)
 
   const enrichedProducts: ProductRow[] = []
   const organicEdges: CategoryRankRow[] = []
@@ -311,13 +252,22 @@ async function main() {
       }
 
       if (IS_TEST || IS_UPLOAD_TEST) {
-        // Find this product's best-seller rank in the category it was discovered in
         const bsEdge = bestSellerEdges.find(e => e.asin === asin)
-        logProductFull(
-          product,
+        log.enrichCard(
+          asin,
           bsEdge?.rank ?? 0,
           bsEdge?.category_id ?? 'unknown',
-          ranks
+          product.title ?? null,
+          product.brand ?? null,
+          product.price ?? null,
+          product.rating ?? null,
+          product.review_count ?? null,
+          product.fba_fee ?? null,
+          product.referral_fee ?? null,
+          product.product_type ?? null,
+          { l: product.item_length_cm ?? null, w: product.item_width_cm ?? null, h: product.item_height_cm ?? null, wt: product.item_weight_kg ?? null },
+          product.scrape_status,
+          ranks.length,
         )
       }
 
@@ -337,7 +287,7 @@ async function main() {
       await upsertProducts(db, enrichedProducts.splice(0))
       await upsertRanks(db, [...deduped.values()])
       saveCheckpoint(cp)
-      log.info(`Flushed to DB — enriched: ${enriched_ok} | failed: ${enriched_fail}`)
+      log.flush(enriched_ok, enriched_fail)
     }
   }
 
@@ -355,42 +305,16 @@ async function main() {
   // ─── SUMMARY ───────────────────────────────────────────────────────────────
 
   log.section('Summary')
-
-  if (IS_TEST) {
-    log.raw('  ┌─────────────────────────────────────────────┐')
-    log.raw(`  │  Categories scraped:    ${String(scraped_ok).padStart(6)}              │`)
-    log.raw(`  │  Categories failed:     ${String(scraped_fail).padStart(6)}              │`)
-    log.raw(`  │  Unique ASINs found:    ${String(uniqueAsins.length).padStart(6)}              │`)
-    log.raw(`  │  ASINs enriched (ok):   ${String(enriched_ok).padStart(6)}              │`)
-    log.raw(`  │  ASINs enriched (fail): ${String(enriched_fail).padStart(6)}              │`)
-    log.raw(`  │  Best seller edges:     ${String(bestSellerEdges.length).padStart(6)}              │`)
-    log.raw(`  │  Organic edges (total): ${String(organicEdges.length).padStart(6)}              │`)
-    log.raw('  │                                             │')
-    log.raw('  │  ✓ No DB writes — test mode                │')
-    log.raw('  └─────────────────────────────────────────────┘')
-  } else if (IS_UPLOAD_TEST) {
-    log.raw('  ┌─────────────────────────────────────────────┐')
-    log.raw(`  │  Categories scraped:    ${String(scraped_ok).padStart(6)}              │`)
-    log.raw(`  │  Categories failed:     ${String(scraped_fail).padStart(6)}              │`)
-    log.raw(`  │  Unique ASINs found:    ${String(uniqueAsins.length).padStart(6)}              │`)
-    log.raw(`  │  ASINs enriched (ok):   ${String(enriched_ok).padStart(6)}              │`)
-    log.raw(`  │  ASINs enriched (fail): ${String(enriched_fail).padStart(6)}              │`)
-    log.raw(`  │  Best seller edges:     ${String(bestSellerEdges.length).padStart(6)}              │`)
-    log.raw(`  │  Organic edges (total): ${String(organicEdges.length).padStart(6)}              │`)
-    log.raw('  │                                             │')
-    log.raw('  │  ✓ DB writes — upload-test mode            │')
-    log.raw('  └─────────────────────────────────────────────┘')
-  } else {
-    log.raw(`  Categories scraped:    ${scraped_ok} ok / ${scraped_fail} failed`)
-    log.raw(`  Unique ASINs:          ${uniqueAsins.length}`)
-    log.raw(`  Enriched:              ${enriched_ok} ok / ${enriched_fail} failed`)
-    log.raw(`  Best seller edges:     ${bestSellerEdges.length}`)
-    log.raw(`  Organic rank edges:    ${organicEdges.length}`)
-    if (enriched_fail > 0 || scraped_fail > 0) {
-      log.raw(`\n  Run with --resume to retry ${scraped_fail + enriched_fail} failed items`)
-    }
-  }
-  log.raw('')
+  log.summary({
+    scrapedOk:        scraped_ok,
+    scrapedFail:      scraped_fail,
+    uniqueAsins:      uniqueAsins.length,
+    enrichedOk:       enriched_ok,
+    enrichedFail:     enriched_fail,
+    bestSellerEdges:  bestSellerEdges.length,
+    organicEdges:     organicEdges.length,
+    elapsedMs:        Date.now() - start.getTime(),
+  }, runMode)
 }
 
 // ─── GRACEFUL SHUTDOWN ───────────────────────────────────────────────────────
