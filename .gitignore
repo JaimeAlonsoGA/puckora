@@ -60,3 +60,7 @@ coverage/
 
 # sensible file 
 amazon-browse-nodes.xlsx
+scraper-cache.ndjson
+test-run.log
+upload-test.log
+checkpoint.json
