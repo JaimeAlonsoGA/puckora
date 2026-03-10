@@ -34,14 +34,18 @@ export const CONFIG = {
   retry_delay: 30_000,
 
   // SP-API rate control
-  // getCatalogItem:           5 req/s limit → 300ms between concurrent pairs ≈ 3.6 req/s (safe)
-  // getMyFeesEstimateForASIN: 10 req/s limit → still safe at 300ms
+  // getCatalogItem v2022-04-01: published rate 2 req/s, burst 2, but Retry-After: 60
+  //   when throttled strongly suggests a per-minute quota, not just per-second.
+  //   700 ms gap (1.43 req/s) gives 28 % headroom with zero burst risk.
+  // Fees batch: 0.5 req/s limit → 2 s sleep enforced inside fees.ts.
   spapi_delay_ms: 300,
+  catalog_interval_ms: 700,          // min ms between successive getCatalogItem fires
   spapi_retry_max: 3,
-  spapi_retry_on_429_ms: 60_000,
+  spapi_retry_on_429_ms: 60_000,     // fallback — Retry-After header is always honoured first
   spapi_retry_on_503_ms: 120_000,
 
   // Persistence
   checkpoint_file: './checkpoint.json',
+  scrape_cache_file: './scrape-cache.ndjson',
   batch_size: 50,
 } as const

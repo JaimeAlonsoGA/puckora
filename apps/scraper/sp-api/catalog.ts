@@ -52,8 +52,7 @@ export async function getCatalogItem(asin: string): Promise<CatalogItemResult | 
         `https://sellingpartnerapi-na.amazon.com/catalog/2022-04-01/items/${asin}` +
         `?marketplaceIds=${CONFIG.sp_marketplace_id}&includedData=${includedData}&locale=en_US`
 
-    await sleep(CONFIG.spapi_delay_ms)
-
+    // Rate pacing is the caller's responsibility (see index.ts stagger loop).
     const raw = await spApiCall<RawCatalogResponse>(url)
     if (!raw) return null
 

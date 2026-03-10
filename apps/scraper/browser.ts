@@ -45,7 +45,7 @@ export async function launchBrowser(): Promise<Browser> {
  *    with that snapshot so Amazon still sees a continuous session.
  *  - On a hard block (CAPTCHA / login wall) we discard the snapshot entirely and do a clean warmup.
  */
-const CONTEXT_ROTATE_EVERY = 50
+const CONTEXT_ROTATE_EVERY = 25
 
 let sharedCtx: BrowserContext | null = null
 let savedStorageState: NonNullable<BrowserContextOptions['storageState']> | null = null

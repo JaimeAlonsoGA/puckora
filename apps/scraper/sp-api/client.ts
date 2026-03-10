@@ -67,14 +67,19 @@ export async function spApiCall<T>(
         },
     })
 
-    // Rate throttled
+    // Rate throttled — honour Retry-After when Amazon provides it (typically 1–5 s for getCatalogItem);
+    // fall back to config value only when the header is absent or unparseable.
     if (res.status === 429) {
         if (attempt >= CONFIG.spapi_retry_max) {
             log.warn(`SP-API 429 — max retries reached for ${url}`)
             return null
         }
-        log.warn(`SP-API 429 — waiting ${CONFIG.spapi_retry_on_429_ms / 1000}s (attempt ${attempt + 1})`)
-        await sleep(CONFIG.spapi_retry_on_429_ms)
+        const retryAfterSec = parseFloat(res.headers.get('Retry-After') ?? '')
+        const waitMs = Number.isFinite(retryAfterSec) && retryAfterSec > 0
+            ? Math.ceil(retryAfterSec * 1_000) + 200   // Amazon's header + 200 ms buffer
+            : CONFIG.spapi_retry_on_429_ms              // fallback
+        log.warn(`SP-API 429 — waiting ${(waitMs / 1_000).toFixed(1)}s (attempt ${attempt + 1})`)
+        await sleep(waitMs)
         return spApiCall<T>(url, options, attempt + 1)
     }
 

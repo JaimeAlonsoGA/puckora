@@ -3,13 +3,46 @@
   Puckora — Best Sellers Scraper v2 [TEST — no DB writes]
 ────────────────────────────────────────────────────────────
 
-2026-03-10 12:42:37 ℹ  No proxy — using local IP
-2026-03-10 12:42:40 ✓  Loaded 29143 categories from Supabase
-2026-03-10 12:42:40 ℹ  Categories to scrape: 5
-2026-03-10 12:42:40 ℹ  Est. time (scrape only): ~0h
+2026-03-10 21:04:41 ℹ  No proxy — using local IP
+2026-03-10 21:04:45 ✓  Loaded 27865 categories from Supabase
+2026-03-10 21:04:45 ℹ  Categories to scrape: 5
+2026-03-10 21:04:45 ℹ  Est. time (scrape only): ~0h
 
 ────────────────────────────────────────────────────────────
   Phase 1 — Scraping Best Sellers Pages [TEST — no DB writes]
 ────────────────────────────────────────────────────────────
 
-[  0%] ✓0 ⊘0 ✗0 ⬜5  ETA —  Musical Instruments
+[  0%] ✓0 ⊘0 ✗0 ⬜5  ETA —  Skins
+2026-03-10 21:04:59 ✓  Electronics > eBook Readers & Accessories > …  [2642136011]  100 products
+[ 20%] ✓1 ⊘0 ✗0 ⬜4 ~100p/cat  ETA 1m 12s  Sleeves
+2026-03-10 21:05:14 ✓  Electronics > eBook Readers & Accessories > …  [2642137011]  100 products
+[ 40%] ✓2 ⊘0 ✗0 ⬜3 ~100p/cat  ETA 53s  Pastry Shells & Crusts
+2026-03-10 21:05:31 ✓  Grocery & Gourmet Food > Breads & Bakery > P…  [6548861011]  100 products
+[ 60%] ✓3 ⊘0 ✗0 ⬜2 ~100p/cat  ETA 34s  Pizza Crusts
+2026-03-10 21:05:47 ✓  Grocery & Gourmet Food > Breads & Bakery > P…  [291442011]  100 products
+[ 80%] ✓4 ⊘0 ✗0 ⬜1 ~100p/cat  ETA 17s  Cold Cereal
+2026-03-10 21:06:03 ✓  Grocery & Gourmet Food > Breakfast Cereal > …  [6524561011]  100 products
+2026-03-10 21:06:10 ✓  Scraping complete — 5 scraped | 0 empty | 0 failed | 0 unique ASINs
+
+────────────────────────────────────────────────────────────
+  Phase 2 — SP-API Enrichment [TEST — no DB writes]
+────────────────────────────────────────────────────────────
+
+2026-03-10 21:06:10 ℹ  ASINs to enrich: 0
+2026-03-10 21:06:10 ⚠  SP-API calls ARE made in test mode — check your console output carefully
+
+────────────────────────────────────────────────────────────
+  Summary
+────────────────────────────────────────────────────────────
+
+  ┌───────────────────────────────────────────────┐
+  │ Categories     5 scraped / 0 empty / 0 failed │
+  │ Median products              100 per category │
+  │ Unique ASINs                                0 │
+  │ Enriched                      0 ok / 0 failed │
+  │ Best seller edges                           0 │
+  │ Organic edges                               0 │
+  │ Elapsed                                1m 25s │
+  │                                  no DB writes │
+  └───────────────────────────────────────────────┘
+

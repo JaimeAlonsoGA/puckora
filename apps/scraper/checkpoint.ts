@@ -28,7 +28,7 @@ export function saveCheckpoint(cp: Checkpoint): void {
 }
 
 export function freshCheckpoint(): Checkpoint {
-  return {
+  const cp: Checkpoint = {
     phase: 'scraping',
     scraped_ids: [],
     failed_scrapes: [],
@@ -37,4 +37,8 @@ export function freshCheckpoint(): Checkpoint {
     started_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   }
+  // Write immediately so a stale checkpoint.json from a previous run is
+  // never on disk — avoids confusion when inspecting state mid-run.
+  fs.writeFileSync(CONFIG.checkpoint_file, JSON.stringify(cp, null, 2))
+  return cp
 }

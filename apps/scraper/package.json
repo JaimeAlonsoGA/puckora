@@ -3,11 +3,11 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "scrape": "NODE_OPTIONS=--max-old-space-size=4096 tsx index.ts",
+    "scrape": "NODE_OPTIONS=--max-old-space-size=8192 tsx index.ts",
     "scrape:test": "tsx index.ts --test 5",
     "scrape:debug": "tsx index.ts --upload-test 1",
-    "scrape:upload-test": "NODE_OPTIONS=--max-old-space-size=4096 tsx index.ts --upload-test 10",
-    "scrape:resume": "NODE_OPTIONS=--max-old-space-size=4096 tsx index.ts --resume",
+    "scrape:upload-test": "NODE_OPTIONS=--max-old-space-size=8192 tsx index.ts --upload-test 10",
+    "scrape:resume": "NODE_OPTIONS=--max-old-space-size=8192 tsx index.ts --resume",
     "import": "tsx import-categories.ts",
     "import:dry": "tsx import-categories.ts --dry-run"
   },

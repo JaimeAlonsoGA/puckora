@@ -3,39 +3,2534 @@
   Puckora — Best Sellers Scraper v2 [UPLOAD-TEST]
 ────────────────────────────────────────────────────────────
 
-2026-03-10 10:43:41 ℹ  No proxy — using local IP
-2026-03-10 10:43:44 ✓  Loaded 19649 categories from Supabase
-2026-03-10 10:43:44 ℹ  Categories to scrape: 1
-2026-03-10 10:43:44 ℹ  Est. time (scrape only): ~0h
+2026-03-10 21:53:15 ℹ  No proxy — using local IP
+2026-03-10 21:53:20 ✓  Loaded 27861 categories from Supabase
+2026-03-10 21:53:20 ℹ  Scrape cache cleared: ./scrape-cache.ndjson
+2026-03-10 21:53:20 ℹ  Categories to scrape: 1
+2026-03-10 21:53:20 ℹ  Est. time (scrape only): ~0h
 
 ────────────────────────────────────────────────────────────
   Phase 1 — Scraping Best Sellers Pages [UPLOAD-TEST]
 ────────────────────────────────────────────────────────────
 
-[  0%] ✓0 ⊘0 ✗0 ⬜1  ETA —  Drumsticks
-2026-03-10 10:44:04 ⚠  10155428011 — no Best Sellers available in this category, skipping
-2026-03-10 10:44:09 ✓  Scraping complete — 0 scraped | 1 empty | 0 failed | 0 unique ASINs
+[  0%] ✓0 ⊘0 ✗0 ⬜1  ETA —  Cold Cereal
+2026-03-10 21:53:34 ✓  Grocery & Gourmet Food > Breakfast Cereal > …  [6524561011]  100 products
+2026-03-10 21:53:42 ℹ  Loading scrape cache from ./scrape-cache.ndjson …
+2026-03-10 21:53:42 ✓  Cache loaded — 1 categories · 100 unique ASINs · 100 best-seller edges
+2026-03-10 21:53:42 ✓  Scraping complete — 1 scraped | 0 empty | 0 failed | 100 unique ASINs
 
 ────────────────────────────────────────────────────────────
   Phase 2 — SP-API Enrichment [UPLOAD-TEST]
 ────────────────────────────────────────────────────────────
 
-2026-03-10 10:44:09 ℹ  ASINs to enrich: 0
-2026-03-10 10:44:09 ⚠  UPLOAD-TEST — SP-API calls ARE made and results WILL be written to DB
-2026-03-10 10:44:09 ℹ  Pre-fetching fee estimates for 0 ASINs (0 batch calls)...
+2026-03-10 21:53:42 ℹ  ASINs to enrich: 100
+2026-03-10 21:53:42 ⚠  UPLOAD-TEST — SP-API calls ARE made and results WILL be written to DB
+[  0%] ✓0 ✗0 ⬜100  ETA —  B07CM8J4NC
+2026-03-10 21:53:42 ⬡  Enriching B07CM8J4NC — getCatalogItem
+2026-03-10 21:53:42 ⬡  Access token refreshed
+2026-03-10 21:53:43 ⬡  Enriching B07CX3GRXV — getCatalogItem
+2026-03-10 21:53:44 ⬡  Enriching B07CX3GRY1 — getCatalogItem
+2026-03-10 21:53:45 ⬡  Enriching B07WD631ZX — getCatalogItem
+2026-03-10 21:53:46 ⬡  Enriching B07CX6LN8F — getCatalogItem
+2026-03-10 21:53:46 ⬡  Enriching B097ZFCRH7 — getCatalogItem
+2026-03-10 21:53:47 ⬡  Enriching B0055AEZ0G — getCatalogItem
+2026-03-10 21:53:48 ⬡  Enriching B000VK2LO2 — getCatalogItem
+2026-03-10 21:53:48 ⬡  Enriching B07CMGL95S — getCatalogItem
+2026-03-10 21:53:49 ⬡  Enriching B08QTC6TJN — getCatalogItem
+2026-03-10 21:53:50 ⬡  Enriching B07QFG64SQ — getCatalogItem
+2026-03-10 21:53:50 ⬡  Enriching B0BFZV1CM4 — getCatalogItem
+2026-03-10 21:53:51 ⬡  Enriching B0F15SQ8HY — getCatalogItem
+2026-03-10 21:53:52 ⬡  Enriching B0831DKX4J — getCatalogItem
+2026-03-10 21:53:53 ⬡  Enriching B08X6L4ZQB — getCatalogItem
+2026-03-10 21:53:53 ⬡  Enriching B07ZTTPMNJ — getCatalogItem
+2026-03-10 21:53:54 ⬡  Enriching B00IGHKDT2 — getCatalogItem
+2026-03-10 21:53:55 ⬡  Enriching B0D828VTRH — getCatalogItem
+2026-03-10 21:53:55 ⬡  Enriching B07SQB7GF2 — getCatalogItem
+2026-03-10 21:53:56 ⬡  Enriching B08QDP3S8X — getCatalogItem
+2026-03-10 21:53:59 ⬡  Fee batch 1/1 — 20 ASINs
+  ┌─ B07CM8J4NC  #1 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honey Nut Cheerios Cereal, Limited Edition Heart Shapes, Af…
+  │  Brand        Cheerios  │  Mfr: General Mills  │  Model: OXCZG-182
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2018-04-20
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.79  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.85  Referral $0.60  Total: $6.45
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         7.85 × 19.51 × 32.54 cm   0.7711 kg
+  │  Package      34.7 × 24.13 × 8.1 cm   0.912 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • THOUGHTFUL HEARTS AND Os: Sweetened whole grain oat cereal with real ho…
+  │  • CAN HELP LOWER CHOLESTEROL as part of a heart healthy diet; 3g soluble …
+  │  • GLUTEN FREE CEREAL: Pour in a bowl with ice cold milk for an irresistib…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #1      6524561011
+  └─ enriched  https://www.amazon.com/dp/B07CM8J4NC
+
+  ┌─ B07CX3GRXV  #2 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cinnamon Toast Crunch Breakfast Cereal, Crispy Cinnamon Cer…
+  │  Brand        Cinnamon Toast Crunch  │  Mfr: General Mills  │  Model: 00016000122540
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2018-05-28
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $2.97  →  SP-API $5.99  (diff)
+  │  Fees         FBA $4.60  Referral $0.48  Total: $5.08
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.83 × 19.56 × 28.7 cm   0.3402 kg
+  │  Package      29.01 × 19.61 × 5.21 cm   0.408 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CINNAMON CEREAL: Crispy cereal squares made from whole wheat and rice, …
+  │  • WHOLE GRAIN: Each serving provides 16g whole grain (at least 48g recomm…
+  │  • BREAKFAST FOOD OR SNACK: Try it with or without milk as part of an easy…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #2      6524561011
+  └─ enriched  https://www.amazon.com/dp/B07CX3GRXV
+
+  ┌─ B07CX3GRY1  #3 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cheerios Cereal, Limited Edition Heart Shapes, Affirmations…
+  │  Brand        Cheerios  │  Mfr: General Mills  │  Model: 00016000125411
+  │  Color        Bla191  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2018-05-28
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.50  →  SP-API $8.49  (diff)
+  │  Fees         FBA $5.85  Referral $0.68  Total: $6.53
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         7.87 × 23.88 × 34.42 cm   0.567 kg
+  │  Package      34.75 × 24.1 × 8.13 cm   0.703 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • THOUGHTFUL HEARTS AND Os: A delicious toasted whole grain oat cereal fo…
+  │  • CAN HELP LOWER CHOLESTEROL as part of a heart healthy diet; 3g soluble …
+  │  • GLUTEN FREE CEREAL: Pour some in a bowl with milk for a great-tasting, …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #3      6524561011
+  └─ enriched  https://www.amazon.com/dp/B07CX3GRY1
+
+  ┌─ B07WD631ZX  #4 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Catalina Crunch Protein Cereal | Sugar Free Breakfast Cerea…
+  │  Brand        Catalina Crunch  │  Mfr: Catalina Crunch  │  Model: 0860479001522
+  │  Color        No Color  │  Pkg Qty: 6  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2019-11-11
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.29  →  SP-API $7.99  (diff)
+  │  Fees         FBA $3.13  Referral $0.64  Total: $3.77
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         17.27 × 12.57 × 12.57 cm   ? kg
+  │  Package      25.4 × 17.78 × 2.54 cm   0.118 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • 11G OF PROTEIN PER 1/2 CUP SERVING: Kick off your morning, workout or o…
+  │  • EXCELLENT SOURCE OF FIBER: Packed with 9 grams of fiber per 1/2 cup ser…
+  │  • WHOLESOME INGREDIENTS AND GLUTEN FREE: Catalina Crunch Cereal is not ju…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #4      6524561011
+  └─ enriched  https://www.amazon.com/dp/B07WD631ZX
+
+  ┌─ B07CX6LN8F  #5 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Lucky Charms Gluten Free Cereal with Marshmallows, Kids Bre…
+  │  Brand        Lucky Charms  │  Mfr: General Mills  │  Model: 00016000123998
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2018-05-28
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $2.97  →  SP-API $4.30  (diff)
+  │  Fees         FBA $4.60  Referral $0.34  Total: $4.94
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.83 × 19.56 × 28.7 cm   0.2977 kg
+  │  Package      28.7 × 20 × 5 cm   0.38 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • MARSHMALLOW CEREAL: A frosted toasted cereal for kids featuring Lucky's…
+  │  • GLUTEN FREE: A gluten free cereal with 12 vitamins and minerals and a g…
+  │  • WHOLE GRAIN CEREAL: Kids cereal with 19g of whole grain in every servin…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #5      6524561011
+  └─ enriched  https://www.amazon.com/dp/B07CX6LN8F
+
+  ┌─ B097ZFCRH7  #6 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Fruity PEBBLES Breakfast Cereal for Kids, Gluten Free, Made…
+  │  Brand        Pebbles  │  Mfr: Post Consumer Brands  │  Model: 37927
+  │  Color        Fruity  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-06-26
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.99  →  SP-API $5.29  (diff)
+  │  Fees         FBA $5.00  Referral $0.42  Total: $5.42
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         33.3 × 19.71 × 6.71 cm   0.5528 kg
+  │  Package      33.6 × 19.89 × 6.6 cm   0.64 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • FLAVORED FRUITY CEREAL: Contains one (1) 19.5 oz Family Size Box of Fru…
+  │  • GLUTEN FREE CEREAL: These colorful sweetened flavor and are gluten free…
+  │  • KID-FRIENDLY SNACK: Perfect for kids and creators of all ages, Fruity P…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #6      6524561011
+  └─ enriched  https://www.amazon.com/dp/B097ZFCRH7
+
+  ┌─ B0055AEZ0G  #7 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honey Bunches of Oats with Almonds Breakfast Cereal, Honey …
+  │  Brand        Honey Bunches of Oats  │  Mfr: Post Foods LLC  │  Model: 88177
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2012-05-07
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.54  →  SP-API $5.29  (diff)
+  │  Fees         FBA $4.75  Referral $0.42  Total: $5.17
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.84 × 19.61 × 30.76 cm   0.5103 kg
+  │  Package      31.11 × 19.8 × 5.69 cm   0.592 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • ALMOND CEREAL FOR BREAKFAST: Enjoy one (1) 18 oz family size cereal box…
+  │  • NUTRITIOUS & WHOLESOME: Each serving of this honey granola almond cerea…
+  │  • GOODNESS IN EVERY BITE: Enjoy a delicious honey almond cereal with a bl…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #7      6524561011
+  └─ enriched  https://www.amazon.com/dp/B0055AEZ0G
+
+  ┌─ B000VK2LO2  #8 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Weetabix Biscuits Whole Grain Cereal, Good Source of Fiber,…
+  │  Brand        Weetabix  │  Mfr: Post Foods  │  Model: 055712067124
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2010-10-22
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.79  →  SP-API $5.79  (match)
+  │  Fees         FBA $5.10  Referral $0.46  Total: $5.56
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.84 × 19.05 × 26.16 cm   0.3992 kg
+  │  Package      26.7 × 26.29 × 7.01 cm   0.522 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Weetabix Cereal: Contains one (1) 14 oz box of Weetabix Biscuits Whole …
+  │  • Perfect for Recipes: Use to make your favorite Weetabix recipes or enjo…
+  │  • Whole Grain Cereal: A delicious, light, crispy breakfast cereal made wi…
+  │    … 3 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #8      6524561011
+  └─ enriched  https://www.amazon.com/dp/B000VK2LO2
+
+  ┌─ B07CMGL95S  #8 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Lucky Charms Gluten Free Cereal with Marshmallows, Kids Bre…
+  │  Brand        Lucky Charms  │  Mfr: General Mills  │  Model: 10016000121833
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2018-04-20
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.37  →  SP-API $7.49  (diff)
+  │  Fees         FBA $6.23  Referral $0.60  Total: $6.83
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         7.87 × 23.88 × 34.42 cm   0.7257 kg
+  │  Package      34.66 × 24.1 × 8.27 cm   0.9 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • MARSHMALLOW CEREAL: A frosted toasted cereal for kids featuring Lucky's…
+  │  • GLUTEN FREE: A gluten free cereal with 12 vitamins and minerals and a g…
+  │  • WHOLE GRAIN CEREAL: Kids cereal with 19g of whole grain in every servin…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #9      6524561011
+  └─ enriched  https://www.amazon.com/dp/B07CMGL95S
+
+  ┌─ B08QTC6TJN  #10 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cascadian Farm Organic Cinnamon Crunch Cereal, Family Size,…
+  │  Brand        Cascadian Farm  │  Mfr: GENERAL MILLS SALES INC.  │  Model: 0021908121734
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2020-12-16
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.48  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.44  Referral $0.60  Total: $6.04
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.35 × 19.56 × 30.1 cm   0.508 kg
+  │  Package      32.3 × 27.3 × 7 cm   0.51 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CINNAMON CEREAL: Organic whole grain cereal squares, lightly sprinkled …
+  │  • NON-GMO AND ORGANIC: This cereal is Non-GMO Project Verified and certif…
+  │  • MADE WITH WHOLE GRAIN: Every serving provides 17g whole grain (at least…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #10     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08QTC6TJN
+
+  ┌─ B07QFG64SQ  #11 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Peanut Butter Chex Cereal, Gluten Free Breakfast Cereal, Ma…
+  │  Brand        Chex  │  Mfr: General Mills  │  Model: 10016000152332
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2019-05-27
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.99  →  SP-API $5.49  (diff)
+  │  Fees         FBA $4.60  Referral $0.44  Total: $5.04
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.83 × 19.56 × 28.7 cm   0.3459 kg
+  │  Package      28.8 × 19.51 × 5.11 cm   0.422 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • DELICIOUS TASTE: Made with real peanut butter, each box of crunchy latt…
+  │  • WHOLE GRAIN: Helps get your day off to a good start with 12g of whole g…
+  │  • GLUTEN FREE CEREAL: Pour some in a bowl with milk for a great-tasting, …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #11     6524561011
+  └─ enriched  https://www.amazon.com/dp/B07QFG64SQ
+
+  ┌─ B0BFZV1CM4  #12 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Quaker Life Original Cereal, 22.3OZ Box
+  │  Brand        Quaker  │  Mfr: Quaker  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2022-09-21
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.29  (diff)
+  │  Fees         FBA $4.75  Referral $0.50  Total: $5.25
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      32.01 × 19.2 × 6.25 cm   0.721 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Includes 1 (22.3 oz) box of Quaker Life Multigrain Breakfast Cereal, Or…
+  │  • Your whole family will love the sweet flavor of Quaker Life Cereal with…
+  │  • Quaker Life Original Multigrain Breakfast Cereal is made with whole gra…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #12     6524561011
+  │  #39     16310251
+  └─ enriched  https://www.amazon.com/dp/B0BFZV1CM4
+
+  ┌─ B0F15SQ8HY  #12 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg’s Raisin Bran Breakfast Cereal, High Fiber, 28g Who…
+  │  Brand        Kellogg's  │  Mfr: Kellogg's  │  Model: 00041192103803
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-04-15
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.45  →  SP-API $5.99  (diff)
+  │  Fees         FBA $4.75  Referral $0.48  Total: $5.23
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      31.6 × 19.99 × 5.69 cm   0.671 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CRUNCH WITH PURPOSE: High fiber cereal to help support digestive health…
+  │  • BURSTING WITH FLAVOR: Delicious raisins perfectly balanced with crisp, …
+  │  • SIMPLY NOURISHING: Made with just 7 simple ingredients plus iron; Good …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #13     6524561011
+  │  #24     16310251
+  └─ enriched  https://www.amazon.com/dp/B0F15SQ8HY
+
+  ┌─ B0831DKX4J  #14 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Fiber One Cereal, Original Bran, High Fiber Cereal Made wit…
+  │  Brand        Fiber One  │  Mfr: GENERAL MILLS SALES INC.  │  Model: 10016000157627
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2019-12-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.46  →  SP-API $7.10  (diff)
+  │  Fees         FBA $4.60  Referral $0.57  Total: $5.17
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.33 × 19.56 × 30.1 cm   0.5557 kg
+  │  Package      30.2 × 19.51 × 5.49 cm   0.603 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • HIGH FIBER CEREAL: Delivers 65% daily value of fiber per serving. Diets…
+  │  • FUEL YOUR MORNING: A delicious cereal containing whole grains and 90 ca…
+  │  • WHOLE GRAIN CEREAL: Each serving provides 18g of whole grain (at least …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #14     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0831DKX4J
+
+  ┌─ B08X6L4ZQB  #15 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Multi Grain Cheerios, Heart Healthy Breakfast Cereal, Glute…
+  │  Brand        Cheerios  │  Mfr: General Mills  │  Model: SVQQPE
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.44  Referral $0.60  Total: $6.04
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         8.1 × 19.45 × 34.29 cm   0.5103 kg
+  │  Package      34.65 × 19.77 × 8.61 cm   0.63 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • FIRST INGREDIENT WHOLE GRAIN: Each serving provides 28g whole grain (at…
+  │  • HEART HEALTHY CEREAL: While many factors affect heart disease, diets lo…
+  │  • GLUTEN FREE: This gluten free cereal is a good source of calcium and fi…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #15     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X6L4ZQB
+
+  ┌─ B07ZTTPMNJ  #16 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg's Rice Krispies Cold Breakfast Cereal, 8 Vitamins a…
+  │  Brand        Kellogg's  │  Mfr: AmazonUs/KEN5R  │  Model: 00038000231520
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2019-12-09
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.99  →  SP-API $5.49  (diff)
+  │  Fees         FBA $6.31  Referral $0.44  Total: $6.75
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         23.97 × 8.89 × 34.13 cm   0.6804 kg
+  │  Package      34.8 × 24.4 × 9.3 cm   0.825 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Kellogg's is working with No Kid Hungry to provide free breakfast to ch…
+  │  • A crisp way to start your day, Rice Krispies brings the classic crunch …
+  │  • A healthy, fat-free cereal; Good source of 8 vitamins and minerals in e…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #16     6524561011
+  └─ enriched  https://www.amazon.com/dp/B07ZTTPMNJ
+
+  ┌─ B00IGHKDT2  #17 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Grape-Nuts Original Cereal, Crunchy Whole Grain Wheat and B…
+  │  Brand        Grape-Nuts  │  Mfr: Post Consumer Brands  │  Model: 88418
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2014-02-14
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.29  →  SP-API $5.29  (match)
+  │  Fees         FBA $4.60  Referral $0.42  Total: $5.02
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.47 × 16.51 × 24.36 cm   0.6577 kg
+  │  Package      21.8 × 16.31 × 4.85 cm   0.64 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • One 20.5 oz box of Post Grape Nuts Original Breakfast Cereal
+  │  • Post Grape-Nuts Cereal is a heart-healthy (2) breakfast cereal option t…
+  │  • Grape Nuts Cereal is Non-GMO Project Verified and made with whole grain…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #17     6524561011
+  └─ enriched  https://www.amazon.com/dp/B00IGHKDT2
+
+  ┌─ B0D828VTRH  #18 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Catalina Crunch Protein Cereal - Breakfast Cereal with 10g …
+  │  Brand        Catalina Crunch  │  Mfr: Catalina Crunch  │  Model: CTA12098
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2024-06-25
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.29  →  SP-API $7.99  (diff)
+  │  Fees         FBA $4.60  Referral $0.64  Total: $5.24
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         18.11 × 7.24 × 25.4 cm   0.2268 kg
+  │  Package      24.9 × 17.5 × 6.7 cm   0.24 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • 10G OF PROTEIN PER 1/2 CUP SERVING: Kick off your morning, workout or o…
+  │  • EXCELLENT SOURCE OF FIBER: Packed with 7 grams of fiber per 1/2 cup ser…
+  │  • WHOLESOME INGREDIENTS AND GLUTEN FREE: Catalina Crunch Cereal is not ju…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #18     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0D828VTRH
+
+  ┌─ B07SQB7GF2  #19 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Catalina Crunch Protein Cereal - Sugar Free Breakfast Cerea…
+  │  Brand        Catalina Crunch  │  Mfr: Catalina Crunch  │  Model: CTA00154
+  │  Color        No Color  │  Pkg Qty: 6  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2019-07-12
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.97  →  SP-API $7.99  (diff)
+  │  Fees         FBA $4.60  Referral $0.64  Total: $5.24
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         17.27 × 15.75 × 10.29 cm   0.2551 kg
+  │  Package      26.52 × 17.91 × 6.81 cm   0.268 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • 11G OF PROTEIN PER 1/2 CUP SERVING: Kick off your morning, workout or o…
+  │  • EXCELLENT SOURCE OF FIBER: Packed with 9 grams of fiber per 1/2 cup ser…
+  │  • WHOLESOME INGREDIENTS AND GLUTEN FREE: Catalina Crunch Cereal is not ju…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #19     6524561011
+  └─ enriched  https://www.amazon.com/dp/B07SQB7GF2
+
+  ┌─ B08QDP3S8X  #20 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Catalina Crunch Protein Cereal - Sugar Free Breakfast Cerea…
+  │  Brand        Catalina Crunch  │  Mfr: Catalina Crunch  │  Model: 0850017468184
+  │  Color        brown  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2020-12-11
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.29  →  SP-API $7.99  (diff)
+  │  Fees         FBA $4.22  Referral $0.64  Total: $4.86
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         27.31 × 20.32 × 12.7 cm   0.2551 kg
+  │  Package      24.79 × 17.6 × 5.79 cm   0.272 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • 11G OF PROTEIN PER 1/2 CUP SERVING: Kick off your morning, workout or o…
+  │  • EXCELLENT SOURCE OF FIBER: Packed with 9 grams of fiber per 1/2 cup ser…
+  │  • WHOLESOME INGREDIENTS AND GLUTEN FREE: Catalina Crunch Cereal is not ju…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #20     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08QDP3S8X
+
+[ 20%] ✓20 ✗0 ⬜80  ETA 1m 9s  B08X68QH1J
+2026-03-10 21:53:59 ⬡  Enriching B08X68QH1J — getCatalogItem
+2026-03-10 21:54:00 ⬡  Enriching B0DCP66L5Y — getCatalogItem
+2026-03-10 21:54:01 ⬡  Enriching B09NC951TG — getCatalogItem
+2026-03-10 21:54:01 ⬡  Enriching B097ZF9YSL — getCatalogItem
+2026-03-10 21:54:02 ⬡  Enriching B07CZ83NQ4 — getCatalogItem
+2026-03-10 21:54:03 ⬡  Enriching B0051OLMZC — getCatalogItem
+2026-03-10 21:54:03 ⬡  Enriching B0DCP5PFNQ — getCatalogItem
+2026-03-10 21:54:04 ⬡  Enriching B0D9KPMLQ2 — getCatalogItem
+2026-03-10 21:54:05 ⬡  Enriching B002NLGE9A — getCatalogItem
+2026-03-10 21:54:05 ⬡  Enriching B01K8STMFC — getCatalogItem
+2026-03-10 21:54:06 ⬡  Enriching B0D23PWQFS — getCatalogItem
+2026-03-10 21:54:07 ⬡  Enriching B0DT1MC1DJ — getCatalogItem
+2026-03-10 21:54:08 ⬡  Enriching B09JTWBSJT — getCatalogItem
+2026-03-10 21:54:08 ⬡  Enriching B00DTXEBSM — getCatalogItem
+2026-03-10 21:54:09 ⬡  Enriching B09FFSBYJS — getCatalogItem
+2026-03-10 21:54:10 ⬡  Enriching B0DNNH415B — getCatalogItem
+2026-03-10 21:54:10 ⬡  Enriching B0D9KRGTGC — getCatalogItem
+2026-03-10 21:54:11 ⬡  Enriching B000RA8E56 — getCatalogItem
+2026-03-10 21:54:12 ⬡  Enriching B0BFZNBP6Z — getCatalogItem
+2026-03-10 21:54:12 ⬡  Enriching B0DHW7LV5R — getCatalogItem
+2026-03-10 21:54:15 ⬡  Fee batch 1/1 — 20 ASINs
+  ┌─ B08X68QH1J  #21 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Rice Chex Gluten Free Breakfast Cereal, Homemade Chex Mix I…
+  │  Brand        Chex  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.99  (diff)
+  │  Fees         FBA $5.44  Referral $0.56  Total: $6.00
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         8.1 × 19.45 × 34.29 cm   0.5103 kg
+  │  Package      34.7 × 19.81 × 8.61 cm   0.626 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • BREAKFAST CEREAL TO KIDS SNACKS: Crunchy lattice squares made with oven…
+  │  • DELICIOUSLY EASY RECIPES: A key ingredient in homemade Original Chex Mi…
+  │  • GLUTEN FREE: Gluten free cereal with no high fructose corn syrup and no…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #21     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X68QH1J
+
+  ┌─ B0DCP66L5Y  #22 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg’s Frosted Mini-Wheats Breakfast Cereal, High Fiber,…
+  │  Brand        Kellogg's  │  Mfr: Kellogg's  │  Model: 00038000269950
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2021-12-06
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.99  →  SP-API $6.79  (diff)
+  │  Fees         FBA $5.28  Referral $0.54  Total: $5.82
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      34.01 × 19.71 × 7.9 cm   0.894 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • HIGH FIBER: Packed with fiber to help support digestive wellness; Good …
+  │  • WHOLESOME WHEAT: Made with 100% whole grain at 48g per serving; Delicio…
+  │  • PERFECTLY SWEET: Crunchy, bite-sized wheat biscuits with irresistibly s…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #22     6524561011
+  │  #30     16310251
+  └─ enriched  https://www.amazon.com/dp/B0DCP66L5Y
+
+  ┌─ B09NC951TG  #22 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Nature's Path Organic Heritage Flakes® Cereal, 33.5 oz (Pac…
+  │  Brand        Nature's Path  │  Mfr: Nature's Path  │  Model: 058449221012-22101U
+  │  Color        Heritage Flakes  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2021-12-09
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $8.86  →  SP-API $8.99  (diff)
+  │  Fees         FBA $5.44  Referral $0.72  Total: $6.16
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      29.01 × 23.49 × 9.09 cm   1.089 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Contains: 1 Box of Nature's Path Heritage Flakes Cereal, 33.5 ounces
+  │  • All of our recipes are carefully crafted with only certified USDA organ…
+  │  • Our ancient grain cereal flake, organically sweetened, and lightly flav…
+  │    … 3 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #23     6524561011
+  │  #76     16310251
+  └─ enriched  https://www.amazon.com/dp/B09NC951TG
+
+  ┌─ B097ZF9YSL  #24 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cocoa PEBBLES Cereal, Chocolatey Kids Crunch, Gluten Free S…
+  │  Brand        Cocoa Pebbles  │  Mfr: Post Consumer Brands  │  Model: 37928
+  │  Color        Cocoa  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-06-26
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.99  (diff)
+  │  Fees         FBA $5.00  Referral $0.56  Total: $5.56
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      33.5 × 20.6 × 6.4 cm   0.64 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CHOCOLATE CEREAL: Contains one (1) 19.5 oz Family Size Box of Cocoa PEB…
+  │  • GLUTEN FREE CEREAL: These sweetened rice cereal pieces are gluten free,…
+  │  • KID-FRIENDLY SNACK: Perfect for kids and creators of all ages, Cocoa PE…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #24     6524561011
+  └─ enriched  https://www.amazon.com/dp/B097ZF9YSL
+
+  ┌─ B07CZ83NQ4  #25 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        REESE'S PUFFS Breakfast Cereal, Chocolatey Peanut Butter Ce…
+  │  Brand        Reese's Puffs  │  Mfr: General Mills  │  Model: 10016000122229
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2018-05-28
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $2.91  →  SP-API $5.99  (diff)
+  │  Fees         FBA $4.60  Referral $0.48  Total: $5.08
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.83 × 19.56 × 28.7 cm   0.326 kg
+  │  Package      28.91 × 19.51 × 5.17 cm   0.399 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • DELICIOUS TASTE COMBO: The perfect combination of chocolatey and peanut…
+  │  • REAL REESE'S PEANUT BUTTER: Ready to eat sweet and crispy corn puffs ma…
+  │  • WHOLE GRAIN: Each serving of this kids breakfast cereal provides 15g wh…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #25     6524561011
+  └─ enriched  https://www.amazon.com/dp/B07CZ83NQ4
+
+  ┌─ B0051OLMZC  #26 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Great Grains Raisins Dates and Pecans Breakfast Cereal, Rai…
+  │  Brand        Great Grains  │  Mfr: Post Foods LLC  │  Model: 88055
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2011-05-19
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.47  →  SP-API $6.29  (diff)
+  │  Fees         FBA $4.22  Referral $0.50  Total: $4.72
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      27.72 × 16.51 × 5.11 cm   0.522 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Contains 1 - 16 ounce box.Excellent source of fiber; contains 4g total …
+  │  • Great Grains Cereal is a great start to your day
+  │  • 32g of Whole Grains per serving - Nutritionists recommend eating 3 or m…
+  │    … 1 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #26     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0051OLMZC
+
+  ┌─ B0DCP5PFNQ  #27 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg's Frosted Flakes Breakfast Cereal, Fat Free, Giant …
+  │  Brand        Frosted Flakes  │  Mfr: Kellogg's  │  Model: 00038000270109
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2021-12-06
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.99  →  SP-API $6.79  (diff)
+  │  Fees         FBA $6.23  Referral $0.54  Total: $6.77
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         23.98 × 7.62 × 33.66 cm   0.808 kg
+  │  Package      33.71 × 24.41 × 8.41 cm   0.93 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • 4 SIMPLE INGREDIENTS: Crafted with corn, sugar, malt, and salt, plus 8 …
+  │  • SWEET FROSTING: Enjoy the iconic taste of crunchy corn flakes with a sp…
+  │  • VITAMINS AND MINERALS: A good source of 8 vitamins and minerals; Fat fr…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #27     6524561011
+  │  #36     16310251
+  └─ enriched  https://www.amazon.com/dp/B0DCP5PFNQ
+
+  ┌─ B0D9KPMLQ2  #28 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg's Froot Loops Breakfast Cereal, Good Source of Fibe…
+  │  Brand        Kellogg's  │  Mfr: Kellogg's  │  Model: 00038000270079
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-09-12
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.98  →  SP-API $6.79  (diff)
+  │  Fees         FBA $6.23  Referral $0.54  Total: $6.77
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      34.01 × 24.31 × 8.79 cm   0.78 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • FIBER AND VITAMINS: Each serving has a good source of fiber, 9 vitamins…
+  │  • FOLLOW YOUR NOSE: Pour a bowl of colorful crunchy O's with ice cold mil…
+  │  • NOURISHING GOODNESS: An excellent source of vitamin C; Wholesome, low f…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #28     6524561011
+  │  #37     16310251
+  └─ enriched  https://www.amazon.com/dp/B0D9KPMLQ2
+
+  ┌─ B002NLGE9A  #29 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honey Bunches of Oats Crunchy Honey Roasted Cereal 18 Ounce…
+  │  Brand        Honey Bunches of Oats  │  Mfr: Post Consumer Brands  │  Model: 88176
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2012-05-07
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.99  →  SP-API $6.99  (diff)
+  │  Fees         FBA $4.75  Referral $0.56  Total: $5.31
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         30.96 × 5.59 × 19.56 cm   0.5103 kg
+  │  Package      31.21 × 19.81 × 5.79 cm   0.59 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Honey Bunches of Oats cereal is the perfect combination of crispy flake…
+  │  • Honey Bunches of Oats cereal is the perfect combination of crispy flake…
+  │  • Is heart healthy** (0g trans fat, 0g saturated fat, and 0mg cholesterol…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #29     6524561011
+  └─ enriched  https://www.amazon.com/dp/B002NLGE9A
+
+  ┌─ B01K8STMFC  #30 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Corn Chex Gluten Free Breakfast Cereal, Homemade Chex Mix I…
+  │  Brand        Chex  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2016-08-15
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.50  →  SP-API $6.99  (diff)
+  │  Fees         FBA $5.28  Referral $0.56  Total: $5.84
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         7.78 × 19.45 × 33.02 cm   0.5103 kg
+  │  Package      33.23 × 19.66 × 8.2 cm   0.621 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • BREAKFAST CEREAL TO KIDS SNACKS: Crunchy lattice squares are made with …
+  │  • DELICIOUSLY EASY RECIPES: A key ingredient in homemade Original Chex Mi…
+  │  • GLUTEN FREE: Gluten free cereal made without high fructose corn syrup a…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #30     6524561011
+  └─ enriched  https://www.amazon.com/dp/B01K8STMFC
+
+  ┌─ B0D23PWQFS  #31 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cinnamon Toast Crunch Breakfast Cereal, Crispy Cinnamon Cer…
+  │  Brand        Cinnamon Toast Crunch  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-06-17
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.37  →  SP-API $8.34  (diff)
+  │  Fees         FBA $5.85  Referral $0.67  Total: $6.52
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         7.37 × 23.88 × 34.42 cm   0.7654 kg
+  │  Package      34.7 × 24.21 × 7.9 cm   0.898 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CINNAMON CEREAL: Crispy cereal squares made from whole wheat and rice, …
+  │  • WHOLE GRAIN: Each serving provides 16g whole grain (at least 48g recomm…
+  │  • BREAKFAST FOOD OR SNACK: Try it with or without milk as part of an easy…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #31     6524561011
+  │  #45     16310251
+  └─ enriched  https://www.amazon.com/dp/B0D23PWQFS
+
+  ┌─ B0DT1MC1DJ  #32 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kashi GO Protein Cereal, 10g Protein, 10g Fiber, Peanut But…
+  │  Brand        Kashi  │  Mfr: Kashi  │  Model: 00018627115649
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2025-02-20
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.42  →  SP-API $6.99  (diff)
+  │  Fees         FBA $4.22  Referral $0.56  Total: $4.78
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         19.74 × 4.45 × 27.94 cm   0.4791 kg
+  │  Package      28.2 × 19.9 × 4.7 cm   0.55 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Level up your day with Kashi GO Peanut Butter Crunch breakfast cereal; …
+  │  • Peanut butter goodness and crunchy multigrain clusters combine for a wh…
+  │  • 10g protein (16% daily value) and 10g fiber (contains 9g total fat per …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #32     6524561011
+  │  #46     16310251
+  └─ enriched  https://www.amazon.com/dp/B0DT1MC1DJ
+
+  ┌─ B09JTWBSJT  #33 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Seven Sundays Cereal Mple Sea Slt Gfree 8 OZ
+  │  Brand        Seven Sundays  │  Mfr: SEVEN SUNDAYS  │  Model: 0856088003743
+  │  Color        light brown  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-01-28
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.97  →  SP-API $8.99  (diff)
+  │  Fees         FBA $5.00  Referral $0.72  Total: $5.72
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         21.59 × 8.89 × 26.67 cm   0.2268 kg
+  │  Package      25.7 × 20.2 × 8.4 cm   0.24 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Keep it Real: Our Maple Sea Salt Sunflower Cereal is a crunchy bowl of …
+  │  • No Weird Stuff Ever: Our certified gluten free cereal is also vegan and…
+  │  • Subtly Sweetened by Nature: Maple Sea Salt has the perfect touch of swe…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #33     6524561011
+  └─ enriched  https://www.amazon.com/dp/B09JTWBSJT
+
+  ┌─ B00DTXEBSM  #34 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cascadian Farm Organic Cereal, Fruitful O's, 10.2 Oz
+  │  Brand        Cascadian Farm  │  Mfr: General Mills  │  Model: 123611
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2013-07-08
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.87  →  SP-API $6.38  (diff)
+  │  Fees         FBA $4.22  Referral $0.51  Total: $4.73
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.67 × 19.43 × 25.86 cm   0.2903 kg
+  │  Package      26.19 × 19.51 × 5.11 cm   0.358 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Certified Organic
+  │  • Non-GMO
+  │  • Fair Trade Certified Ingredient
+  │    … 1 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #34     6524561011
+  └─ enriched  https://www.amazon.com/dp/B00DTXEBSM
+
+  ┌─ B09FFSBYJS  #35 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Premier Protein Mixed Berry Almond Cereal, Protein Cereal F…
+  │  Brand        Premier Protein  │  Mfr: Post Consumer Brands  │  Model: 37747
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-09-03
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.29  →  SP-API $5.29  (match)
+  │  Fees         FBA $3.78  Referral $0.42  Total: $4.20
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      27.7 × 16.5 × 4.7 cm   0.31 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • One 9 oz box of Post Premier Protein Mixed Berry Almond Cereal, Mixed B…
+  │  • High protein cereal filled with delicious dried strawberries, raspberri…
+  │  • Crunchy mixed berry cereal provides 20 grams of protein per serving for…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #35     6524561011
+  └─ enriched  https://www.amazon.com/dp/B09FFSBYJS
+
+  ┌─ B0DNNH415B  #36 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cascadian Farm Organic Mixed Berry Cereal, No Added Sugar, …
+  │  Brand        Cascadian Farm  │  Mfr: GENERAL MILLS SALES INC.  │  Model: 0021908139326
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: GROCERY
+  │  Browse Node  16310251  │  Listed: 2024-12-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.49  →  SP-API $5.88  (diff)
+  │  Fees         FBA $4.22  Referral $0.47  Total: $4.69
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.83 × 19.56 × 26.04 cm   ? kg
+  │  Package      26.4 × 19.8 × 5 cm   0.437 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • 0G ADDED SUGAR: A delicious mix of whole grain wheat, rice, date powder…
+  │  • SWEETENED WITH FRUIT: Dried date powder brings a just-right touch of sw…
+  │  • ORGANIC CEREAL: Certified USDA Organic and Non-GMO Project Verified for…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #36     6524561011
+  │  #50     16310251
+  └─ enriched  https://www.amazon.com/dp/B0DNNH415B
+
+  ┌─ B0D9KRGTGC  #37 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg's Special K Red Berries Breakfast Cereal, Good Sour…
+  │  Brand        Kellogg's  │  Mfr: Kellogg's  │  Model: 00041192103278
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2023-12-04
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.99  →  SP-API $6.79  (diff)
+  │  Fees         FBA $5.00  Referral $0.54  Total: $5.54
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      34.29 × 19.99 × 6.4 cm   0.63 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • REAL STRAWBERRIES: Start your day with crunchy wheat and rice flakes, a…
+  │  • FIBER AND VITAMINS: In every serving, discover a good source of fiber, …
+  │  • WHOLE GRAIN: Make every day a treat with the goodness of this vibrant a…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #37     6524561011
+  │  #51     16310251
+  └─ enriched  https://www.amazon.com/dp/B0D9KRGTGC
+
+  ┌─ B000RA8E56  #38 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cream of Wheat Stove Top Hot Cereal, Original, 2 1/2 Minute…
+  │  Brand        Cream of Wheat  │  Mfr: B & G Foods  │  Model: 10013130006122
+  │  Color        2 1/2 Minute  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2007-06-06
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.29  →  SP-API $4.29  (match)
+  │  Fees         FBA $5.00  Referral $0.34  Total: $5.34
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         13.21 × 5.33 × 19.56 cm   0.7938 kg
+  │  Package      19.81 × 13.41 × 5.11 cm   0.848 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Made with ground wheat with a smooth texture
+  │  • Easy stove top preparation
+  │  • An excellent source of iron
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #13     118518017011
+  │  #38     6524561011
+  └─ enriched  https://www.amazon.com/dp/B000RA8E56
+
+  ┌─ B0BFZNBP6Z  #38 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cap'n Crunch Cereal, Crunch Berries, 20.5oz Box
+  │  Brand        Cap'n Crunch  │  Mfr: Quaker  │  Model: 1
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2022-09-21
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.29  (diff)
+  │  Fees         FBA $5.10  Referral $0.50  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      33.7 × 20.1 × 7.1 cm   0.71 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Includes 1 (20.5oz) box of Cap'n Crunch Cereal, Crunch Berries flavor
+  │  • Rock your taste buds in a berry crunchy way.
+  │  • Cap’n Crunch’s Crunch Berries take the original crunch you love, and ad…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #39     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0BFZNBP6Z
+
+  ┌─ B0DHW7LV5R  #39 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cheerios Protein Cereal, Cinnamon, 8g Protein, Family Size,…
+  │  Brand        Cheerios  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        15 Ounce (Pack of 1)  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-12-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.44  →  SP-API $7.82  (diff)
+  │  Fees         FBA $5.00  Referral $0.63  Total: $5.63
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.1 × 19.56 × 30.1 cm   0.515 kg
+  │  Package      30 × 19.6 × 7 cm   0.515 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CHEERIOS PROTEIN CEREAL: You'll get 8g of protein in each serving of th…
+  │  • DELICIOUS CINNAMON TASTE: Every spoonful treats your taste buds to the …
+  │  • WHOLE GRAIN: Provides 12g of whole grain per serving (at least 48g reco…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #40     6524561011
+  │  #55     16310251
+  └─ enriched  https://www.amazon.com/dp/B0DHW7LV5R
+
+[ 40%] ✓40 ✗0 ⬜60  ETA 50s  B001AS8QPC
+2026-03-10 21:54:15 ⬡  Enriching B001AS8QPC — getCatalogItem
+2026-03-10 21:54:16 ⬡  Enriching B000VDR3WO — getCatalogItem
+2026-03-10 21:54:17 ⬡  Enriching B000WHXORC — getCatalogItem
+2026-03-10 21:54:17 ⬡  Enriching B0831CG6D5 — getCatalogItem
+2026-03-10 21:54:18 ⬡  Enriching B0DT1LTH82 — getCatalogItem
+2026-03-10 21:54:19 ⬡  Enriching B0BXTBFFTX — getCatalogItem
+2026-03-10 21:54:20 ⬡  Enriching B0D244LQVD — getCatalogItem
+2026-03-10 21:54:20 ⬡  Enriching B08X719R3T — getCatalogItem
+2026-03-10 21:54:21 ⬡  Enriching B08X69TX2M — getCatalogItem
+2026-03-10 21:54:22 ⬡  Enriching B08X6H8KDB — getCatalogItem
+2026-03-10 21:54:22 ⬡  Enriching B004G7RJKM — getCatalogItem
+2026-03-10 21:54:23 ⬡  Enriching B000VDUY02 — getCatalogItem
+2026-03-10 21:54:24 ⬡  Enriching B08X6N6PBD — getCatalogItem
+2026-03-10 21:54:24 ⬡  Enriching B08ZDYGMMC — getCatalogItem
+2026-03-10 21:54:25 ⬡  Enriching B08X64TDGH — getCatalogItem
+2026-03-10 21:54:26 ⬡  Enriching B08X6N7HP4 — getCatalogItem
+2026-03-10 21:54:27 ⬡  Enriching B0F2PYFS9Z — getCatalogItem
+2026-03-10 21:54:27 ⬡  Enriching B0BG1YM2Q5 — getCatalogItem
+2026-03-10 21:54:28 ⬡  Enriching B09HSWMB4L — getCatalogItem
+2026-03-10 21:54:29 ⬡  Enriching B0C7QLL3M6 — getCatalogItem
+2026-03-10 21:54:31 ⬡  Fee batch 1/1 — 20 ASINs
+  ┌─ B001AS8QPC  #41 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Trix Breakfast Cereal, 6 Fruity Shapes, Made with Whole Gra…
+  │  Brand        Trix  │  Mfr: General Mills  │  Model: DCS-882
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2009-04-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $2.97  →  SP-API $5.49  (diff)
+  │  Fees         FBA $4.60  Referral $0.44  Total: $5.04
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.08 × 19.43 × 28.58 cm   0.3033 kg
+  │  Package      28.7 × 19.61 × 5.79 cm   0.381 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • DELICIOUS CEREAL: Naturally and artificially fruit flavored sweetened c…
+  │  • FRUITY SHAPES AND TASTE: Trix cereal features cereal pieces in six colo…
+  │  • MADE WITH WHOLE GRAIN: Each serving provides 14g whole grain per servin…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #41     6524561011
+  │  #102    16310251
+  └─ enriched  https://www.amazon.com/dp/B001AS8QPC
+
+  ┌─ B000VDR3WO  #42 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Total Breakfast Cereal, 100% Daily Value of 11 Vitamins and…
+  │  Brand        Total  │  Mfr: General Mills  │  Model: 016000275638
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2011-05-19
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.46  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.00  Referral $0.60  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.99 × 19.56 × 30.1 cm   0.0018 kg
+  │  Package      30.29 × 19.81 × 7.11 cm   0.549 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • WHOLE GRAIN FLAKES: Crunchy, tasty 100% whole grain wheat flakes contai…
+  │  • VITAMINS AND MINERALS: Every serving provides 100% daily value of 11 vi…
+  │  • GREAT START: This healthy cereal for adults is a great way to get Vitam…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #42     6524561011
+  └─ enriched  https://www.amazon.com/dp/B000VDR3WO
+
+  ┌─ B000WHXORC  #43 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cream of Rice Gluten Free Hot Cereal, 14 Ounce
+  │  Brand        Cream of Rice  │  Mfr: B&G Foods  │  Model: 80100698
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2012-01-14
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.98  →  SP-API $0.00  (diff)
+  │  Fees         FBA $3.78  Referral $0.00  Total: $3.78
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         10.67 × 4.32 × 15.24 cm   0.3992 kg
+  │  Package      15.39 × 10.49 × 4.14 cm   0.431 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Cream of Wheat hot rice cereal allows for easy measurement of the desir…
+  │  • Cream of Rice is naturally cholesterol free, fat-free and gluten-free, …
+  │  • A hot delicious bowl of Cream of Rice provides 4 essential vitamins and…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #43     6524561011
+  └─ enriched  https://www.amazon.com/dp/B000WHXORC
+
+  ┌─ B0831CG6D5  #43 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Raisin Nut Bran Cereal, High Fiber Cereal, Made with Whole …
+  │  Brand        Raisin Nut Bran  │  Mfr: General Mills  │  Model: 10016000157818
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2019-12-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.46  →  SP-API $7.49  (diff)
+  │  Fees         FBA $4.60  Referral $0.60  Total: $5.20
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.33 × 19.56 × 30.1 cm   0.589 kg
+  │  Package      30.3 × 19.71 × 5.51 cm   0.671 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • FRUIT AND NUT CEREAL: Crispy flakes, crunchy almonds, and sweet covered…
+  │  • WHOLE GRAIN FIRST INGREDIENT: Whole grain is the first ingredient; Cont…
+  │  • HIGH FIBER CEREAL: Each serving of this breakfast cereal is an excellen…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #44     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0831CG6D5
+
+  ┌─ B0DT1LTH82  #45 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kashi Breakfast Cereal, Organic, Whole Grain, Cinnamon Harv…
+  │  Brand        Kashi  │  Mfr: Kashi  │  Model: 00018627116004
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2025-02-20
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.42  →  SP-API $6.99  (diff)
+  │  Fees         FBA $4.75  Referral $0.56  Total: $5.31
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         19.74 × 5.67 × 27.94 cm   0.5103 kg
+  │  Package      28.4 × 19.99 × 6.81 cm   0.59 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Deliciously crunchy and full of cinnamon spice, the whole family will e…
+  │  • Made with just 4 organic ingredients, wake up to simply good taste;?Kis…
+  │  • Excellent source of fiber; 52g whole grains per serving; Vegan; Organic…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #45     6524561011
+  │  #63     16310251
+  └─ enriched  https://www.amazon.com/dp/B0DT1LTH82
+
+  ┌─ B0BXTBFFTX  #46 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honeycomb Cereal, Honey Flavored Sweetened Corn and Oat Cer…
+  │  Brand        Honeycomb  │  Mfr: Post Consumer Brands  │  Model: 41648
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2023-03-08
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.99  (diff)
+  │  Fees         FBA $6.23  Referral $0.56  Total: $6.79
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      33.2 × 19.89 × 11.1 cm   0.689 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • One 19 oz box of Post Honeycomb Cereal, Honey Flavored Breakfast Cereal
+  │  • Unique shape and crunchy texture make this honey flavored breakfast cer…
+  │  • Start your mornings with excitement with this sweetened corn and oat ce…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #46     6524561011
+  │  #65     16310251
+  └─ enriched  https://www.amazon.com/dp/B0BXTBFFTX
+
+  ┌─ B0D244LQVD  #46 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honey Nut Cheerios Cereal, Limited Edition Heart Shapes, Af…
+  │  Brand        Cheerios  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-06-17
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.37  →  SP-API $8.34  (diff)
+  │  Fees         FBA $6.31  Referral $0.67  Total: $6.98
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         7.87 × 23.88 × 34.42 cm   0.7711 kg
+  │  Package      40 × 24.2 × 7.9 cm   1.25 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • THOUGHTFUL HEARTS AND Os: Sweetened whole grain oat cereal with real ho…
+  │  • CAN HELP LOWER CHOLESTEROL as part of a heart healthy diet; 3g soluble …
+  │  • GLUTEN FREE CEREAL: Pour in a bowl with ice cold milk for an irresistib…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #47     6524561011
+  │  #68     16310251
+  └─ enriched  https://www.amazon.com/dp/B0D244LQVD
+
+  ┌─ B08X719R3T  #48 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cinnamon Chex Cereal, Gluten Free Breakfast Cereal, Made wi…
+  │  Brand        Chex  │  Mfr: General Mills  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.00  Referral $0.60  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.22 × 19.45 × 33.02 cm   0.5443 kg
+  │  Package      33.3 × 19.71 × 6.91 cm   0.64 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • DELICIOUS TASTE: Made with real cinnamon, each box of crunchy lattice s…
+  │  • WHOLE GRAIN: Helps get your day off to a good start with 13g of whole g…
+  │  • GLUTEN FREE CEREAL: Pour some in a bowl with milk for a great-tasting, …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #48     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X719R3T
+
+  ┌─ B08X69TX2M  #49 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cocoa Puffs, Chocolatey Breakfast Cereal, Made with Whole G…
+  │  Brand        Cocoa Puffs  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.10  Referral $0.60  Total: $5.70
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.73 × 19.45 × 33.02 cm   0.5131 kg
+  │  Package      33.34 × 19.68 × 7.24 cm   0.621 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • READY TO EAT CEREAL: Cocoa Puffs is a delicious ready to eat chocolatey…
+  │  • GREAT CHOCOLATEY TASTE: Naturally flavored sweetened corn puffs with a …
+  │  • MADE WITH WHOLE GRAIN: Each serving provides 16g whole grain (at least …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #49     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X69TX2M
+
+  ┌─ B08X6H8KDB  #50 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Apple Cinnamon Cheerios, Heart Healthy Gluten Free Breakfas…
+  │  Brand        Cheerios  │  Mfr: General Mills  │  Model: Ad-bm4-68912
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.10  Referral $0.60  Total: $5.70
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.73 × 19.45 × 33.02 cm   0.5386 kg
+  │  Package      33.4 × 19.56 × 7.29 cm   0.64 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • APPLE CINNAMON CHEERIOS: Gluten free sweetened whole grain oat cereal w…
+  │  • CAN HELP LOWER CHOLESTEROL as part of a heart healthy diet; 3g soluble …
+  │  • WHOLE GRAIN GOODNESS: Provides 20g of whole grain (at least 48g recomme…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #50     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X6H8KDB
+
+  ┌─ B004G7RJKM  #51 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cream of Wheat Instant Hot Cereal, Maple Brown Sugar, 1.23 …
+  │  Brand        Cream of Wheat  │  Mfr: B&G Foods  │  Model: 80106053
+  │  Color        Maple Brown Sugar  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2012-04-23
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.82  →  SP-API $6.99  (diff)
+  │  Fees         FBA $3.78  Referral $0.56  Total: $4.34
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         38.18 × 25.98 × 20.4 cm   0.3487 kg
+  │  Package      20.19 × 12.5 × 6.4 cm   0.422 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Great cereal for kids and adults - Tasty nutrition for your whole family
+  │  • Contains 10 Packets
+  │  • Excellent source of Vitamin D, Calcium, Iron and 6 Essential Vitamins
+  │    … 1 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #22     118518017011
+  │  #51     6524561011
+  │  #74     16310251
+  └─ enriched  https://www.amazon.com/dp/B004G7RJKM
+
+  ┌─ B000VDUY02  #51 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Wheaties Cereal, Breakfast of Champions, Jalen Hurts Cereal…
+  │  Brand        Wheaties  │  Mfr: General Mills  │  Model: dinirao
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2011-05-19
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.46  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.00  Referral $0.60  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.99 × 19.56 × 30.1 cm   0.5443 kg
+  │  Package      30.26 × 19.81 × 7.17 cm   0.5443 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • BREAKFAST OF CHAMPIONS: Wheaties Cereal, made from toasted 100% whole w…
+  │  • COLLECTIBLE BOX: Wheaties has been synonymous with greatness, featuring…
+  │  • MADE WITH WHOLE GRAIN: 32g whole grain per serving (at least 48 grams r…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #52     6524561011
+  └─ enriched  https://www.amazon.com/dp/B000VDUY02
+
+  ┌─ B08X6N6PBD  #53 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cinnamon Toast Crunch Breakfast Cereal, Crispy Cinnamon Cer…
+  │  Brand        Cinnamon Toast Crunch  │  Mfr: GENERAL MILLS SALES INC.  │  Model: TS0417-A700ML-M181
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-03-01
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.77  →  SP-API $6.99  (diff)
+  │  Fees         FBA $6.47  Referral $0.56  Total: $7.03
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      44.09 × 25.2 × 8 cm   0.93 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CINNAMON CEREAL: Crispy cereal squares made from whole wheat and rice, …
+  │  • WHOLE GRAIN: Each serving provides 16g whole grain (at least 48g recomm…
+  │  • BREAKFAST FOOD OR SNACK: Try it with or without milk as part of an easy…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #53     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X6N6PBD
+
+  ┌─ B08ZDYGMMC  #54 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Golden Grahams Breakfast Cereal, Graham Cracker Taste, Made…
+  │  Brand        Golden Grahams  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.00  Referral $0.60  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.22 × 33.02 × 19.45 cm   0.5358 kg
+  │  Package      33.4 × 19.81 × 6.91 cm   0.64 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CEREAL FOR KIDS OR ADULTS: Enjoy crispy, delicious graham squares, idea…
+  │  • GRAHAM CRACKER TASTE: A family favorite, every bowl of this ready to ea…
+  │  • WHOLE GRAIN: Each serving of this cold cereal provides 14g whole grain …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #54     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08ZDYGMMC
+
+  ┌─ B08X64TDGH  #55 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kix Whole Grain Breakfast Cereal, Crispy Corn Cereal Puffs,…
+  │  Brand        Kix  │  Mfr: General Mills  │  Model: 20
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.49  (diff)
+  │  Fees         FBA $5.85  Referral $0.52  Total: $6.37
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         9.21 × 19.45 × 32.39 cm   0.5103 kg
+  │  Package      32.82 × 19.99 × 9.7 cm   0.63 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CORN CEREAL: These crispy corn puffs are kid-tested and parent-approved…
+  │  • EASY BREAKFAST: This sweet, crunchy kids breakfast cereal is the perfec…
+  │  • WHOLE GRAIN: Each serving provides 21g of whole grain (at least 48g rec…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #55     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X64TDGH
+
+  ┌─ B08X6N7HP4  #56 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cheerios Oat Crunch Oats 'N Honey Breakfast Cereal, Made wi…
+  │  Brand        Cheerios  │  Mfr: General Mills  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.00  Referral $0.60  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.83 × 19.45 × 33.02 cm   0.6804 kg
+  │  Package      32.99 × 19.61 × 6.3 cm   0.7776 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CRAVEABLE CRUNCH: Dive into a delicious bowl of sweetened multigrain ce…
+  │  • RIGHT START: Each serving helps to keep you full through the morning; A…
+  │  • WHOLE GRAIN GOODNESS: Whole grain oats are the first ingredient; Each s…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #56     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X6N7HP4
+
+  ┌─ B0F2PYFS9Z  #57 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cheerios Protein Cereal, Cookies and Crème, 8g Protein, Fam…
+  │  Brand        Cheerios  │  Mfr: General Mills  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2025-05-26
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.44  →  SP-API $7.82  (diff)
+  │  Fees         FBA $4.75  Referral $0.63  Total: $5.38
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.1 × 19.56 × 30.1 cm   0.514 kg
+  │  Package      30 × 19.6 × 6.3 cm   0.514 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CHEERIOS PROTEIN CEREAL: There are 8g of protein in each serving of thi…
+  │  • DELICIOUS COOKIES AND CRÈME TASTE: Every spoonful treats your taste bud…
+  │  • WHOLE GRAIN: Provides 12g of whole grain per serving (at least 48g reco…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #57     6524561011
+  │  #77     16310251
+  └─ enriched  https://www.amazon.com/dp/B0F2PYFS9Z
+
+  ┌─ B0BG1YM2Q5  #58 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cap'n Crunch Cereal, Original, 22.1oz Box
+  │  Brand        Cap'n Crunch  │  Mfr: Quaker  │  Model: 1
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2022-09-21
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.29  (diff)
+  │  Fees         FBA $5.10  Referral $0.50  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      33.78 × 20.19 × 7.29 cm   0.748 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Includes 1 (22.1oz) box of Cap'n Crunch Cereal, Original flavor
+  │  • Sweet and golden, with a crunch you’ll love, nothing competes with the …
+  │  • Grab a bowl or cup for an easy snack that goes great with couch time, a…
+  │    … 1 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #58     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0BG1YM2Q5
+
+  ┌─ B09HSWMB4L  #58 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Premier Protein Chocolate Almond Cereal, Chocolatey Protein…
+  │  Brand        Premier Protein  │  Mfr: Post Consumer Brands  │  Model: 37750
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-10-05
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.29  →  SP-API $6.99  (diff)
+  │  Fees         FBA $4.22  Referral $0.56  Total: $4.78
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      27.71 × 16.51 × 5.19 cm   0.322 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Post Premier Protein breakfast cereal lets you feel good about great ta…
+  │  • Try this delicious high protein cereal by the bowlful at breakfast time…
+  │  • Delicious chocolatey goodness gives this high protein breakfast cereal …
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #59     6524561011
+  └─ enriched  https://www.amazon.com/dp/B09HSWMB4L
+
+  ┌─ B0C7QLL3M6  #60 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Wheat Chex Breakfast Cereal, Homemade Chex Mix Ingredient, …
+  │  Brand        Chex  │  Mfr: General Mills  │  Model: TS0417-A700ML-M342
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2023-07-14
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $4.60  Referral $0.60  Total: $5.20
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.08 × 19.43 × 28.58 cm   0.5386 kg
+  │  Package      28.8 × 19.61 × 5.59 cm   0.59 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • BREAKFAST CEREAL TO KIDS SNACKS: Crunchy lattice squares made with oven…
+  │  • DELICIOUSLY EASY RECIPES: A key ingredient in homemade Original Chex Mi…
+  │  • GREAT TASTE: No high fructose corn syrup and no artificial flavors or c…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #60     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0C7QLL3M6
+
+[ 60%] ✓60 ✗0 ⬜40  ETA 33s  B00437AB1O
+2026-03-10 21:54:31 ⬡  Enriching B00437AB1O — getCatalogItem
+2026-03-10 21:54:32 ⬡  Enriching B07G9ZRSLP — getCatalogItem
+2026-03-10 21:54:33 ⬡  Enriching B08X73BWV8 — getCatalogItem
+2026-03-10 21:54:34 ⬡  Enriching B0DHW9RPY7 — getCatalogItem
+2026-03-10 21:54:35 ⬡  Enriching B08X69Y5SS — getCatalogItem
+2026-03-10 21:54:36 ⬡  Enriching B0831CG6D4 — getCatalogItem
+2026-03-10 21:54:36 ⬡  Enriching B08SSVY1PQ — getCatalogItem
+2026-03-10 21:54:37 ⬡  Enriching B08FBVQC62 — getCatalogItem
+2026-03-10 21:54:38 ⬡  Enriching B09RSFXBHR — getCatalogItem
+2026-03-10 21:54:39 ⬡  Enriching B08X6RS5R2 — getCatalogItem
+2026-03-10 21:54:39 ⬡  Enriching B0DK9RCKVL — getCatalogItem
+2026-03-10 21:54:40 ⬡  Enriching B06XR4517K — getCatalogItem
+2026-03-10 21:54:41 ⬡  Enriching B0BFZV114B — getCatalogItem
+2026-03-10 21:54:41 ⬡  Enriching B0DTQ9179N — getCatalogItem
+2026-03-10 21:54:42 ⬡  Enriching B0882XFGJW — getCatalogItem
+2026-03-10 21:54:43 ⬡  Enriching B0CD88SDBL — getCatalogItem
+2026-03-10 21:54:43 ⬡  Enriching B0D244S5QD — getCatalogItem
+2026-03-10 21:54:44 ⬡  Enriching B097ZFZJ12 — getCatalogItem
+2026-03-10 21:54:45 ⬡  Enriching B08X719R3Y — getCatalogItem
+2026-03-10 21:54:46 ⬡  Enriching B0BZTL7JWJ — getCatalogItem
+2026-03-10 21:54:48 ⬡  Fee batch 1/1 — 20 ASINs
+  ┌─ B00437AB1O  #61 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Lucky Charms with Marshmallows Breakfast Cereal Cup, Gluten…
+  │  Brand        Lucky Charms  │  Mfr: General Mills Cereals  │  Model: 16000141568
+  │  Color        Original Version  │  Pkg Qty: 12  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2010-09-16
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $12.00  →  SP-API $13.49  (diff)
+  │  Fees         FBA $7.54  Referral $1.08  Total: $8.62
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      30.51 × 20.5 × 19.49 cm   0.9354 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • TAKE IT WITH YOU: This Lucky Charms individual cereal cup is great to g…
+  │  • MARSHMALLOW CEREAL: A frosted toasted cereal featuring Lucky's classic …
+  │  • WHOLE GRAIN CEREAL: Kids cereal with 26g of whole grain in every servin…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #61     6524561011
+  └─ enriched  https://www.amazon.com/dp/B00437AB1O
+
+  ┌─ B07G9ZRSLP  #62 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Post Wheat n Bran® Shredded Wheat, Breakfast Cereal, Excell…
+  │  Brand        Post  │  Mfr: Post Consumer Brands  │  Model: 884912180599
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2012-01-14
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.98  →  SP-API $4.99  (diff)
+  │  Fees         FBA $4.75  Referral $0.40  Total: $5.15
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         7.11 × 19.81 × 30.99 cm   0.5897 kg
+  │  Package      27.6 × 19.4 × 6.7 cm   0.56 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Light, crispy and delicious, for a perfect bite and breakfast or any ti…
+  │  • This wholesome cereal is an excellent source of fiber.
+  │  • Post Wheat N Bran is Non-GMO Project Verified
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #62     6524561011
+  └─ enriched  https://www.amazon.com/dp/B07G9ZRSLP
+
+  ┌─ B08X73BWV8  #62 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cheerios Oat Crunch Cinnamon Breakfast Cereal, Made with Wh…
+  │  Brand        Cheerios  │  Mfr: GENERAL MILLS SALES INC.  │  Model: 1
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.00  Referral $0.60  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.83 × 19.45 × 33.02 cm   0.6804 kg
+  │  Package      33.22 × 19.51 × 6.3 cm   0.78 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CRAVEABLE CRUNCH: Dive into a delicious bowl of cinnamon multigrain cer…
+  │  • RIGHT START: Each serving helps to keep you full through the morning; A…
+  │  • WHOLE GRAIN GOODNESS: Whole grain oats are the first ingredient; Each s…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #63     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X73BWV8
+
+  ┌─ B0DHW9RPY7  #64 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cheerios Protein Cereal, Strawberry, 8g Protein, Family Siz…
+  │  Brand        Cheerios  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        15 Ounce (Pack of 1)  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-12-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.44  →  SP-API $7.82  (diff)
+  │  Fees         FBA $4.75  Referral $0.63  Total: $5.38
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.1 × 19.56 × 30.1 cm   ? kg
+  │  Package      30.1 × 19.7 × 6.2 cm   0.514 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CHEERIOS PROTEIN CEREAL: You'll get 8g of protein in each serving of th…
+  │  • DELICIOUS STRAWBERRY TASTE: Every spoonful treats your taste buds to th…
+  │  • WHOLE GRAIN: Provides 12g of whole grain per serving (at least 48g reco…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #64     6524561011
+  │  #86     16310251
+  └─ enriched  https://www.amazon.com/dp/B0DHW9RPY7
+
+  ┌─ B08X69Y5SS  #65 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Chocolate Cheerios, Heart Healthy Gluten Free Breakfast Cer…
+  │  Brand        Cheerios  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $43.99  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.10  Referral $0.60  Total: $5.70
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.73 × 19.45 × 33.02 cm   0.5443 kg
+  │  Package      33.3 × 19.71 × 7.29 cm   0.649 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • NATURALLY FLAVORED CHOCOLATE CHEERIOS: A deliciously chocolatey whole g…
+  │  • CAN HELP LOWER CHOLESTEROL as part of a heart healthy diet; 3g of solub…
+  │  • WHOLE GRAIN GOODNESS: Provides 21g of whole grain (at least 48g recomme…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #65     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X69Y5SS
+
+  ┌─ B0831CG6D4  #66 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Fiber One Honey Clusters Breakfast Cereal, Fiber Cereal Mad…
+  │  Brand        Fiber One  │  Mfr: GENERAL MILLS SALES INC.  │  Model: 10016000157658
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2019-12-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $43.99  →  SP-API $7.49  (diff)
+  │  Fees         FBA $4.60  Referral $0.60  Total: $5.20
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         5.33 × 19.56 × 30.1 cm   0.4961 kg
+  │  Package      30.2 × 19.61 × 5.59 cm   0.581 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • FIBER CEREAL: Delivers 36% daily value of fiber. Diets high in fiber ca…
+  │  • HONEY CEREAL: Delicious, lightly sweetened flakes with honey clusters, …
+  │  • WHOLE GRAIN GOODNESS: Each serving provides 31g of whole grain (at leas…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #66     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0831CG6D4
+
+  ┌─ B08SSVY1PQ  #67 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Magic Spoon Cereal - High Protein Cereals - Sugar Free Snac…
+  │  Brand        Magic Spoon  │  Mfr: Magic Spoon  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2021-01-12
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $43.99  →  SP-API $43.99  (match)
+  │  Fees         FBA $7.69  Referral $6.60  Total: $14.29
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      26.9 × 21.59 × 19.81 cm   1.27 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • ABOUT MAGIC SPOON CEREAL: Magic Spoon cereal tastes like your favorite …
+  │  • HIGH PROTEIN CEREAL: Each serving provides 12-14g of premium protein to…
+  │  • LOW CARB & KETO FRIENDLY: Crafted for modern wellness lifestyles, Magic…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #67     6524561011
+  │  #99     16310251
+  └─ enriched  https://www.amazon.com/dp/B08SSVY1PQ
+
+  ┌─ B08FBVQC62  #68 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Post Shredded Wheat Big Biscuit, Whole Grain, Non-Gmo, Hear…
+  │  Brand        Post  │  Mfr: Post Consumer Brands  │  Model: 884912180056
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2011-05-19
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $3.98  →  SP-API $4.99  (diff)
+  │  Fees         FBA $4.22  Referral $0.40  Total: $4.62
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         29.46 × 19.81 × 8.13 cm   0.567 kg
+  │  Package      28.5 × 20.2 × 4.2 cm   0.175 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Product Type:Breakfast Cereal
+  │  • Item Package Dimension:8.788 cm L X19.608 cm W X29.387 cm H
+  │  • Item Package Weight:0.522 kg
+  │    … 1 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #68     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08FBVQC62
+
+  ┌─ B09RSFXBHR  #68 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Ratio Trio Maple Almond Crunch Cereal, 10g Protein, Keto Fr…
+  │  Brand        :ratio  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2022-02-03
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.98  →  SP-API $7.49  (diff)
+  │  Fees         FBA $4.22  Referral $0.60  Total: $4.82
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.83 × 16 × 28.7 cm   0.2948 kg
+  │  Package      29.11 × 15.8 × 5.51 cm   0.372 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • MAPLE ALMOND CRUNCH: Crunch into perfectly balanced Ratio Trio Breakfas…
+  │  • 10G PROTEIN PER SERVING: Our unique trio of protein, sugar, and net car…
+  │  • MINDFUL MACROS: 9g net carbs, 3g sugar, and 160 calories per serving; I…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #69     6524561011
+  └─ enriched  https://www.amazon.com/dp/B09RSFXBHR
+
+  ┌─ B08X6RS5R2  #70 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honey Nut Chex Cereal, Gluten Free Breakfast Cereal, Made w…
+  │  Brand        Chex  │  Mfr: General Mills  │  Model: S-PL-2373
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.00  Referral $0.60  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.22 × 19.45 × 33.02 cm   0.5528 kg
+  │  Package      33.2 × 19.61 × 6.81 cm   0.658 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • DELICIOUS TASTE: Made with real honey, each box of crunchy lattice squa…
+  │  • WHOLE GRAIN: Helps get your day off to a good start with 13g of whole g…
+  │  • GLUTEN FREE CEREAL: Pour some in a bowl with milk for a great-tasting, …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #70     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X6RS5R2
+
+  ┌─ B0DK9RCKVL  #71 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cascadian Farm Organic Vanilla Crisp Cereal, No Added Sugar…
+  │  Brand        Cascadian Farm  │  Mfr: GENERAL MILLS SALES INC.  │  Model: 0021908139319
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-12-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.59  →  SP-API $5.88  (diff)
+  │  Fees         FBA $4.22  Referral $0.47  Total: $4.69
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.83 × 19.56 × 26.04 cm   0.3402 kg
+  │  Package      26.29 × 19.61 × 5.11 cm   0.408 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • 0G ADDED SUGAR: A delicious mix of whole grain wheat, rice, date powder…
+  │  • SWEETENED WITH FRUIT: Dried date powder brings a just-right touch of sw…
+  │  • ORGANIC AND VEGAN: This vegan cereal is certified USDA Organic and Non-…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #71     6524561011
+  │  #103    16310251
+  └─ enriched  https://www.amazon.com/dp/B0DK9RCKVL
+
+  ┌─ B06XR4517K  #72 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        EnviroKidz Organic Panda Puffs Cereal, 10.6 oz (Pack of 1),…
+  │  Brand        EnviroKidz  │  Mfr: Nature's Path Foods Inc.  │  Model: 86004U
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2017-03-20
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.49  →  SP-API $5.89  (diff)
+  │  Fees         FBA $4.60  Referral $0.47  Total: $5.07
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.4 × 16.71 × 26.04 cm   0.2994 kg
+  │  Package      26.6 × 16.2 × 7 cm   0.366 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Contains: 1 Box of EnviroKidz Panda Puffs Cereal, 10.6 ounces
+  │  • Light and airy corn puffs, flavored with organic peanut butter that sta…
+  │  • What makes EnviroKidz the best kids cereal? We keep it simple and healt…
+  │    … 3 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #72     6524561011
+  └─ enriched  https://www.amazon.com/dp/B06XR4517K
+
+  ┌─ B0BFZV114B  #73 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cap'n Crunch Cereal, Peanut Butter, 18.8oz Box, Packaging M…
+  │  Brand        Cap'n Crunch  │  Mfr: Quaker  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2022-09-21
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.29  (diff)
+  │  Fees         FBA $5.10  Referral $0.50  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      33.4 × 20.4 × 7.29 cm   0.64 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Includes 1 (19.8oz) Family Size box of Cap'n Crunch Cereal, Peanut Butt…
+  │  • Peanut butter lovers, we’ve got the crunch for you!
+  │  • Cap’n Crunch’s Peanut Butter Crunch is loaded with rich and creamy pean…
+  │    … 1 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #73     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0BFZV114B
+
+  ┌─ B0DTQ9179N  #73 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cascadian Farm Organic Cinnamon Apple Cereal, No Added Suga…
+  │  Brand        Cascadian Farm  │  Mfr: General Mills  │  Model: 0021908136738
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2025-05-15
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.49  →  SP-API $5.88  (diff)
+  │  Fees         FBA $4.22  Referral $0.47  Total: $4.69
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         4.83 × 19.56 × 26.04 cm   ? kg
+  │  Package      26.3 × 19.5 × 4.8 cm   0.415 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • CINNAMON APPLE TASTE: Made with a tasty combination of whole grain oats…
+  │  • NO ADDED SUGAR: Date powder gives this cereal a just-right touch of swe…
+  │  • ORGANIC CEREAL: Certified USDA Organic; Non-GMO Project Verified
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #74     6524561011
+  │  #108    16310251
+  └─ enriched  https://www.amazon.com/dp/B0DTQ9179N
+
+  ┌─ B0882XFGJW  #74 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Three Wishes Grain-Free & Protein Cereal - Healthy, Low Sug…
+  │  Brand        Three Wishes  │  Mfr: Three Wishes Cereal  │  Model: QD-XZRB-MQIR
+  │  Color        Natural  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2020-05-04
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $35.94  →  SP-API $42.99  (diff)
+  │  Fees         FBA $9.05  Referral $6.45  Total: $15.50
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      43.18 × 29.59 × 16.69 cm   2.2249 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Gluten & Grain Free Cocoa Cereal: Start your day off right with delicio…
+  │  • They Say Good Things Come in Threes: Three Wishes Cocoa cereal contains…
+  │  • More Protein: Pack in the protein without even cracking an egg! All our…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #75     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0882XFGJW
+
+  ┌─ B0CD88SDBL  #76 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Marshmallow Fruity PEBBLES Breakfast Cereal for Kids, Glute…
+  │  Brand        Fruity Pebbles  │  Mfr: Post Consumer Brands  │  Model: 39406
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2023-07-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.99  (diff)
+  │  Fees         FBA $5.00  Referral $0.56  Total: $5.56
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.35 × 19.53 × 33.02 cm   0.5103 kg
+  │  Package      33.4 × 19.51 × 7.01 cm   0.599 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • MARSHMALLOW CEREAL: Contains one (1) 18 oz box of Marshmallow Fruity PE…
+  │  • GLUTEN FREE CEREAL: Made with sweetened rice cereal pieces and marshmal…
+  │  • KID-FRIENDLY SNACK: Perfect for kids and creators of all ages, Fruity P…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #76     6524561011
+  │  #132    16310251
+  └─ enriched  https://www.amazon.com/dp/B0CD88SDBL
+
+  ┌─ B0D244S5QD  #77 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        REESE'S PUFFS Chocolatey Peanut Butter Cereal, Kids Breakfa…
+  │  Brand        Reese's Puffs  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-06-28
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.37  →  SP-API $8.34  (diff)
+  │  Fees         FBA $5.85  Referral $0.67  Total: $6.52
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         7.87 × 23.88 × 34.42 cm   0.8221 kg
+  │  Package      34.49 × 24.31 × 7.9 cm   0.939 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • DELICIOUS TASTE COMBO: The perfect combination of chocolatey and peanut…
+  │  • REAL REESE'S PEANUT BUTTER: Ready to eat sweet and crispy corn puffs ma…
+  │  • WHOLE GRAIN: Each serving of this kids breakfast cereal provides 15g wh…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #77     6524561011
+  │  #112    16310251
+  └─ enriched  https://www.amazon.com/dp/B0D244S5QD
+
+  ┌─ B097ZFZJ12  #78 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Post Raisin Bran Cereal, Made with Wheat and Bran Flakes an…
+  │  Brand        Post  │  Mfr: Post Consumer Brands  │  Model: 37811
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-06-26
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.99  →  SP-API $4.99  (match)
+  │  Fees         FBA $4.22  Referral $0.40  Total: $4.62
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      27.69 × 18.29 × 5.11 cm   0.539 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Breakast is the best meal of the day with this tasty whole grain wheat …
+  │  • Post Raisin Bran contains no high fructose corn syrup
+  │  • This sweet cereal is certified Kosher
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #78     6524561011
+  └─ enriched  https://www.amazon.com/dp/B097ZFZJ12
+
+  ┌─ B08X719R3Y  #78 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cookie Crisp Breakfast Cereal, Chocolate Chip Cookie Taste,…
+  │  Brand        Cookie Crisp  │  Mfr: General Mills  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2021-05-31
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.49  (diff)
+  │  Fees         FBA $5.00  Referral $0.60  Total: $5.60
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.73 × 19.45 × 33.02 cm   0.5188 kg
+  │  Package      33.2 × 19.6 × 7 cm   0.62 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • KIDS CEREAL: Cookie Crisp Cereal is a delicious ready to eat breakfast …
+  │  • CHOCOLATE CHIP COOKIE TASTE: Enjoy chocolate chip cookie taste for brea…
+  │  • VITAMINS AND MINERALS: Every serving of this cold cereal provides 12 vi…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #79     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08X719R3Y
+
+  ┌─ B0BZTL7JWJ  #80 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cascadian Farm Organic Brownie Crunch Cereal, Gluten Free, …
+  │  Brand        Cascadian Farm  │  Mfr: GENERAL MILLS SALES INC.  │  Model: S-PL-12864
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2023-05-29
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.99  →  SP-API $5.99  (diff)
+  │  Fees         FBA $4.60  Referral $0.48  Total: $5.08
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         27.31 × 19.56 × 27.31 cm   0.3515 kg
+  │  Package      27.51 × 19.41 × 5.89 cm   0.422 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • BROWNIE CRUNCH CEREAL: Made with real cocoa, enjoy the combination of d…
+  │  • GLUTEN FREE KIDS CEREAL: This gluten free cereal is perfect paired with…
+  │  • NON-GMO AND ORGANIC: This cereal is Non-GMO Project Verified and certif…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #80     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0BZTL7JWJ
+
+[ 80%] ✓80 ✗0 ⬜20  ETA 17s  B005EKI3KK
+2026-03-10 21:54:48 ⬡  Enriching B005EKI3KK — getCatalogItem
+2026-03-10 21:54:49 ⬡  Enriching B0FXBYNWLT — getCatalogItem
+2026-03-10 21:54:50 ⬡  Enriching B0CCPQ67Y2 — getCatalogItem
+2026-03-10 21:54:50 ⬡  Enriching B08CJLXVMZ — getCatalogItem
+2026-03-10 21:54:51 ⬡  Enriching B00YC0ODRA — getCatalogItem
+2026-03-10 21:54:52 ⬡  Enriching B0DJ1BP9W7 — getCatalogItem
+2026-03-10 21:54:53 ⬡  Enriching B0DT1JXN6L — getCatalogItem
+2026-03-10 21:54:53 ⬡  Enriching B0CV56FV6Z — getCatalogItem
+2026-03-10 21:54:54 ⬡  Enriching B00437CBWG — getCatalogItem
+2026-03-10 21:54:55 ⬡  Enriching B000WDOZHO — getCatalogItem
+2026-03-10 21:54:55 ⬡  Enriching B0DT1KLZTX — getCatalogItem
+2026-03-10 21:54:56 ⬡  Enriching B0CN7GYJY8 — getCatalogItem
+2026-03-10 21:54:57 ⬡  Enriching B0DHW7MTYM — getCatalogItem
+2026-03-10 21:54:57 ⬡  Enriching B0DT1KYYKH — getCatalogItem
+2026-03-10 21:54:58 ⬡  Enriching B07MTSNGHP — getCatalogItem
+2026-03-10 21:54:59 ⬡  Enriching B0GF2WB6VL — getCatalogItem
+2026-03-10 21:55:00 ⬡  Enriching B0CCSXHHL9 — getCatalogItem
+2026-03-10 21:55:00 ⬡  Enriching B09DMZPC3Q — getCatalogItem
+2026-03-10 21:55:01 ⬡  Enriching B002DHOWIY — getCatalogItem
+2026-03-10 21:55:02 ⬡  Enriching B0DT1JJ9H1 — getCatalogItem
+2026-03-10 21:55:04 ⬡  Fee batch 1/1 — 20 ASINs
+  ┌─ B005EKI3KK  #81 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cheerios Breakfast Cereal Cup, Gluten Free, Single Serve Ce…
+  │  Brand        Cheerios  │  Mfr: General Mills  │  Model: 1
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2014-10-22
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $12.00  →  SP-API $13.49  (diff)
+  │  Fees         FBA $7.54  Referral $1.08  Total: $8.62
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         30.2 × 20.5 × 19.61 cm   0.44 kg
+  │  Package      30.6 × 20.52 × 19.63 cm   0.7961 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • TAKE IT WITH YOU: This Cheerios individual cereal cup is great to grab …
+  │  • TASTY LITTLE Os: A delicious toasted whole grain oat cereal that the wh…
+  │  • SIMPLY MADE: Contains 32g whole grain per serving (at least 48g recomme…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #81     6524561011
+  └─ enriched  https://www.amazon.com/dp/B005EKI3KK
+
+  ┌─ B0FXBYNWLT  #82 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Nature Valley Oat and Nut Protein Granola Balls, Peanut But…
+  │  Brand        Nature Valley  │  Mfr: General Mills  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: SNACK_FOOD_BAR
+  │  Browse Node  16310251  │  Listed: 2025-12-29
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.89  →  SP-API $5.98  (diff)
+  │  Fees         FBA $3.38  Referral $0.48  Total: $3.86
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.35 × 15.24 × 21.59 cm   ? kg
+  │  Package      15.29 × 13 × 6.3 cm   0.231 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • QUALITY INGREDIENTS: Delicious protein granola balls made with semiswee…
+  │  • SNACK SMARTER: Every two-ball serving provides 10g protein, offering de…
+  │  • PORTABLE PROTEIN FOR BUSY DAYS: Convenient snacks that fit into your bu…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #82     6524561011
+  │  #119    16310251
+  └─ enriched  https://www.amazon.com/dp/B0FXBYNWLT
+
+  ┌─ B0CCPQ67Y2  #82 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honey Ohs! Family Size Cereal, Crunchy Breakfast Cereal Os …
+  │  Brand        Honey Ohs!  │  Mfr: Post Consumer Brands  │  Model: 39640
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2023-07-21
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.99  (diff)
+  │  Fees         FBA $5.28  Referral $0.56  Total: $5.84
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      33.71 × 19.51 × 8.2 cm   0.671 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • One 20 oz box of Honey Ohs! Family Size Cereal
+  │  • Family size cereal box saves you trips to the grocery store and ensures…
+  │  • Crunchy Honey Ohs cereal features bite-sized sweetened Os
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #83     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0CCPQ67Y2
+
+  ┌─ B08CJLXVMZ  #83 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Catalina Crunch Protein Cereal - Sugar Free Breakfast Cerea…
+  │  Brand        Catalina Crunch  │  Mfr: Catalina Crunch  │  Model: 0860479001553
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2020-02-24
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.97  →  SP-API $7.99  (diff)
+  │  Fees         FBA $4.60  Referral $0.64  Total: $5.24
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         17.53 × 13.97 × 11.94 cm   0.2551 kg
+  │  Package      24.5 × 17.9 × 6.6 cm   0.282 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • 11G OF PROTEIN PER 1/2 CUP SERVING: Kick off your morning, workout or o…
+  │  • EXCELLENT SOURCE OF FIBER: Packed with 9 grams of fiber per 1/2 cup ser…
+  │  • WHOLESOME INGREDIENTS AND GLUTEN FREE: Catalina Crunch Cereal is not ju…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #84     6524561011
+  └─ enriched  https://www.amazon.com/dp/B08CJLXVMZ
+
+  ┌─ B00YC0ODRA  #85 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Nature's Path Organic Crispy Rice Cereal, 10 oz (Pack of 1)…
+  │  Brand        Nature's Path  │  Mfr: Nature's Path Foods Inc.  │  Model: 55000U
+  │  Color        No Color  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2012-06-12
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.08  →  SP-API $4.53  (diff)
+  │  Fees         FBA $4.60  Referral $0.36  Total: $4.96
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         26.42 × 16.26 × 6.6 cm   0.4006 kg
+  │  Package      26.39 × 16 × 6.91 cm   0.322 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Contains: 1 Box of Nature's Path Crispy Rice Cereal, 10 ounces
+  │  • All of our recipes are carefully crafted with only certified USDA organ…
+  │  • Deliciously light and refreshing whole grain brown rice crisps that don…
+  │    … 3 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #85     6524561011
+  └─ enriched  https://www.amazon.com/dp/B00YC0ODRA
+
+  ┌─ B0DJ1BP9W7  #86 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Post Oreo Puff Chocolate Breakfast Cereal, 10 oz Box
+  │  Brand        Post  │  Mfr: Post  │  Model: 44963
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-09-26
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.47  →  SP-API $4.79  (diff)
+  │  Fees         FBA $4.75  Referral $0.38  Total: $5.13
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      28.5 × 19.4 × 6.2 cm   0.35 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • One 10 oz box of OREO PUFFS Breakfast cereal
+  │  • Classic OREO cereal flavor in the form of chocolatey cereal puffs and m…
+  │  • Made with real OREO cookie wafers to bring the iconic taste of OREO to …
+  │    … 3 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #86     6524561011
+  │  #121    16310251
+  └─ enriched  https://www.amazon.com/dp/B0DJ1BP9W7
+
+  ┌─ B0DT1JXN6L  #86 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kashi Breakfast Cereal, Organic, Fiber Cereal, Berry Fruitf…
+  │  Brand        Kashi  │  Mfr: WK Kellogg Company  │  Model: 00018627116066
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2025-02-20
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.42  →  SP-API $6.99  (diff)
+  │  Fees         FBA $4.22  Referral $0.56  Total: $4.78
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         19.74 × 5.67 × 27.94 cm   0.4876 kg
+  │  Package      29.2 × 20.7 × 4.6 cm   0.57 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Deliciously crunchy with a touch of sweet berries, the whole family wil…
+  │  • Wake up to simply good taste; Sweet blend of berries inside toasty whea…
+  │  • Excellent source of fiber; 51g whole grains per serving; Vegan; Organic…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #87     6524561011
+  │  #122    16310251
+  └─ enriched  https://www.amazon.com/dp/B0DT1JXN6L
+
+  ┌─ B0CV56FV6Z  #88 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg's Cracklin' Oat Bran Breakfast Cereal, Fiber Cereal…
+  │  Brand        Kellogg's  │  Mfr: Kellogg's  │  Model: 00041192104565
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-02-22
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $17.07  →  SP-API $19.47  (diff)
+  │  Fees         FBA $7.37  Referral $2.92  Total: $10.29
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      27 × 20.4 × 17.09 cm   1.792 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • An oven-baked oat bran cereal combined with the satisfying taste of coc…
+  │  • Fall into the irresistible crackle of crispy, lightly sweetened cereal …
+  │  • Good source of 8 vitamins and minerals; No artificial colors or flavors…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #88     6524561011
+  │  #125    16310251
+  └─ enriched  https://www.amazon.com/dp/B0CV56FV6Z
+
+  ┌─ B00437CBWG  #89 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honey Nut Cheerios Breakfast Cereal Cup, Gluten Free, Singl…
+  │  Brand        Cheerios  │  Mfr: General Mills Cereals  │  Model: 29603
+  │  Color        Original Version  │  Pkg Qty: 12  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2010-09-16
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $13.49  →  SP-API $13.49  (match)
+  │  Fees         FBA $7.77  Referral $1.08  Total: $8.85
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         29.4 × 11.8 × 19.4 cm   0.053 kg
+  │  Package      30.51 × 20.4 × 19.58 cm   0.971 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • TAKE IT ON THE GO: This Honey Nut Cheerios individual cereal cup is gre…
+  │  • MADE WITH REAL HONEY: Sweetened whole grain oat cereal with real honey …
+  │  • WHOLE GRAIN: 31g of whole grain per serving (at least 48g recommended d…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #89     6524561011
+  └─ enriched  https://www.amazon.com/dp/B00437CBWG
+
+  ┌─ B000WDOZHO  #90 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Nature's Path Organic Fruit Juice Corn Flakes, 26.4 oz (Pac…
+  │  Brand        Nature's Path  │  Mfr: Nature's Path  │  Model: 058449600565
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2011-10-19
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $7.12  →  SP-API $10.68  (diff)
+  │  Fees         FBA $7.05  Referral $0.85  Total: $7.90
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         23.88 × 11.94 × 26.16 cm   0.7711 kg
+  │  Package      34.8 × 22.4 × 8.9 cm   0.77 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Contains: 1 Bag of Nature's Path Fruit Juice Sweetened Corn Flakes Cere…
+  │  • Thick and crunchy organic corn flakes that don’t go soft in milk! Craft…
+  │  • If you’re trying to get rid of refined sugar from your diet, these corn…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #90     6524561011
+  └─ enriched  https://www.amazon.com/dp/B000WDOZHO
+
+  ┌─ B0DT1KLZTX  #91 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kashi Breakfast Cereal, Organic, Whole Grain, Blueberry Clu…
+  │  Brand        Kashi  │  Mfr: Kashi  │  Model: 00018627116141
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2025-02-20
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.42  →  SP-API $6.99  (diff)
+  │  Fees         FBA $4.22  Referral $0.56  Total: $4.78
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         19.74 × 5.67 × 27.94 cm   0.4876 kg
+  │  Package      28.9 × 20.1 × 4.6 cm   0.57 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Deliciously crunchy with berry-tastic flavor, the whole family will enj…
+  │  • Wake up to simply good taste with a mix of blueberry flavored granola c…
+  │  • Whole grain is the first ingredient; Good source of fiber; Vegan; Organ…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #91     6524561011
+  │  #130    16310251
+  └─ enriched  https://www.amazon.com/dp/B0DT1KLZTX
+
+  ┌─ B0CN7GYJY8  #92 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Cheerios Hearty Nut Medley Breakfast Cereal, Maple Cinnamon…
+  │  Brand        Cheerios  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-01-01
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.88  (diff)
+  │  Fees         FBA $4.75  Referral $0.63  Total: $5.38
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.1 × 19.56 × 30.1 cm   0.567 kg
+  │  Package      30.1 × 19.7 × 6.3 cm   0.658 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • HEARTY NUT MEDLEY: This sweetened whole grain oat and wheat cereal comb…
+  │  • EXCELLENT SOURCE OF FIBER: Every serving has the irresistible taste of …
+  │  • HEART HEALTHY CEREAL: Diets rich in whole grain foods and other plant f…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #92     6524561011
+  │  #133    16310251
+  └─ enriched  https://www.amazon.com/dp/B0CN7GYJY8
+
+  ┌─ B0DHW7MTYM  #93 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Strawberry Vanilla Chex Cereal, Gluten Free Breakfast Cerea…
+  │  Brand        Chex  │  Mfr: GENERAL MILLS SALES INC.  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2024-12-30
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $7.42  (diff)
+  │  Fees         FBA $5.00  Referral $0.59  Total: $5.59
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         6.48 × 19.56 × 33.15 cm   ? kg
+  │  Package      33.1 × 19.6 × 6.7 cm   0.659 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • DELICIOUS TASTE: Each box of crunchy lattice squares brings an irresist…
+  │  • WHOLE GRAIN: Helps get your day off to a good start with 13g of whole g…
+  │  • GLUTEN FREE CEREAL: Pour some in a bowl with milk for a great-tasting, …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #93     6524561011
+  │  #134    16310251
+  └─ enriched  https://www.amazon.com/dp/B0DHW7MTYM
+
+  ┌─ B0DT1KYYKH  #94 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kashi Breakfast Cereal, Organic, Whole Grain, Honey Toasted…
+  │  Brand        Kashi  │  Mfr: Kashi  │  Model: 00018627115984
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2025-02-20
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $5.79  →  SP-API $6.99  (diff)
+  │  Fees         FBA $4.75  Referral $0.56  Total: $5.31
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         19.74 × 5.67 × 27.94 cm   0.3856 kg
+  │  Package      28.4 × 20.1 × 6.2 cm   0.465 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Deliciously crunchy with oaty, toasty flavor the whole family will enjo…
+  │  • Wake up to simply good taste;?Sweet like honey and made with love, enjo…
+  │  • Good source of fiber; Whole grain is the first ingredient; Vegetarian; …
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #94     6524561011
+  │  #135    16310251
+  └─ enriched  https://www.amazon.com/dp/B0DT1KYYKH
+
+  ┌─ B07MTSNGHP  #95 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg's Cold Breakfast Cereal, Bulk Pantry Staples, Kid S…
+  │  Brand        Kellogg's  │  Mfr: Kellogg's  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2019-01-24
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $32.80  →  SP-API $38.49  (diff)
+  │  Fees         FBA $8.82  Referral $5.77  Total: $14.59
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      37.39 × 29.97 × 19.3 cm   2.54 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • A delicious breakfast cereal variety pack containing a variety of Kello…
+  │  • Family-favorite cereals perfect for kids and adults; Yummy, sweetened, …
+  │  • A fun part of any balanced breakfast at home or on-the-go
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #95     6524561011
+  └─ enriched  https://www.amazon.com/dp/B07MTSNGHP
+
+  ┌─ B0GF2WB6VL  #95 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Catalina Crunch Cereal Strawbrry Strudel, 8 oz
+  │  Brand        Catalina Crunch  │  Mfr: Catalina Crunch  │  Model: n/a
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2025-12-01
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.29  →  SP-API $7.99  (diff)
+  │  Fees         FBA $4.60  Referral $0.64  Total: $5.24
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      25 × 18.1 × 6.5 cm   0.24 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Catalina Crunch Cereal Strawbrry Strudel — a delicious, high-quality pa…
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #96     6524561011
+  └─ enriched  https://www.amazon.com/dp/B0GF2WB6VL
+
+  ┌─ B0CCSXHHL9  #96 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Honey Bunches of Oats with Real Strawberries Breakfast Cere…
+  │  Brand        Honey Bunches of Oats  │  Mfr: Post Consumer Brands  │  Model: 40674
+  │  Color        n/a  │  Pkg Qty: n/a  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2023-07-25
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $4.97  →  SP-API $6.99  (diff)
+  │  Fees         FBA $4.75  Referral $0.56  Total: $5.31
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      31.19 × 19.89 × 5.99 cm   0.54 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • STRAWBERRY CEREAL: Enjoy one (1) 16.5 oz box of Honey Bunches of Oats w…
+  │  • LOW IN FAT: This strawberry cereal is low fat, contains 0g trans fat, a…
+  │  • CEREAL MADE WITH WHOLE GRAIN: Honey Bunches of Oats Strawberry cereal h…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #97     6524561011
+  │  #185    16310251
+  └─ enriched  https://www.amazon.com/dp/B0CCSXHHL9
+
+  ┌─ B09DMZPC3Q  #98 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Magic Spoon Fruity High Protein Cereal - Sugar Free Snacks …
+  │  Brand        Magic Spoon  │  Mfr: Magic Spoon  │  Model: n/a
+  │  Color        Multicolored (fruity shades)  │  Pkg Qty: 1  │  Type: SAUCE
+  │  Browse Node  6524561011  │  Listed: 2023-06-07
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $8.47  →  SP-API $26.72  (diff)
+  │  Fees         FBA $5.04  Referral $4.01  Total: $9.05
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      26.01 × 19.51 × 5.31 cm   0.272 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Meet Magic Spoon: Magic Spoon looks and tastes like your favorite class…
+  │  • High Protein: Packed with 13g of protein per serving, Magic Spoon is pe…
+  │  • Low Carb & Keto Friendly Lifestyles: With 4g net carbs and 0g sugar per…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #98     6524561011
+  └─ enriched  https://www.amazon.com/dp/B09DMZPC3Q
+
+  ┌─ B002DHOWIY  #98 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kellogg's Raisin Bran Crunch Breakfast Cereal Cups, Fiber C…
+  │  Brand        Kellogg's  │  Mfr: Raisin Bran  │  Model: 00038000339479
+  │  Color        n/a  │  Pkg Qty: 12  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  6524561011  │  Listed: 2009-06-15
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $21.48  →  SP-API $21.48  (match)
+  │  Fees         FBA $7.78  Referral $3.22  Total: $11.00
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         n/a
+  │  Package      32 × 22 × 19.89 cm   1.338 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Crunchy, lightly sweetened breakfast cereal that's bursting with delici…
+  │  • Start your day with crispy, toasted bran flakes balanced with delicious…
+  │  • With 25 grams of whole grain, a good source of fiber and essential vita…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #99     6524561011
+  └─ enriched  https://www.amazon.com/dp/B002DHOWIY
+
+  ┌─ B0DT1JJ9H1  #100 in 6524561011  Grocery & Gourmet Food > Breakfast Cere…
+  ├─ IDENTITY ─────────────────────────────────────
+  │  Title        Kashi GO Protein Cereal, 12g Protein, 12g Fiber, Original, …
+  │  Brand        Kashi  │  Mfr: Kashi  │  Model: 00018627115700
+  │  Color        n/a  │  Pkg Qty: 1  │  Type: BREAKFAST_CEREAL
+  │  Browse Node  16310251  │  Listed: 2025-05-06
+  ├─ PRICING ──────────────────────────────────────
+  │  Scraped      $6.30  →  SP-API $5.99  (diff)
+  │  Fees         FBA $4.22  Referral $0.48  Total: $4.70
+  ├─ DIMENSIONS ───────────────────────────────────
+  │  Item         19.74 × 4.45 × 27.94 cm   0.3487 kg
+  │  Package      27.94 × 19.81 × 4.57 cm   0.408 kg
+  ├─ BULLETS ──────────────────────────────────────
+  │  • Level up your day with Kashi GO Original breakfast cereal; Enjoy a crun…
+  │  • Original flavor, classic favorite; Power your morning with a mix of swe…
+  │  • Packed with 12g protein (16% daily value per serving) and 12g fiber per…
+  │    … 2 more
+  ├─ ORGANIC RANKS ────────────────────────────────
+  │  #100    6524561011
+  │  #144    16310251
+  └─ enriched  https://www.amazon.com/dp/B0DT1JJ9H1
+
+2026-03-10 21:55:04 ↑  amazon_products — upserting 50 rows
+  │  B07CM8J4NC  Honey Nut Cheerios Cereal, Limited Edition …  $7.49  FBA $5.85  Ref $0.60  enriched
+  │  B07CX3GRXV  Cinnamon Toast Crunch Breakfast Cereal, Cri…  $5.99  FBA $4.60  Ref $0.48  enriched
+  │  B07CX3GRY1  Cheerios Cereal, Limited Edition Heart Shap…  $8.49  FBA $5.85  Ref $0.68  enriched
+  │  B07WD631ZX  Catalina Crunch Protein Cereal | Sugar Free…  $7.99  FBA $3.13  Ref $0.64  enriched
+  │  B07CX6LN8F  Lucky Charms Gluten Free Cereal with Marshm…  $4.30  FBA $4.60  Ref $0.34  enriched
+  │  B097ZFCRH7  Fruity PEBBLES Breakfast Cereal for Kids, G…  $5.29  FBA $5.00  Ref $0.42  enriched
+  │  B0055AEZ0G  Honey Bunches of Oats with Almonds Breakfas…  $5.29  FBA $4.75  Ref $0.42  enriched
+  │  B000VK2LO2  Weetabix Biscuits Whole Grain Cereal, Good …  $5.79  FBA $5.10  Ref $0.46  enriched
+  │  B07CMGL95S  Lucky Charms Gluten Free Cereal with Marshm…  $7.49  FBA $6.23  Ref $0.60  enriched
+  │  B08QTC6TJN  Cascadian Farm Organic Cinnamon Crunch Cere…  $7.49  FBA $5.44  Ref $0.60  enriched
+  │  B07QFG64SQ  Peanut Butter Chex Cereal, Gluten Free Brea…  $5.49  FBA $4.60  Ref $0.44  enriched
+  │  B0BFZV1CM4  Quaker Life Original Cereal, 22.3OZ Box  $6.29  FBA $4.75  Ref $0.50  enriched
+  │  B0F15SQ8HY  Kellogg’s Raisin Bran Breakfast Cereal, Hig…  $5.99  FBA $4.75  Ref $0.48  enriched
+  │  B0831DKX4J  Fiber One Cereal, Original Bran, High Fiber…  $7.10  FBA $4.60  Ref $0.57  enriched
+  │  B08X6L4ZQB  Multi Grain Cheerios, Heart Healthy Breakfa…  $7.49  FBA $5.44  Ref $0.60  enriched
+  │  B07ZTTPMNJ  Kellogg's Rice Krispies Cold Breakfast Cere…  $5.49  FBA $6.31  Ref $0.44  enriched
+  │  B00IGHKDT2  Grape-Nuts Original Cereal, Crunchy Whole G…  $5.29  FBA $4.60  Ref $0.42  enriched
+  │  B0D828VTRH  Catalina Crunch Protein Cereal - Breakfast …  $7.99  FBA $4.60  Ref $0.64  enriched
+  │  B07SQB7GF2  Catalina Crunch Protein Cereal - Sugar Free…  $7.99  FBA $4.60  Ref $0.64  enriched
+  │  B08QDP3S8X  Catalina Crunch Protein Cereal - Sugar Free…  $7.99  FBA $4.22  Ref $0.64  enriched
+  │  B08X68QH1J  Rice Chex Gluten Free Breakfast Cereal, Hom…  $6.99  FBA $5.44  Ref $0.56  enriched
+  │  B0DCP66L5Y  Kellogg’s Frosted Mini-Wheats Breakfast Cer…  $6.79  FBA $5.28  Ref $0.54  enriched
+  │  B09NC951TG  Nature's Path Organic Heritage Flakes® Cere…  $8.99  FBA $5.44  Ref $0.72  enriched
+  │  B097ZF9YSL  Cocoa PEBBLES Cereal, Chocolatey Kids Crunc…  $6.99  FBA $5.00  Ref $0.56  enriched
+  │  B07CZ83NQ4  REESE'S PUFFS Breakfast Cereal, Chocolatey …  $5.99  FBA $4.60  Ref $0.48  enriched
+  │  B0051OLMZC  Great Grains Raisins Dates and Pecans Break…  $6.29  FBA $4.22  Ref $0.50  enriched
+  │  B0DCP5PFNQ  Kellogg's Frosted Flakes Breakfast Cereal, …  $6.79  FBA $6.23  Ref $0.54  enriched
+  │  B0D9KPMLQ2  Kellogg's Froot Loops Breakfast Cereal, Goo…  $6.79  FBA $6.23  Ref $0.54  enriched
+  │  B002NLGE9A  Honey Bunches of Oats Crunchy Honey Roasted…  $6.99  FBA $4.75  Ref $0.56  enriched
+  │  B01K8STMFC  Corn Chex Gluten Free Breakfast Cereal, Hom…  $6.99  FBA $5.28  Ref $0.56  enriched
+  │  B0D23PWQFS  Cinnamon Toast Crunch Breakfast Cereal, Cri…  $8.34  FBA $5.85  Ref $0.67  enriched
+  │  B0DT1MC1DJ  Kashi GO Protein Cereal, 10g Protein, 10g F…  $6.99  FBA $4.22  Ref $0.56  enriched
+  │  B09JTWBSJT  Seven Sundays Cereal Mple Sea Slt Gfree 8 OZ  $8.99  FBA $5.00  Ref $0.72  enriched
+  │  B00DTXEBSM  Cascadian Farm Organic Cereal, Fruitful O's…  $6.38  FBA $4.22  Ref $0.51  enriched
+  │  B09FFSBYJS  Premier Protein Mixed Berry Almond Cereal, …  $5.29  FBA $3.78  Ref $0.42  enriched
+  │  B0DNNH415B  Cascadian Farm Organic Mixed Berry Cereal, …  $5.88  FBA $4.22  Ref $0.47  enriched
+  │  B0D9KRGTGC  Kellogg's Special K Red Berries Breakfast C…  $6.79  FBA $5.00  Ref $0.54  enriched
+  │  B000RA8E56  Cream of Wheat Stove Top Hot Cereal, Origin…  $4.29  FBA $5.00  Ref $0.34  enriched
+  │  B0BFZNBP6Z  Cap'n Crunch Cereal, Crunch Berries, 20.5oz…  $6.29  FBA $5.10  Ref $0.50  enriched
+  │  B0DHW7LV5R  Cheerios Protein Cereal, Cinnamon, 8g Prote…  $7.82  FBA $5.00  Ref $0.63  enriched
+  │  B001AS8QPC  Trix Breakfast Cereal, 6 Fruity Shapes, Mad…  $5.49  FBA $4.60  Ref $0.44  enriched
+  │  B000VDR3WO  Total Breakfast Cereal, 100% Daily Value of…  $7.49  FBA $5.00  Ref $0.60  enriched
+  │  B000WHXORC  Cream of Rice Gluten Free Hot Cereal, 14 Ou…  $0.00  FBA $3.78  Ref $0.00  enriched
+  │  B0831CG6D5  Raisin Nut Bran Cereal, High Fiber Cereal, …  $7.49  FBA $4.60  Ref $0.60  enriched
+  │  B0DT1LTH82  Kashi Breakfast Cereal, Organic, Whole Grai…  $6.99  FBA $4.75  Ref $0.56  enriched
+  │  B0BXTBFFTX  Honeycomb Cereal, Honey Flavored Sweetened …  $6.99  FBA $6.23  Ref $0.56  enriched
+  │  B0D244LQVD  Honey Nut Cheerios Cereal, Limited Edition …  $8.34  FBA $6.31  Ref $0.67  enriched
+  │  B08X719R3T  Cinnamon Chex Cereal, Gluten Free Breakfast…  $7.49  FBA $5.00  Ref $0.60  enriched
+  │  B08X69TX2M  Cocoa Puffs, Chocolatey Breakfast Cereal, M…  $7.49  FBA $5.10  Ref $0.60  enriched
+  │  B08X6H8KDB  Apple Cinnamon Cheerios, Heart Healthy Glut…  $7.49  FBA $5.10  Ref $0.60  enriched
+2026-03-10 21:55:05 ✓  amazon_products — 50 written  (289ms)
+2026-03-10 21:55:05 ↑  amazon_products — upserting 50 rows
+  │  B004G7RJKM  Cream of Wheat Instant Hot Cereal, Maple Br…  $6.99  FBA $3.78  Ref $0.56  enriched
+  │  B000VDUY02  Wheaties Cereal, Breakfast of Champions, Ja…  $7.49  FBA $5.00  Ref $0.60  enriched
+  │  B08X6N6PBD  Cinnamon Toast Crunch Breakfast Cereal, Cri…  $6.99  FBA $6.47  Ref $0.56  enriched
+  │  B08ZDYGMMC  Golden Grahams Breakfast Cereal, Graham Cra…  $7.49  FBA $5.00  Ref $0.60  enriched
+  │  B08X64TDGH  Kix Whole Grain Breakfast Cereal, Crispy Co…  $6.49  FBA $5.85  Ref $0.52  enriched
+  │  B08X6N7HP4  Cheerios Oat Crunch Oats 'N Honey Breakfast…  $7.49  FBA $5.00  Ref $0.60  enriched
+  │  B0F2PYFS9Z  Cheerios Protein Cereal, Cookies and Crème,…  $7.82  FBA $4.75  Ref $0.63  enriched
+  │  B0BG1YM2Q5  Cap'n Crunch Cereal, Original, 22.1oz Box  $6.29  FBA $5.10  Ref $0.50  enriched
+  │  B09HSWMB4L  Premier Protein Chocolate Almond Cereal, Ch…  $6.99  FBA $4.22  Ref $0.56  enriched
+  │  B0C7QLL3M6  Wheat Chex Breakfast Cereal, Homemade Chex …  $7.49  FBA $4.60  Ref $0.60  enriched
+  │  B00437AB1O  Lucky Charms with Marshmallows Breakfast Ce…  $13.49  FBA $7.54  Ref $1.08  enriched
+  │  B07G9ZRSLP  Post Wheat n Bran® Shredded Wheat, Breakfas…  $4.99  FBA $4.75  Ref $0.40  enriched
+  │  B08X73BWV8  Cheerios Oat Crunch Cinnamon Breakfast Cere…  $7.49  FBA $5.00  Ref $0.60  enriched
+  │  B0DHW9RPY7  Cheerios Protein Cereal, Strawberry, 8g Pro…  $7.82  FBA $4.75  Ref $0.63  enriched
+  │  B08X69Y5SS  Chocolate Cheerios, Heart Healthy Gluten Fr…  $7.49  FBA $5.10  Ref $0.60  enriched
+  │  B0831CG6D4  Fiber One Honey Clusters Breakfast Cereal, …  $7.49  FBA $4.60  Ref $0.60  enriched
+  │  B08SSVY1PQ  Magic Spoon Cereal - High Protein Cereals -…  $43.99  FBA $7.69  Ref $6.60  enriched
+  │  B08FBVQC62  Post Shredded Wheat Big Biscuit, Whole Grai…  $4.99  FBA $4.22  Ref $0.40  enriched
+  │  B09RSFXBHR  Ratio Trio Maple Almond Crunch Cereal, 10g …  $7.49  FBA $4.22  Ref $0.60  enriched
+  │  B08X6RS5R2  Honey Nut Chex Cereal, Gluten Free Breakfas…  $7.49  FBA $5.00  Ref $0.60  enriched
+  │  B0DK9RCKVL  Cascadian Farm Organic Vanilla Crisp Cereal…  $5.88  FBA $4.22  Ref $0.47  enriched
+  │  B06XR4517K  EnviroKidz Organic Panda Puffs Cereal, 10.6…  $5.89  FBA $4.60  Ref $0.47  enriched
+  │  B0BFZV114B  Cap'n Crunch Cereal, Peanut Butter, 18.8oz …  $6.29  FBA $5.10  Ref $0.50  enriched
+  │  B0DTQ9179N  Cascadian Farm Organic Cinnamon Apple Cerea…  $5.88  FBA $4.22  Ref $0.47  enriched
+  │  B0882XFGJW  Three Wishes Grain-Free & Protein Cereal - …  $42.99  FBA $9.05  Ref $6.45  enriched
+  │  B0CD88SDBL  Marshmallow Fruity PEBBLES Breakfast Cereal…  $6.99  FBA $5.00  Ref $0.56  enriched
+  │  B0D244S5QD  REESE'S PUFFS Chocolatey Peanut Butter Cere…  $8.34  FBA $5.85  Ref $0.67  enriched
+  │  B097ZFZJ12  Post Raisin Bran Cereal, Made with Wheat an…  $4.99  FBA $4.22  Ref $0.40  enriched
+  │  B08X719R3Y  Cookie Crisp Breakfast Cereal, Chocolate Ch…  $7.49  FBA $5.00  Ref $0.60  enriched
+  │  B0BZTL7JWJ  Cascadian Farm Organic Brownie Crunch Cerea…  $5.99  FBA $4.60  Ref $0.48  enriched
+  │  B005EKI3KK  Cheerios Breakfast Cereal Cup, Gluten Free,…  $13.49  FBA $7.54  Ref $1.08  enriched
+  │  B0FXBYNWLT  Nature Valley Oat and Nut Protein Granola B…  $5.98  FBA $3.38  Ref $0.48  enriched
+  │  B0CCPQ67Y2  Honey Ohs! Family Size Cereal, Crunchy Brea…  $6.99  FBA $5.28  Ref $0.56  enriched
+  │  B08CJLXVMZ  Catalina Crunch Protein Cereal - Sugar Free…  $7.99  FBA $4.60  Ref $0.64  enriched
+  │  B00YC0ODRA  Nature's Path Organic Crispy Rice Cereal, 1…  $4.53  FBA $4.60  Ref $0.36  enriched
+  │  B0DJ1BP9W7  Post Oreo Puff Chocolate Breakfast Cereal, …  $4.79  FBA $4.75  Ref $0.38  enriched
+  │  B0DT1JXN6L  Kashi Breakfast Cereal, Organic, Fiber Cere…  $6.99  FBA $4.22  Ref $0.56  enriched
+  │  B0CV56FV6Z  Kellogg's Cracklin' Oat Bran Breakfast Cere…  $19.47  FBA $7.37  Ref $2.92  enriched
+  │  B00437CBWG  Honey Nut Cheerios Breakfast Cereal Cup, Gl…  $13.49  FBA $7.77  Ref $1.08  enriched
+  │  B000WDOZHO  Nature's Path Organic Fruit Juice Corn Flak…  $10.68  FBA $7.05  Ref $0.85  enriched
+  │  B0DT1KLZTX  Kashi Breakfast Cereal, Organic, Whole Grai…  $6.99  FBA $4.22  Ref $0.56  enriched
+  │  B0CN7GYJY8  Cheerios Hearty Nut Medley Breakfast Cereal…  $7.88  FBA $4.75  Ref $0.63  enriched
+  │  B0DHW7MTYM  Strawberry Vanilla Chex Cereal, Gluten Free…  $7.42  FBA $5.00  Ref $0.59  enriched
+  │  B0DT1KYYKH  Kashi Breakfast Cereal, Organic, Whole Grai…  $6.99  FBA $4.75  Ref $0.56  enriched
+  │  B07MTSNGHP  Kellogg's Cold Breakfast Cereal, Bulk Pantr…  $38.49  FBA $8.82  Ref $5.77  enriched
+  │  B0GF2WB6VL  Catalina Crunch Cereal Strawbrry Strudel, 8…  $7.99  FBA $4.60  Ref $0.64  enriched
+  │  B0CCSXHHL9  Honey Bunches of Oats with Real Strawberrie…  $6.99  FBA $4.75  Ref $0.56  enriched
+  │  B09DMZPC3Q  Magic Spoon Fruity High Protein Cereal - Su…  $26.72  FBA $5.04  Ref $4.01  enriched
+  │  B002DHOWIY  Kellogg's Raisin Bran Crunch Breakfast Cere…  $21.48  FBA $7.78  Ref $3.22  enriched
+  │  B0DT1JJ9H1  Kashi GO Protein Cereal, 12g Protein, 12g F…  $5.99  FBA $4.22  Ref $0.48  enriched
+2026-03-10 21:55:05 ✓  amazon_products — 50 written  (337ms)
+2026-03-10 21:55:05 ↑  product_category_ranks — upserting 50 rows
+  │  B07CM8J4NC  #1      cat 6524561011  (best_seller)
+  │  B07CX3GRXV  #2      cat 6524561011  (best_seller)
+  │  B07CX3GRY1  #3      cat 6524561011  (best_seller)
+  │  B07WD631ZX  #4      cat 6524561011  (best_seller)
+  │  B07CX6LN8F  #5      cat 6524561011  (best_seller)
+  │  B097ZFCRH7  #6      cat 6524561011  (best_seller)
+  │  B0055AEZ0G  #7      cat 6524561011  (best_seller)
+  │  B000VK2LO2  #8      cat 6524561011  (best_seller)
+  │  B07CMGL95S  #8      cat 6524561011  (best_seller)
+  │  B08QTC6TJN  #10     cat 6524561011  (best_seller)
+  │  B07QFG64SQ  #11     cat 6524561011  (best_seller)
+  │  B0BFZV1CM4  #12     cat 6524561011  (best_seller)
+  │  B0BFZV1CM4  #39     cat 16310251  (organic)
+  │  B0F15SQ8HY  #12     cat 6524561011  (best_seller)
+  │  B0F15SQ8HY  #24     cat 16310251  (organic)
+  │  B0831DKX4J  #14     cat 6524561011  (best_seller)
+  │  B08X6L4ZQB  #15     cat 6524561011  (best_seller)
+  │  B07ZTTPMNJ  #16     cat 6524561011  (best_seller)
+  │  B00IGHKDT2  #17     cat 6524561011  (best_seller)
+  │  B0D828VTRH  #18     cat 6524561011  (best_seller)
+  │  B07SQB7GF2  #19     cat 6524561011  (best_seller)
+  │  B08QDP3S8X  #20     cat 6524561011  (best_seller)
+  │  B08X68QH1J  #21     cat 6524561011  (best_seller)
+  │  B0DCP66L5Y  #22     cat 6524561011  (best_seller)
+  │  B0DCP66L5Y  #30     cat 16310251  (organic)
+  │  B09NC951TG  #22     cat 6524561011  (best_seller)
+  │  B09NC951TG  #76     cat 16310251  (organic)
+  │  B097ZF9YSL  #24     cat 6524561011  (best_seller)
+  │  B07CZ83NQ4  #25     cat 6524561011  (best_seller)
+  │  B0051OLMZC  #26     cat 6524561011  (best_seller)
+  │  B0DCP5PFNQ  #27     cat 6524561011  (best_seller)
+  │  B0DCP5PFNQ  #36     cat 16310251  (organic)
+  │  B0D9KPMLQ2  #28     cat 6524561011  (best_seller)
+  │  B0D9KPMLQ2  #37     cat 16310251  (organic)
+  │  B002NLGE9A  #29     cat 6524561011  (best_seller)
+  │  B01K8STMFC  #30     cat 6524561011  (best_seller)
+  │  B0D23PWQFS  #31     cat 6524561011  (best_seller)
+  │  B0D23PWQFS  #45     cat 16310251  (organic)
+  │  B0DT1MC1DJ  #32     cat 6524561011  (best_seller)
+  │  B0DT1MC1DJ  #46     cat 16310251  (organic)
+  │  B09JTWBSJT  #33     cat 6524561011  (best_seller)
+  │  B00DTXEBSM  #34     cat 6524561011  (best_seller)
+  │  B09FFSBYJS  #35     cat 6524561011  (best_seller)
+  │  B0DNNH415B  #36     cat 6524561011  (best_seller)
+  │  B0DNNH415B  #50     cat 16310251  (organic)
+  │  B0D9KRGTGC  #37     cat 6524561011  (best_seller)
+  │  B0D9KRGTGC  #51     cat 16310251  (organic)
+  │  B000RA8E56  #13     cat 118518017011  (organic)
+  │  B000RA8E56  #38     cat 6524561011  (best_seller)
+  │  B0BFZNBP6Z  #38     cat 6524561011  (best_seller)
+2026-03-10 21:55:05 ✗  product_category_ranks.upsert failed  (batch 1/3)
+  message: insert or update on table "product_category_ranks" violates foreign key constraint "product_category_ranks_category_id_fkey"
+  code:    23503
+  details: Key (category_id)=(118518017011) is not present in table "amazon_categories".
+2026-03-10 21:55:05 ↑  product_category_ranks — upserting 50 rows
+  │  B0DHW7LV5R  #39     cat 6524561011  (best_seller)
+  │  B0DHW7LV5R  #55     cat 16310251  (organic)
+  │  B001AS8QPC  #41     cat 6524561011  (best_seller)
+  │  B001AS8QPC  #102    cat 16310251  (organic)
+  │  B000VDR3WO  #42     cat 6524561011  (best_seller)
+  │  B000WHXORC  #43     cat 6524561011  (best_seller)
+  │  B0831CG6D5  #43     cat 6524561011  (best_seller)
+  │  B0DT1LTH82  #45     cat 6524561011  (best_seller)
+  │  B0DT1LTH82  #63     cat 16310251  (organic)
+  │  B0BXTBFFTX  #46     cat 6524561011  (best_seller)
+  │  B0BXTBFFTX  #65     cat 16310251  (organic)
+  │  B0D244LQVD  #46     cat 6524561011  (best_seller)
+  │  B0D244LQVD  #68     cat 16310251  (organic)
+  │  B08X719R3T  #48     cat 6524561011  (best_seller)
+  │  B08X69TX2M  #49     cat 6524561011  (best_seller)
+  │  B08X6H8KDB  #50     cat 6524561011  (best_seller)
+  │  B004G7RJKM  #22     cat 118518017011  (organic)
+  │  B004G7RJKM  #51     cat 6524561011  (best_seller)
+  │  B004G7RJKM  #74     cat 16310251  (organic)
+  │  B000VDUY02  #51     cat 6524561011  (best_seller)
+  │  B08X6N6PBD  #53     cat 6524561011  (best_seller)
+  │  B08ZDYGMMC  #54     cat 6524561011  (best_seller)
+  │  B08X64TDGH  #55     cat 6524561011  (best_seller)
+  │  B08X6N7HP4  #56     cat 6524561011  (best_seller)
+  │  B0F2PYFS9Z  #57     cat 6524561011  (best_seller)
+  │  B0F2PYFS9Z  #77     cat 16310251  (organic)
+  │  B0BG1YM2Q5  #58     cat 6524561011  (best_seller)
+  │  B09HSWMB4L  #58     cat 6524561011  (best_seller)
+  │  B0C7QLL3M6  #60     cat 6524561011  (best_seller)
+  │  B00437AB1O  #61     cat 6524561011  (best_seller)
+  │  B07G9ZRSLP  #62     cat 6524561011  (best_seller)
+  │  B08X73BWV8  #62     cat 6524561011  (best_seller)
+  │  B0DHW9RPY7  #64     cat 6524561011  (best_seller)
+  │  B0DHW9RPY7  #86     cat 16310251  (organic)
+  │  B08X69Y5SS  #65     cat 6524561011  (best_seller)
+  │  B0831CG6D4  #66     cat 6524561011  (best_seller)
+  │  B08SSVY1PQ  #67     cat 6524561011  (best_seller)
+  │  B08SSVY1PQ  #99     cat 16310251  (organic)
+  │  B08FBVQC62  #68     cat 6524561011  (best_seller)
+  │  B09RSFXBHR  #68     cat 6524561011  (best_seller)
+  │  B08X6RS5R2  #70     cat 6524561011  (best_seller)
+  │  B0DK9RCKVL  #71     cat 6524561011  (best_seller)
+  │  B0DK9RCKVL  #103    cat 16310251  (organic)
+  │  B06XR4517K  #72     cat 6524561011  (best_seller)
+  │  B0BFZV114B  #73     cat 6524561011  (best_seller)
+  │  B0DTQ9179N  #73     cat 6524561011  (best_seller)
+  │  B0DTQ9179N  #108    cat 16310251  (organic)
+  │  B0882XFGJW  #74     cat 6524561011  (best_seller)
+  │  B0CD88SDBL  #76     cat 6524561011  (best_seller)
+  │  B0CD88SDBL  #132    cat 16310251  (organic)
+2026-03-10 21:55:05 ✗  product_category_ranks.upsert failed  (batch 2/3)
+  message: insert or update on table "product_category_ranks" violates foreign key constraint "product_category_ranks_category_id_fkey"
+  code:    23503
+  details: Key (category_id)=(118518017011) is not present in table "amazon_categories".
+2026-03-10 21:55:05 ↑  product_category_ranks — upserting 35 rows
+  │  B0D244S5QD  #77     cat 6524561011  (best_seller)
+  │  B0D244S5QD  #112    cat 16310251  (organic)
+  │  B097ZFZJ12  #78     cat 6524561011  (best_seller)
+  │  B08X719R3Y  #78     cat 6524561011  (best_seller)
+  │  B0BZTL7JWJ  #80     cat 6524561011  (best_seller)
+  │  B005EKI3KK  #81     cat 6524561011  (best_seller)
+  │  B0FXBYNWLT  #82     cat 6524561011  (best_seller)
+  │  B0FXBYNWLT  #119    cat 16310251  (organic)
+  │  B0CCPQ67Y2  #82     cat 6524561011  (best_seller)
+  │  B08CJLXVMZ  #83     cat 6524561011  (best_seller)
+  │  B00YC0ODRA  #85     cat 6524561011  (best_seller)
+  │  B0DJ1BP9W7  #86     cat 6524561011  (best_seller)
+  │  B0DJ1BP9W7  #121    cat 16310251  (organic)
+  │  B0DT1JXN6L  #86     cat 6524561011  (best_seller)
+  │  B0DT1JXN6L  #122    cat 16310251  (organic)
+  │  B0CV56FV6Z  #88     cat 6524561011  (best_seller)
+  │  B0CV56FV6Z  #125    cat 16310251  (organic)
+  │  B00437CBWG  #89     cat 6524561011  (best_seller)
+  │  B000WDOZHO  #90     cat 6524561011  (best_seller)
+  │  B0DT1KLZTX  #91     cat 6524561011  (best_seller)
+  │  B0DT1KLZTX  #130    cat 16310251  (organic)
+  │  B0CN7GYJY8  #92     cat 6524561011  (best_seller)
+  │  B0CN7GYJY8  #133    cat 16310251  (organic)
+  │  B0DHW7MTYM  #93     cat 6524561011  (best_seller)
+  │  B0DHW7MTYM  #134    cat 16310251  (organic)
+  │  B0DT1KYYKH  #94     cat 6524561011  (best_seller)
+  │  B0DT1KYYKH  #135    cat 16310251  (organic)
+  │  B07MTSNGHP  #95     cat 6524561011  (best_seller)
+  │  B0GF2WB6VL  #95     cat 6524561011  (best_seller)
+  │  B0CCSXHHL9  #96     cat 6524561011  (best_seller)
+  │  B0CCSXHHL9  #185    cat 16310251  (organic)
+  │  B09DMZPC3Q  #98     cat 6524561011  (best_seller)
+  │  B002DHOWIY  #98     cat 6524561011  (best_seller)
+  │  B0DT1JJ9H1  #100    cat 6524561011  (best_seller)
+  │  B0DT1JJ9H1  #144    cat 16310251  (organic)
+2026-03-10 21:55:05 ✓  product_category_ranks — 35 written  (80ms)
+2026-03-10 21:55:05 ↑  Flushed to DB — 100 enriched
 
 ────────────────────────────────────────────────────────────
   Summary
 ────────────────────────────────────────────────────────────
 
   ┌───────────────────────────────────────────────┐
-  │ Categories     0 scraped / 1 empty / 0 failed │
-  │ Median products                           n/a │
-  │ Unique ASINs                                0 │
-  │ Enriched                      0 ok / 0 failed │
-  │ Best seller edges                           0 │
-  │ Organic edges                               0 │
-  │ Elapsed                                   25s │
+  │ Categories     1 scraped / 0 empty / 0 failed │
+  │ Median products              100 per category │
+  │ Unique ASINs                              100 │
+  │ Enriched                    100 ok / 0 failed │
+  │ Best seller edges                         100 │
+  │ Organic edges                             135 │
+  │ Elapsed                                1m 46s │
   │                                  DB writes ON │
   └───────────────────────────────────────────────┘
 
