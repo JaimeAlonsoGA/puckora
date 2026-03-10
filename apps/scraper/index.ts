@@ -8,16 +8,20 @@
  *   npx ts-node src/index.ts --category 404809011
  */
 
-import { chromium } from 'playwright'
 import { CONFIG } from './config'
 import { log } from './logger'
 import { loadCheckpoint, saveCheckpoint, freshCheckpoint } from './checkpoint'
-import { scrapeCategory, loadCategoriesFromSupabase, jitter } from './scraper'
+import { scrapeCategory } from './scraper/category'
+import { enrichAsin } from './scraper/enrich'
+import { loadCategoriesFromSupabase, markCategoryScraped, markCategoryFailed } from './db/categories'
+import { createDb } from './db/client'
+import { upsertProducts, upsertRanks } from './db/products'
 import { launchBrowser } from './browser'
-import { getCatalogItem, getFeesEstimatesBatch } from './spapi'
-import { createDb, upsertProducts, upsertRanks, markCategoryScraped, markCategoryFailed } from './db'
-import { ProductRow, CategoryRankRow, ScrapedProduct, CategoryNode, FeeEstimateResult, CatalogItemResult } from './types'
-import { eta, dedupeByAsin } from './utils'
+import { getCatalogItem } from './sp-api/catalog'
+import { getFeesEstimatesBatch } from './sp-api/fees'
+import type { CatalogItemResult } from './sp-api/types'
+import type { ProductRow, CategoryRankRow, ScrapedProduct, CategoryNode } from './types'
+import { eta, dedupeByAsin, jitter } from './utils'
 
 // ─── ARGS ────────────────────────────────────────────────────────────────────
 
@@ -28,65 +32,6 @@ const IS_RESUME = ARGS.includes('--resume')
 const TEST_LIMIT = IS_TEST ? parseInt(ARGS[ARGS.indexOf('--test') + 1] ?? '5') : null
 const UPLOAD_TEST_LIMIT = IS_UPLOAD_TEST ? parseInt(ARGS[ARGS.indexOf('--upload-test') + 1] ?? '10') : null
 const SINGLE_ID = ARGS.includes('--category') ? ARGS[ARGS.indexOf('--category') + 1] : null
-
-// ─── ENRICH ONE ASIN ─────────────────────────────────────────────────────────
-
-async function enrichAsin(
-  asin: string,
-  scraped: ScrapedProduct,
-  catalog: CatalogItemResult | null,
-  feeResult: FeeEstimateResult | null,
-): Promise<{ product: ProductRow; ranks: CategoryRankRow[] }> {
-
-  const now = new Date().toISOString()
-
-  const product: ProductRow = {
-    // From scraper
-    asin,
-    price: catalog?.list_price ?? scraped.price,
-    rating: scraped.rating,
-    review_count: scraped.review_count,
-    product_url: scraped.product_url,
-
-    // From SP-API (null if enrichment failed)
-    title: catalog?.title ?? scraped.name,  // fallback to scraped name
-    brand: catalog?.brand ?? null,
-    manufacturer: catalog?.manufacturer ?? null,
-    model_number: catalog?.model_number ?? null,
-    package_quantity: catalog?.package_quantity ?? null,
-    color: catalog?.color ?? null,
-    main_image_url: catalog?.main_image_url ?? null,
-    bullet_points: catalog?.bullet_points ?? [],
-    product_type: catalog?.product_type ?? null,
-    browse_node_id: catalog?.browse_node_id ?? null,
-    item_length_cm: catalog?.item_length_cm ?? null,
-    item_width_cm: catalog?.item_width_cm ?? null,
-    item_height_cm: catalog?.item_height_cm ?? null,
-    item_weight_kg: catalog?.item_weight_kg ?? null,
-    pkg_length_cm: catalog?.pkg_length_cm ?? null,
-    pkg_width_cm: catalog?.pkg_width_cm ?? null,
-    pkg_height_cm: catalog?.pkg_height_cm ?? null,
-    pkg_weight_kg: catalog?.pkg_weight_kg ?? null,
-
-    fba_fee: feeResult?.fba_fee ?? null,
-    referral_fee: feeResult?.referral_fee ?? null,
-    listing_date: catalog?.listing_date ?? null,
-
-    scrape_status: catalog ? 'enriched' : 'enrichment_failed',
-    enriched_at: now,
-  }
-
-  // Organic ranks from SP-API salesRanks — these are ALL categories this ASIN ranks in
-  const ranks: CategoryRankRow[] = (catalog?.category_ranks ?? []).map(r => ({
-    asin,
-    category_id: r.classificationId,
-    rank: r.rank,
-    rank_type: 'organic' as const,
-    observed_at: now,
-  }))
-
-  return { product, ranks }
-}
 
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 

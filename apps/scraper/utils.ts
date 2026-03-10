@@ -1,4 +1,13 @@
 import { ScrapedProduct } from './types'
+import { CONFIG } from './config'
+
+const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
+
+/** Random delay between CONFIG.delay_min and CONFIG.delay_max to avoid detection. */
+export function jitter(): Promise<void> {
+    const ms = CONFIG.delay_min + Math.random() * (CONFIG.delay_max - CONFIG.delay_min)
+    return sleep(ms)
+}
 
 /**
  * Estimate time remaining as a human-readable string.

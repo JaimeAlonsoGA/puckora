@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { AppRoute } from '@/lib/routes'
-import { CookieName } from '@/lib/cookies'
+import { AppRoute } from '@/constants/routes'
+import { CookieName } from '@/constants/cookies'
 import { DEFAULT_LANGUAGE, SUPPORTED_LOCALES } from '@puckora/types'
 
 const PUBLIC_ROUTES: string[] = [AppRoute.login, AppRoute.signup, '/api/webhooks']
@@ -42,12 +42,12 @@ export async function proxy(request: NextRequest) {
     // whenever the cookie is absent (first login or new browser).
     // This is a lightweight single-column query and only runs once per session.
     if (userId && !request.cookies.has(CookieName.locale)) {
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('preferences')
+        const { data: user } = await supabase
+            .from('users')
+            .select('language')
             .eq('id', userId)
             .single()
-        const prefs = (profile?.preferences ?? {}) as { language?: string }
+        const prefs = { language: user?.language } as { language?: string }
         const lang = (SUPPORTED_LOCALES as readonly string[]).includes(prefs.language ?? '')
             ? prefs.language!
             : DEFAULT_LANGUAGE

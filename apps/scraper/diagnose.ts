@@ -7,7 +7,7 @@
  */
 import * as dotenv from 'dotenv'
 import { launchBrowser, getSharedContext } from './browser'
-import { isBlocked, isEmptyCategory } from './parser'
+import { isBlocked, isEmptyCategory } from '@puckora/scraper-core'
 import { writeFileSync } from 'fs'
 dotenv.config()
 
@@ -44,7 +44,7 @@ async function probe(url: string, label: string, browser: Awaited<ReturnType<typ
     console.log(`  has "no Best Sell": ${earlyHtml.includes('no Best Sellers available')}`)
 
     // Now wait for products (same as scraper)
-    await page.waitForSelector('[data-asin]', { timeout: 15_000 }).catch(() => {})
+    await page.waitForSelector('[data-asin]', { timeout: 15_000 }).catch(() => { })
 
     const fullHtml = await page.content()
     console.log(`  (after wait) data-asin count   : ${(fullHtml.match(/data-asin="[A-Z0-9]{10}"/g) ?? []).length}`)
@@ -63,7 +63,7 @@ async function probe(url: string, label: string, browser: Awaited<ReturnType<typ
   } catch (e) {
     console.error(`  ERROR: ${(e as Error).message}`)
   } finally {
-    await page.close().catch(() => {})
+    await page.close().catch(() => { })
   }
 }
 

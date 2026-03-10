@@ -1,10 +1,10 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/integrations/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { AppRoute } from '@/lib/routes'
+import { AppRoute } from '@/constants/routes'
 
 export function useAuth() {
     const [user, setUser] = useState<User | null>(null)
@@ -17,15 +17,12 @@ export function useAuth() {
     const supabase = useMemo(() => createClient(), [])
 
     useEffect(() => {
-        const getUser = async () => {
-            const {
-                data: { user },
-            } = await supabase.auth.getUser()
-            setUser(user)
+        // getSession() reads the cached session from storage — no network call.
+        // The server already enforces auth (proxy.ts), so client state is for UI only.
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null)
             setLoading(false)
-        }
-
-        getUser()
+        })
 
         const {
             data: { subscription },

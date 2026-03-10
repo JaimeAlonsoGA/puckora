@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentType } from 'react'
-import { AppRoute } from '@/lib/routes'
+import { AppRoute } from '@/constants/routes'
 import { IconSettings, IconActivity } from '@tabler/icons-react'
 import { cn } from '@puckora/utils'
 import { Icon } from '@/components/building-blocks'

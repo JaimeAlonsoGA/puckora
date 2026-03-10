@@ -1,10 +1,61 @@
 {
     "manifest_version": 3,
-    "name": "puckora",
-    "version": "0.0.1",
-    "description": "Amazon FBA product research assistant",
-    "permissions": [],
+    "name": "Puckora",
+    "version": "0.1.0",
+    "description": "Amazon FBA product research — powered by Puckora",
+
+    "permissions": [
+        "storage",
+        "tabs",
+        "offscreen"
+    ],
+
+    "host_permissions": [
+        "https://www.amazon.com/*",
+        "https://www.amazon.co.uk/*",
+        "https://www.amazon.de/*",
+        "https://www.amazon.co.jp/*",
+        "https://www.amazon.fr/*",
+        "https://www.amazon.it/*",
+        "https://www.amazon.es/*",
+        "https://www.amazon.ca/*",
+        "https://www.alibaba.com/*",
+        "https://www.1688.com/*"
+    ],
+
+    "background": {
+        "service_worker": "background/service-worker.js",
+        "type": "module"
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["https://www.amazon.com/s*", "https://www.amazon.co.uk/s*", "https://www.amazon.de/s*"],
+            "js": ["content-scripts/amazon-search.js"],
+            "run_at": "document_idle"
+        },
+        {
+            "matches": ["https://www.amazon.com/dp/*", "https://www.amazon.co.uk/dp/*", "https://www.amazon.de/dp/*"],
+            "js": ["content-scripts/amazon-product.js"],
+            "run_at": "document_idle"
+        }
+    ],
+
     "action": {
-        "default_popup": "popup.html"
-    }
+        "default_popup": "popup/popup.html",
+        "default_title": "Puckora"
+    },
+
+    "icons": {
+        "16":  "icons/icon16.png",
+        "48":  "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+
+    "web_accessible_resources": [
+        {
+            "resources": ["sidebar/*"],
+            "matches": ["https://www.amazon.com/*", "https://www.amazon.co.uk/*", "https://www.amazon.de/*"]
+        }
+    ]
 }

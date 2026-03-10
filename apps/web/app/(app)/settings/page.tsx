@@ -1,14 +1,12 @@
 import { Suspense } from 'react'
-import { getCachedProfile } from '@/lib/server/profile'
+import { getCachedUser } from '@/server/users'
 import { PageContainer } from '@/components/layout/page-container'
 import { Heading, Body } from '@/components/building-blocks/typography'
-import { SettingsSkeleton } from '@puckora/web/app/(app)/settings/_components/settings-skeleton'
-import { ProfileForm } from '@puckora/web/app/(app)/settings/_components/profile-form'
-import { MarketplaceSelector } from '@puckora/web/app/(app)/settings/_components/marketplace-selector'
-import { LanguageSelector } from '@puckora/web/app/(app)/settings/_components/language-selector'
-import { PlanCard } from '@puckora/web/app/(app)/settings/_components/plan-card'
+import { SettingsSkeleton } from '@/app/(app)/settings/_components/settings-skeleton'
+import { ProfileForm } from '@/app/(app)/settings/_components/profile-form'
+import { MarketplaceSelector } from '@/app/(app)/settings/_components/marketplace-selector'
+import { LanguageSelector } from '@/app/(app)/settings/_components/language-selector'
 import { getTranslations } from 'next-intl/server'
-import { getProfilePreferences } from '@puckora/types/domain'
 
 export default async function SettingsPage() {
     const t = await getTranslations('settings')
@@ -28,15 +26,13 @@ export default async function SettingsPage() {
 }
 
 async function SettingsContent() {
-    const profile = await getCachedProfile()
-    const prefs = getProfilePreferences(profile)
+    const user = await getCachedUser()
 
     return (
         <div className="mt-[var(--space-8)] flex flex-col gap-[var(--space-8)]">
-            <ProfileForm profile={profile} />
-            <MarketplaceSelector currentMarketplace={prefs.marketplace} />
-            <LanguageSelector currentLanguage={prefs.language} />
-            <PlanCard planType={profile.plan} />
+            <ProfileForm profile={user} />
+            <MarketplaceSelector currentMarketplace={user.marketplace ?? 'US'} />
+            <LanguageSelector currentLanguage={user.language ?? 'en'} />
         </div>
     )
 }

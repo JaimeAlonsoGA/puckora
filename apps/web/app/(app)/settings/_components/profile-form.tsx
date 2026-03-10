@@ -1,89 +1,79 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { AppRoute } from '@/lib/routes'
-import type { Profile } from '@puckora/types'
-import { SettingsUpdateSchema, type SettingsUpdateInput } from '@puckora/types/schemas'
+import { useTranslations } from 'next-intl'
+import type { User } from '@puckora/types'
+import { SettingsUpdateSchema } from '@puckora/types/schemas'
+import { useFormAction } from '@/hooks/use-form-action'
+import { updateProfileAction } from '@/app/(app)/actions'
+import { useInvalidateUser } from '@/queries/users'
+import { Surface, Button, Alert } from '@/components/building-blocks'
+import { Subheading, Body } from '@/components/building-blocks/typography'
 import { FormField } from '@/components/form/form-field'
 import { FormInput } from '@/components/form/form-input'
-import { Button } from '@/components/building-blocks'
-import { Subheading, Body } from '@/components/building-blocks/typography'
 
 type ProfileFormProps = {
-    profile: Profile
+    profile: User
 }
 
 export function ProfileForm({ profile }: ProfileFormProps) {
     const t = useTranslations('settings.profile')
     const tc = useTranslations('common')
     const router = useRouter()
-    const [saving, setSaving] = useState(false)
+    const invalidateUser = useInvalidateUser()
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isDirty },
-    } = useForm<SettingsUpdateInput>({
-        resolver: zodResolver(SettingsUpdateSchema),
-        defaultValues: {
-            full_name: profile.full_name ?? '',
+    const { form, onSubmit, serverError, isPending } = useFormAction(
+        SettingsUpdateSchema,
+        updateProfileAction,
+        {
+            defaultValues: { display_name: profile.display_name ?? '' },
+            onSuccess: () => {
+                // Invalidate cached user so useUserPreferences() refetches
+                invalidateUser()
+                // Re-run Server Components so they receive the updated profile
+                router.refresh()
+            },
         },
-    })
+    )
 
-    const onSubmit = async (data: SettingsUpdateInput) => {
-        setSaving(true)
-        try {
-            const res = await fetch(AppRoute.apiSettings, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            })
-            if (!res.ok) throw new Error('Failed to save')
-            router.refresh()
-        } catch {
-            // TODO: toast notification
-        } finally {
-            setSaving(false)
-        }
-    }
+    const { register, formState: { errors, isDirty } } = form
 
     return (
-        <section className="rounded-[var(--radius-lg)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)] p-[var(--space-6)]">
+        <Surface variant="card" padding="lg" border="default">
             <div className="mb-[var(--space-5)] flex flex-col gap-[var(--space-1)]">
                 <Subheading>{t('title')}</Subheading>
                 <Body size="sm">{t('description')}</Body>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[var(--space-4)]">
+            <form onSubmit={onSubmit} className="flex flex-col gap-[var(--space-4)]">
                 <FormField
                     label={t('fullName')}
-                    htmlFor="full_name"
-                    error={errors.full_name?.message}
+                    htmlFor="display_name"
+                    error={errors.display_name?.message}
                 >
                     <FormInput
-                        id="full_name"
+                        id="display_name"
                         placeholder={t('fullNamePlaceholder')}
-                        error={!!errors.full_name}
-                        {...register('full_name')}
+                        autoComplete="name"
+                        error={!!errors.display_name}
+                        {...register('display_name')}
                     />
                 </FormField>
+
+                {serverError && <Alert variant="error">{serverError}</Alert>}
 
                 <div className="flex justify-end">
                     <Button
                         type="submit"
                         variant="primary"
                         size="sm"
-                        loading={saving}
+                        loading={isPending}
                         disabled={!isDirty}
                     >
                         {tc('save')}
                     </Button>
                 </div>
             </form>
-        </section>
+        </Surface>
     )
 }

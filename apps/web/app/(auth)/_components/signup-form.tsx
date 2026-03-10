@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { signupAction } from '../actions'
-import { SignupSchema } from '@/lib/schemas/auth'
+import { SignupSchema } from '@/schemas/auth'
 import { useFormAction } from '@/hooks/use-form-action'
 import { Button, Stack, Alert } from '@/components/building-blocks'
 import { FormField } from '@/components/form/form-field'

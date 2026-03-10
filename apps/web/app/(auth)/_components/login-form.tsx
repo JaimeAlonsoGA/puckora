@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { loginAction } from '../actions'
-import { LoginSchema } from '@/lib/schemas/auth'
+import { LoginSchema } from '@/schemas/auth'
 import { useFormAction } from '@/hooks/use-form-action'
 import { Button, Stack, Alert } from '@/components/building-blocks'
 import { FormField } from '@/components/form/form-field'

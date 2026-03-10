@@ -12,6 +12,7 @@
     "import:dry": "tsx import-categories.ts --dry-run"
   },
   "dependencies": {
+    "@puckora/scraper-core": "*",
     "@puckora/types": "*",
     "@supabase/supabase-js": "^2.39.0",
     "dotenv": "^16.4.0",

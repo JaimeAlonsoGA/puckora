@@ -1,4 +1,4 @@
-export default function SettingsSkeleton() {
+export function SettingsSkeleton() {
     return (
         <div className="mt-[var(--space-8)] flex flex-col gap-[var(--space-8)]">
             {/* Profile section */}
@@ -12,5 +12,3 @@ export default function SettingsSkeleton() {
         </div>
     )
 }
-
-export { SettingsSkeleton }

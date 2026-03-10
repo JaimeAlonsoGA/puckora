@@ -11,10 +11,10 @@
  *  - Calls redirect() on success so the browser navigates server-side
  */
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createServerClient } from '@/integrations/supabase/server'
 import { redirect } from 'next/navigation'
-import { AppRoute } from '@/lib/routes'
-import type { LoginFormValues, SignupFormValues } from '@/lib/schemas/auth'
+import { AppRoute } from '@/constants/routes'
+import type { LoginFormValues, SignupFormValues } from '@/schemas/auth'
 import type { ActionResult } from '@/hooks/use-form-action'
 
 // ---------------------------------------------------------------------------
@@ -44,6 +44,13 @@ export async function signupAction(data: SignupFormValues): Promise<ActionResult
     const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
+        options: {
+            // The handle_new_user trigger reads display_name from raw_user_meta_data
+            // to seed the public.users row on first sign-up.
+            data: {
+                display_name: data.email.split('@')[0],
+            },
+        },
     })
 
     if (error) {

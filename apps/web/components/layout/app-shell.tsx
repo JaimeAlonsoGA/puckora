@@ -1,7 +1,5 @@
-'use client'
-
-import { Sidebar } from '@puckora/web/components/layout/sidebar'
-import { Topbar } from '@puckora/web/components/layout/topbar'
+import { Sidebar } from '@/components/layout/sidebar'
+import { Topbar } from '@/components/layout/topbar'
 
 type AppShellProps = {
     children: React.ReactNode

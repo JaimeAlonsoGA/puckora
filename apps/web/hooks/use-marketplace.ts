@@ -1,15 +1,15 @@
 'use client'
 
-import { useUserPreferences } from '@puckora/web/hooks/use-user-preferences'
+import { useUserPreferences } from './use-user-preferences'
 
 /**
  * Returns the user's currently selected Amazon marketplace ID (e.g. "US", "DE").
  * Falls back to 'US' while the query is loading.
  *
  * For Server Components, use `getCachedPreferences()` from
- * `@/lib/server/profile` instead.
+ * `@/server/profile` instead.
  */
 export function useMarketplace(): string {
-    const { data } = useUserPreferences()
-    return data?.marketplace ?? 'US'
+    const { marketplace } = useUserPreferences()
+    return marketplace
 }

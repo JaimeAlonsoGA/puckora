@@ -27,7 +27,7 @@ export type Database = {
           marketplace: string
           name: string
           parent_id: string | null
-          scrape_status: string
+          scrape_status: Database["public"]["Enums"]["category_scrape_status"]
         }
         Insert: {
           bestsellers_url?: string | null
@@ -41,7 +41,7 @@ export type Database = {
           marketplace?: string
           name: string
           parent_id?: string | null
-          scrape_status?: string
+          scrape_status?: Database["public"]["Enums"]["category_scrape_status"]
         }
         Update: {
           bestsellers_url?: string | null
@@ -55,7 +55,7 @@ export type Database = {
           marketplace?: string
           name?: string
           parent_id?: string | null
-          scrape_status?: string
+          scrape_status?: Database["public"]["Enums"]["category_scrape_status"]
         }
         Relationships: [
           {
@@ -97,7 +97,7 @@ export type Database = {
           rating: number | null
           referral_fee: number | null
           review_count: number | null
-          scrape_status: string
+          scrape_status: Database["public"]["Enums"]["product_scrape_status"]
           title: string | null
           updated_at: string
         }
@@ -130,7 +130,7 @@ export type Database = {
           rating?: number | null
           referral_fee?: number | null
           review_count?: number | null
-          scrape_status?: string
+          scrape_status?: Database["public"]["Enums"]["product_scrape_status"]
           title?: string | null
           updated_at?: string
         }
@@ -163,7 +163,7 @@ export type Database = {
           rating?: number | null
           referral_fee?: number | null
           review_count?: number | null
-          scrape_status?: string
+          scrape_status?: Database["public"]["Enums"]["product_scrape_status"]
           title?: string | null
           updated_at?: string
         }
@@ -214,6 +214,89 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      scrape_jobs: {
+        Row: {
+          claimed_at: string | null
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          executor: Database["public"]["Enums"]["scrape_executor"] | null
+          id: string
+          payload: Json
+          result: Json | null
+          status: Database["public"]["Enums"]["scrape_job_status"]
+          type: Database["public"]["Enums"]["scrape_job_type"]
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          executor?: Database["public"]["Enums"]["scrape_executor"] | null
+          id?: string
+          payload: Json
+          result?: Json | null
+          status?: Database["public"]["Enums"]["scrape_job_status"]
+          type: Database["public"]["Enums"]["scrape_job_type"]
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          executor?: Database["public"]["Enums"]["scrape_executor"] | null
+          id?: string
+          payload?: Json
+          result?: Json | null
+          status?: Database["public"]["Enums"]["scrape_job_status"]
+          type?: Database["public"]["Enums"]["scrape_job_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrape_jobs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string
+          id: string
+          language: string
+          marketplace: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email: string
+          id: string
+          language?: string
+          marketplace?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string
+          id?: string
+          language?: string
+          marketplace?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -287,7 +370,11 @@ export type Database = {
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
-      [_ in never]: never
+      category_scrape_status: "pending" | "scraped" | "failed"
+      product_scrape_status: "scraped" | "enriched" | "enrichment_failed"
+      scrape_executor: "extension" | "agent"
+      scrape_job_status: "pending" | "claimed" | "running" | "done" | "failed"
+      scrape_job_type: "amazon_search" | "amazon_product" | "alibaba_search"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -414,6 +501,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      category_scrape_status: ["pending", "scraped", "failed"],
+      product_scrape_status: ["scraped", "enriched", "enrichment_failed"],
+      scrape_executor: ["extension", "agent"],
+      scrape_job_status: ["pending", "claimed", "running", "done", "failed"],
+      scrape_job_type: ["amazon_search", "amazon_product", "alibaba_search"],
+    },
   },
 } as const

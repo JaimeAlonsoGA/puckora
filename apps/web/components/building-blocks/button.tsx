@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { cn } from '@puckora/utils'
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline'
@@ -13,6 +14,11 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     iconRight?: React.ReactNode
     loading?: boolean
     fullWidth?: boolean
+    /**
+     * When provided the button renders as a Next.js Link for navigation.
+     * Use this instead of wrapping <Button> inside <Link>.
+     */
+    href?: React.ComponentPropsWithoutRef<typeof Link>['href']
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
@@ -67,24 +73,22 @@ export function Button({
     disabled,
     className,
     children,
+    href,
     ...props
 }: ButtonProps) {
-    return (
-        <button
-            ref={ref}
-            disabled={disabled || loading}
-            className={cn(
-                'inline-flex items-center justify-center font-medium',
-                'transition-all duration-[var(--transition-fast)]',
-                'select-none whitespace-nowrap',
-                'disabled:pointer-events-none disabled:opacity-50',
-                variantStyles[variant],
-                sizeStyles[size],
-                fullWidth && 'w-full',
-                className,
-            )}
-            {...props}
-        >
+    const classes = cn(
+        'inline-flex items-center justify-center font-medium',
+        'transition-all duration-[var(--transition-fast)]',
+        'select-none whitespace-nowrap',
+        'disabled:pointer-events-none disabled:opacity-50',
+        variantStyles[variant],
+        sizeStyles[size],
+        fullWidth && 'w-full',
+        className,
+    )
+
+    const content = (
+        <>
             {loading ? (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             ) : (
@@ -92,6 +96,25 @@ export function Button({
             )}
             {children}
             {iconRight}
+        </>
+    )
+
+    if (href) {
+        return (
+            <Link href={href} className={classes}>
+                {content}
+            </Link>
+        )
+    }
+
+    return (
+        <button
+            ref={ref}
+            disabled={disabled || loading}
+            className={classes}
+            {...props}
+        >
+            {content}
         </button>
     )
 }

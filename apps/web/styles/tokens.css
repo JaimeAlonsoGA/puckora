@@ -208,6 +208,8 @@
     --surface-success: var(--sf-success-bg);
     --surface-warning: var(--sf-warning-bg);
     --surface-info: var(--sf-info-bg);
+    /** Dark overlay — for panels/cards that invert to a near-black background */
+    --surface-overlay: var(--sf-text);
 
     /* ── Borders ────────────────────────────────────────────────────────────── */
     --border-default: var(--sf-border);

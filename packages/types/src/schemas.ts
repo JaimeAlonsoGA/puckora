@@ -10,7 +10,7 @@ const [firstMarket, ...restMarkets] = MARKETPLACES.map((m) => m.id) as [
 const [firstLocale, ...restLocales] = [...SUPPORTED_LOCALES] as [AppLanguage, ...AppLanguage[]]
 
 export const SettingsUpdateSchema = z.object({
-    full_name: z.string().min(1).max(100).optional(),
+    display_name: z.string().min(1).max(100).optional(),
     avatar_url: z.string().url().optional().nullable(),
     marketplace: z.enum([firstMarket, ...restMarkets]).optional(),
     language: z.enum([firstLocale, ...restLocales]).optional(),

@@ -1,25 +1,18 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { getProfilePreferences } from '@puckora/types/domain'
-import type { Profile } from '@puckora/types'
+import { userQueryOptions } from '@/queries/users'
+import { DEFAULT_MARKETPLACE, DEFAULT_LANGUAGE } from '@puckora/types'
 
 /**
- * Fetches the user's profile via the /api/settings endpoint and returns their
- * current preferences. TanStack Query caches the response and deduplicates
- * concurrent requests across all components.
- *
- * For Server Components, use `getCachedPreferences()` from
- * `@/lib/server/profile` instead — no network round-trip needed there.
+ * Returns the current user's marketplace and language preferences.
+ * For Server Components, read user.marketplace / user.language directly
+ * from getCachedUser() — no network call.
  */
 export function useUserPreferences() {
-    return useQuery({
-        queryKey: ['profile'],
-        queryFn: async () => {
-            const res = await fetch('/api/settings')
-            if (!res.ok) throw new Error('Failed to fetch profile')
-            const profile = (await res.json()) as Profile
-            return getProfilePreferences(profile)
-        },
-    })
+    const { data: user } = useQuery(userQueryOptions())
+    return {
+        marketplace: user?.marketplace ?? DEFAULT_MARKETPLACE,
+        language: user?.language ?? DEFAULT_LANGUAGE,
+    }
 }

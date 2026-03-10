@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
-import { getProfile, updateProfile } from '@/lib/services/settings'
+import { createServerClient } from '@/integrations/supabase/server'
+import { getUser, updateUser } from '@/services/settings'
 import { SettingsUpdateSchema } from '@puckora/types/schemas'
-import { CookieName } from '@/lib/cookies'
+import { CookieName } from '@/constants/cookies'
 
 export async function GET() {
     try {
@@ -16,7 +16,7 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const profile = await getProfile(supabase, user.id)
+        const profile = await getUser(supabase, user.id)
         return NextResponse.json(profile)
     } catch (err) {
         const message = err instanceof Error ? err.message : 'Internal server error'
@@ -46,7 +46,7 @@ export async function PATCH(req: NextRequest) {
             )
         }
 
-        const updated = await updateProfile(supabase, user.id, parsed.data)
+        const updated = await updateUser(supabase, user.id, parsed.data)
         const response = NextResponse.json(updated)
 
         // Keep the NEXT_LOCALE cookie in sync so the i18n layer picks up the

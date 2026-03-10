@@ -36,7 +36,14 @@ export type ActionResult = { error: string } | undefined
 export function useFormAction<TValues extends FieldValues>(
     schema: ZodSchema<TValues>,
     action: (data: TValues) => Promise<ActionResult>,
-    defaultValues?: DefaultValues<TValues>,
+    options?: {
+        defaultValues?: DefaultValues<TValues>
+        /**
+         * Called after a successful action (no error returned, no redirect thrown).
+         * Use this for mutations that update data in-place instead of redirecting.
+         */
+        onSuccess?: () => void
+    },
 ) {
     const [serverError, setServerError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
@@ -47,7 +54,7 @@ export function useFormAction<TValues extends FieldValues>(
         // because the schema will validate correctly at runtime.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         resolver: zodResolver(schema as any),
-        defaultValues,
+        defaultValues: options?.defaultValues,
     })
 
     const onSubmit = form.handleSubmit((data) => {
@@ -56,6 +63,8 @@ export function useFormAction<TValues extends FieldValues>(
             const result = await action(data)
             if (result?.error) {
                 setServerError(result.error)
+            } else {
+                options?.onSuccess?.()
             }
         })
     })

@@ -2,7 +2,7 @@ import { getRequestConfig } from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { SUPPORTED_LOCALES, DEFAULT_LANGUAGE } from '@puckora/types'
 import type { AppLanguage } from '@puckora/types'
-import { CookieName } from '@/lib/cookies'
+import { CookieName } from '@/constants/cookies'
 
 export default getRequestConfig(async () => {
     // Locale comes from the NEXT_LOCALE cookie which is:

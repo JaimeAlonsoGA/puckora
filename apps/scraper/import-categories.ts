@@ -24,6 +24,8 @@ import * as XLSX from 'xlsx'
 import * as dotenv from 'dotenv'
 import { createClient } from '@supabase/supabase-js'
 import { log } from './logger'
+import { CATEGORY_SCRAPE_STATUS } from '@puckora/scraper-core'
+import { categorySlug, buildUrl } from './categories/slugs'
 dotenv.config()
 
 const MARKETPLACE = 'US'
@@ -40,58 +42,6 @@ interface CategoryRow {
   marketplace: string
   bestsellers_url: string
   scrape_status: string
-}
-
-/**
- * Amazon uses internal slugs that do NOT match the category name directly.
- * Key: exact MAIN_CATEGORY value from col 1 of the XLSX (case-sensitive).
- * The node ID drives the actual page — the slug only needs to be a valid ancestor.
- */
-const CATEGORY_SLUG_MAP: Record<string, string> = {
-  'Automotive':                         'automotive',
-  'Baby Products':                      'baby-products',
-  'Beauty & Personal Care':             'beauty',
-  'Books':                              'books',
-  'Camera & Photo Products':            'photo',
-  'Cell Phones & Accessories':          'wireless',
-  'Clothing, Shoes & Jewelry':          'fashion',
-  'Computers':                          'pc',
-  'Electronics':                        'electronics',
-  'Grocery & Gourmet Food':             'grocery',
-  'Health & Household':                 'hpc',
-  'Home & Kitchen':                     'home-garden',
-  'Industrial & Scientific':            'industrial',
-  'Kitchen & Dining':                   'kitchen',
-  'Movies & TV':                        'movies-tv',
-  'Music':                              'music',
-  'Musical Instruments':                'mi',
-  'Office Products':                    'office-products',
-  'Patio, Lawn & Garden':               'lawn-garden',
-  'Pet Supplies':                       'pet-supplies',
-  'Software':                           'software',
-  'Sports & Outdoors':                  'sporting-goods',
-  'Tools & Home Improvement':           'hi',
-  'Toys & Games':                       'toys-and-games',
-  'Video Games':                        'videogames',
-  'Arts, Crafts & Sewing':              'arts-crafts',
-  'Appliances':                         'appliances',
-  'Garden & Outdoor':                   'lawn-garden',
-  'Handmade Products':                  'handmade',
-  'Collectibles & Fine Art':            'collectibles',
-  'Jewelry':                            'jewelry',
-  'Luggage & Travel Gear':              'luggage',
-  'Magazine Subscriptions':             'magazines',
-  'Sports & Fitness':                   'sporting-goods',
-  'Video Games & Accessories':          'videogames',
-}
-
-export function categorySlug(mainCategory: string): string {
-  return CATEGORY_SLUG_MAP[mainCategory.trim()] ?? 'x'
-}
-
-function buildUrl(nodeId: string, mainCategory: string): string {
-  const slug = categorySlug(mainCategory)
-  return `https://www.amazon.com/gp/bestsellers/${slug}/${nodeId}?pg=1`
 }
 
 function parseXlsx(filePath: string): CategoryRow[] {
@@ -139,7 +89,7 @@ function parseXlsx(filePath: string): CategoryRow[] {
       is_leaf: true,   // resolved below
       marketplace: MARKETPLACE,
       bestsellers_url: buildUrl(nodeId, breadcrumb[0] ?? ''),  // breadcrumb[0] = MAIN_CATEGORY
-      scrape_status: 'pending',
+      scrape_status: CATEGORY_SCRAPE_STATUS.PENDING,
     })
   }
 
