@@ -7,11 +7,17 @@
  *   npx ts-node src/import-categories.ts ./amazon-browse-nodes.xlsx --dry-run
  *
  * XLSX format (from NarrowDown / Amazon BTG):
- *   Col 0: node_id (numeric)
- *   Col 1: Level 1 name
- *   Col 2: Level 2 name
+ *   Col 0: Browse Node ID (numeric)
+ *   Col 1: MAIN_CATEGORY  (top-level department, e.g. "Electronics")
+ *   Col 2: SUB-CATEGORY_1
  *   ...
- *   Col N: Level N name (empty = stop)
+ *   Col N: SUB-CATEGORY_N (empty = stop)
+ *
+ * Best Sellers URL format:
+ *   https://www.amazon.com/gp/bestsellers/{slug}/{nodeId}?pg=1
+ *   The slug is Amazon's private internal slug — NOT the category name.
+ *   It is derived from MAIN_CATEGORY using CATEGORY_SLUG_MAP below.
+ *   The node ID alone drives the actual page; the slug must be a valid ancestor.
  */
 
 import * as XLSX from 'xlsx'
@@ -36,8 +42,56 @@ interface CategoryRow {
   scrape_status: string
 }
 
-function buildUrl(nodeId: string): string {
-  return `https://www.amazon.com/gp/bestsellers/x/${nodeId}?pg=1`
+/**
+ * Amazon uses internal slugs that do NOT match the category name directly.
+ * Key: exact MAIN_CATEGORY value from col 1 of the XLSX (case-sensitive).
+ * The node ID drives the actual page — the slug only needs to be a valid ancestor.
+ */
+const CATEGORY_SLUG_MAP: Record<string, string> = {
+  'Automotive':                         'automotive',
+  'Baby Products':                      'baby-products',
+  'Beauty & Personal Care':             'beauty',
+  'Books':                              'books',
+  'Camera & Photo Products':            'photo',
+  'Cell Phones & Accessories':          'wireless',
+  'Clothing, Shoes & Jewelry':          'fashion',
+  'Computers':                          'pc',
+  'Electronics':                        'electronics',
+  'Grocery & Gourmet Food':             'grocery',
+  'Health & Household':                 'hpc',
+  'Home & Kitchen':                     'home-garden',
+  'Industrial & Scientific':            'industrial',
+  'Kitchen & Dining':                   'kitchen',
+  'Movies & TV':                        'movies-tv',
+  'Music':                              'music',
+  'Musical Instruments':                'mi',
+  'Office Products':                    'office-products',
+  'Patio, Lawn & Garden':               'lawn-garden',
+  'Pet Supplies':                       'pet-supplies',
+  'Software':                           'software',
+  'Sports & Outdoors':                  'sporting-goods',
+  'Tools & Home Improvement':           'hi',
+  'Toys & Games':                       'toys-and-games',
+  'Video Games':                        'videogames',
+  'Arts, Crafts & Sewing':              'arts-crafts',
+  'Appliances':                         'appliances',
+  'Garden & Outdoor':                   'lawn-garden',
+  'Handmade Products':                  'handmade',
+  'Collectibles & Fine Art':            'collectibles',
+  'Jewelry':                            'jewelry',
+  'Luggage & Travel Gear':              'luggage',
+  'Magazine Subscriptions':             'magazines',
+  'Sports & Fitness':                   'sporting-goods',
+  'Video Games & Accessories':          'videogames',
+}
+
+export function categorySlug(mainCategory: string): string {
+  return CATEGORY_SLUG_MAP[mainCategory.trim()] ?? 'x'
+}
+
+function buildUrl(nodeId: string, mainCategory: string): string {
+  const slug = categorySlug(mainCategory)
+  return `https://www.amazon.com/gp/bestsellers/${slug}/${nodeId}?pg=1`
 }
 
 function parseXlsx(filePath: string): CategoryRow[] {
@@ -84,7 +138,7 @@ function parseXlsx(filePath: string): CategoryRow[] {
       parent_id: null,   // resolved below
       is_leaf: true,   // resolved below
       marketplace: MARKETPLACE,
-      bestsellers_url: buildUrl(nodeId),
+      bestsellers_url: buildUrl(nodeId, breadcrumb[0] ?? ''),  // breadcrumb[0] = MAIN_CATEGORY
       scrape_status: 'pending',
     })
   }
@@ -130,12 +184,12 @@ async function importToDb(rows: CategoryRow[], dryRun: boolean): Promise<void> {
     return
   }
 
-  if (!process.env['SUPABASE_URL'] || !process.env['SUPABASE_SERVICE_ROLE_KEY']) {
-    log.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env')
+  if (!process.env['NEXT_PUBLIC_SUPABASE_URL'] || !process.env['SUPABASE_SERVICE_ROLE_KEY']) {
+    log.error('Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env')
     process.exit(1)
   }
 
-  const db = createClient(process.env['SUPABASE_URL']!, process.env['SUPABASE_SERVICE_ROLE_KEY']!)
+  const db = createClient(process.env['NEXT_PUBLIC_SUPABASE_URL']!, process.env['SUPABASE_SERVICE_ROLE_KEY']!)
 
   // Must insert parents before children — sort by depth ascending
   const sorted = [...rows].sort((a, b) => a.depth - b.depth)
@@ -170,4 +224,6 @@ async function main() {
   await importToDb(rows, dryRun)
 }
 
-main().catch(err => { log.error(err.message); process.exit(1) })
+if (require.main === module) {
+  main().catch(err => { log.error(err.message); process.exit(1) })
+}

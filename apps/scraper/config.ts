@@ -34,9 +34,9 @@ export const CONFIG = {
   retry_delay: 30_000,
 
   // SP-API rate control
-  // getCatalogItem:          5 req/s  → 1200ms between calls = never throttled
-  // getMyFeesEstimateForASIN: 10 req/s → 1200ms still safe
-  spapi_delay_ms: 1_200,
+  // getCatalogItem:           5 req/s limit → 300ms between concurrent pairs ≈ 3.6 req/s (safe)
+  // getMyFeesEstimateForASIN: 10 req/s limit → still safe at 300ms
+  spapi_delay_ms: 300,
   spapi_retry_max: 3,
   spapi_retry_on_429_ms: 60_000,
   spapi_retry_on_503_ms: 120_000,

@@ -146,22 +146,48 @@ async function main() {
 
   log.section('Phase 1 — Scraping Best Sellers Pages', badge)
 
-  let scraped_ok = 0, scraped_fail = 0
+  let scraped_ok = 0, scraped_empty = 0, scraped_fail = 0
+  const scrapeProductCounts: number[] = []
+  const calcMedian = (arr: number[]): number | null => {
+    if (arr.length === 0) return null
+    const sorted = [...arr].sort((a, b) => a - b)
+    const mid = Math.floor(sorted.length / 2)
+    return sorted.length % 2 !== 0
+      ? sorted[mid]
+      : Math.round((sorted[mid - 1] + sorted[mid]) / 2)
+  }
 
   for (const category of categories) {
-    log.progress(scraped_ok + scraped_fail, categories.length, scraped_ok, scraped_fail, eta(scraped_ok + scraped_fail, categories.length, start), category.name)
+    const done = scraped_ok + scraped_empty + scraped_fail
+    log.scrapePanel({
+      done,
+      total: categories.length,
+      ok: scraped_ok,
+      empty: scraped_empty,
+      fail: scraped_fail,
+      etaStr: eta(done, categories.length, start),
+      medianProducts: calcMedian(scrapeProductCounts),
+      label: category.name,
+    })
 
     const products = await scrapeCategory(browser, category)
 
-    if (!products || products.length === 0) {
+    if (products === null) {
       scraped_fail++
       cp.failed_scrapes.push(category.id)
       if (!IS_TEST) await markCategoryFailed(db, category.id)
+    } else if (products.length === 0) {
+      // Genuinely no Best Sellers — mark scraped so it isn't retried next run
+      scraped_empty++
+      cp.scraped_ids.push(category.id)
+      if (!IS_TEST) await markCategoryScraped(db, category.id)
     } else {
       scraped_ok++
+      scrapeProductCounts.push(products.length)
       cp.scraped_ids.push(category.id)
 
-      log.scrape(category.id, category.name, category.full_path, products.length)
+      const totalBadges: number | undefined = (products as any)._totalBadges
+      log.scrape(category.id, category.name, category.full_path, products.length, totalBadges)
 
       // Collect unique ASINs + best-seller edges
       const now = new Date().toISOString()
@@ -179,15 +205,14 @@ async function main() {
       if (!IS_TEST) await markCategoryScraped(db, category.id)
     }
 
-    if ((scraped_ok + scraped_fail) % 50 === 0 && !IS_TEST) saveCheckpoint(cp)
+    if ((scraped_ok + scraped_empty + scraped_fail) % 50 === 0 && !IS_TEST) saveCheckpoint(cp)
     await jitter()
   }
 
   await browser.close()
-  process.stdout.write('\n')
 
   const uniqueAsins = [...allProducts.keys()]
-  log.success(`Scraping complete — ${scraped_ok} categories | ${uniqueAsins.length} unique ASINs | ${scraped_fail} failed`)
+  log.success(`Scraping complete — ${scraped_ok} scraped | ${scraped_empty} empty | ${scraped_fail} failed | ${uniqueAsins.length} unique ASINs`)
 
   // ─── PHASE 2: ENRICH ───────────────────────────────────────────────────────
 
@@ -209,16 +234,34 @@ async function main() {
   if (IS_UPLOAD_TEST) log.warn('UPLOAD-TEST — SP-API calls ARE made and results WILL be written to DB')
   console.log()
 
-  // Phase 2a: Fetch all catalog items first
+  // Phase 2a: Fetch all catalog items — 2 concurrent calls per batch
+  // getCatalogItem rate limit is 5 req/s; 2 concurrent × ~300ms delay ≈ 3.6 req/s (safe headroom)
   const catalogMap = new Map<string, CatalogItemResult | null>()
-  for (const asin of toEnrich) {
-    log.api(`Enriching ${asin} — getCatalogItem`)
-    try {
-      catalogMap.set(asin, await getCatalogItem(asin))
-    } catch (err) {
-      log.error(`Catalog fetch exception for ${asin}: ${(err as Error).message}`)
-      catalogMap.set(asin, null)
-    }
+  let catalog_ok = 0, catalog_fail = 0
+  const enrichStart = new Date()
+  const CATALOG_CONCURRENCY = 2
+  for (let ci = 0; ci < toEnrich.length; ci += CATALOG_CONCURRENCY) {
+    const batch = toEnrich.slice(ci, ci + CATALOG_CONCURRENCY)
+    const enrichDone = catalog_ok + catalog_fail
+    log.enrichPanel({
+      done: enrichDone,
+      total: toEnrich.length,
+      ok: catalog_ok,
+      fail: catalog_fail,
+      etaStr: eta(enrichDone, toEnrich.length, enrichStart),
+      label: batch[0],
+    })
+    await Promise.all(batch.map(async (asin) => {
+      if (IS_TEST || IS_UPLOAD_TEST) log.api(`Enriching ${asin} — getCatalogItem`)
+      try {
+        catalogMap.set(asin, await getCatalogItem(asin))
+        catalog_ok++
+      } catch (err) {
+        log.error(`Catalog fetch exception for ${asin}: ${(err as Error).message}`)
+        catalogMap.set(asin, null)
+        catalog_fail++
+      }
+    }))
   }
 
   // Phase 2b: Batch fee estimates — use catalog list_price, fall back to scraped price
@@ -303,26 +346,30 @@ async function main() {
     }
 
     if (!IS_TEST && (enriched_ok + enriched_fail) % 100 === 0) {
-      // Flush to DB every 100 ASINs — keeps memory manageable
+      // Flush to DB every 100 ASINs — keeps memory manageable.
+      // NOTE: bestSellerEdges are NOT flushed here — they reference ALL scraped ASINs
+      // and would violate the product_category_ranks → amazon_products FK constraint
+      // for products not yet uploaded. They are flushed at the end when all products exist.
       const deduped = new Map<string, CategoryRankRow>()
-      for (const e of [...bestSellerEdges.splice(0), ...organicEdges.splice(0)]) {
+      for (const e of organicEdges.splice(0)) {
         if (!failedEnrichmentAsins.has(e.asin)) deduped.set(`${e.asin}:${e.category_id}`, e)
       }
       await upsertProducts(db, enrichedProducts.splice(0))
-      await upsertRanks(db, [...deduped.values()])
+      if (deduped.size > 0) await upsertRanks(db, [...deduped.values()])
       saveCheckpoint(cp)
       log.flush(enriched_ok, enriched_fail)
     }
   }
 
-  // Final flush
-  if (!IS_TEST && enrichedProducts.length > 0) {
-    await upsertProducts(db, enrichedProducts)
+  // Final flush — always runs so bestSellerEdges are uploaded after all products exist in DB.
+  // Gating on enrichedProducts.length would skip this when the total is divisible by 100.
+  if (!IS_TEST) {
+    if (enrichedProducts.length > 0) await upsertProducts(db, enrichedProducts)
     const deduped = new Map<string, CategoryRankRow>()
     for (const e of [...bestSellerEdges, ...organicEdges]) {
       if (!failedEnrichmentAsins.has(e.asin)) deduped.set(`${e.asin}:${e.category_id}`, e)
     }
-    await upsertRanks(db, [...deduped.values()])
+    if (deduped.size > 0) await upsertRanks(db, [...deduped.values()])
     saveCheckpoint(cp)
   }
 
@@ -331,6 +378,7 @@ async function main() {
   log.section('Summary')
   log.summary({
     scrapedOk: scraped_ok,
+    scrapedEmpty: scraped_empty,
     scrapedFail: scraped_fail,
     uniqueAsins: uniqueAsins.length,
     enrichedOk: enriched_ok,
@@ -338,6 +386,7 @@ async function main() {
     bestSellerEdges: bestSellerEdges.length,
     organicEdges: organicEdges.length,
     elapsedMs: Date.now() - start.getTime(),
+    medianProducts: calcMedian(scrapeProductCounts),
   }, runMode)
 }
 

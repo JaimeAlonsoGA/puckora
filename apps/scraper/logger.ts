@@ -68,14 +68,20 @@ function emit(line: string): void {
 
 // ─── PROGRESS BAR STATE ──────────────────────────────────────────────────────
 
-let _progressActive = false
+/** Number of lines currently held by the in-place panel (0 = none). */
+let _progressLines = 0
 
-/** Clear the in-place progress line before printing a normal log line. */
+/**
+ * Clear all in-place panel lines before printing a normal log line.
+ * Walks up from the bottom line, clearing each one.
+ */
 function clearProgress(): void {
-  if (_progressActive) {
-    process.stdout.write('\r\x1b[2K')
-    _progressActive = false
+  if (_progressLines === 0) return
+  process.stdout.write('\r\x1b[2K')
+  for (let i = 1; i < _progressLines; i++) {
+    process.stdout.write('\x1b[1A\r\x1b[2K')
   }
+  _progressLines = 0
 }
 
 // ─── PUBLIC API ──────────────────────────────────────────────────────────────
@@ -157,7 +163,90 @@ export const log = {
       `\r[${bar}] ${C.bold}${pctStr}${C.reset}  ${stats}  ${C.gray}ETA ${etaStr}${C.reset}${lbl}   `
     )
     fileWrite(`[${pctStr}] ✓${ok} ✗${fail}  ETA ${etaStr}${label ? '  ' + label : ''}`)
-    _progressActive = true
+    _progressLines = 1
+  },
+
+  // ── Phase 1 panel ──────────────────────────────────────────────────────────
+
+  /**
+   * Two-line in-place stats panel for Phase 1 (scraping).
+   *  Line 1: progress bar + ETA + current category name
+   *  Line 2: ✓ scraped  ⊘ empty  ✗ failed  ⬜ remaining  〜 median products/cat
+   */
+  scrapePanel: (opts: {
+    done: number
+    total: number
+    ok: number
+    empty: number
+    fail: number
+    etaStr: string
+    medianProducts: number | null
+    label?: string
+  }) => {
+    const pct    = opts.total > 0 ? Math.round((opts.done / opts.total) * 100) : 0
+    const filled = Math.floor(pct / 5)
+    const bar    = C.green + '█'.repeat(filled) + C.reset + C.gray + '░'.repeat(20 - filled) + C.reset
+    const pctStr = String(pct).padStart(3) + '%'
+    const remaining = opts.total - opts.done
+    const medStr = opts.medianProducts !== null
+      ? `  ${C.dim}〜${opts.medianProducts} products/cat${C.reset}`
+      : ''
+
+    const line1 = (
+      `\r[${bar}] ${C.bold}${pctStr}${C.reset}` +
+      `  ${C.gray}ETA ${opts.etaStr}${C.reset}` +
+      (opts.label ? `  ${C.dim}▸ ${trunc(opts.label, 40)}${C.reset}` : '') +
+      '   '
+    )
+    const line2 = (
+      `\r${C.green}✓ ${opts.ok}${C.reset}` +
+      `  ${C.yellow}⊘ ${opts.empty}${C.reset}` +
+      `  ${C.red}✗ ${opts.fail}${C.reset}` +
+      `  ${C.gray}⬜ ${remaining} remaining${C.reset}` +
+      medStr +
+      '   '
+    )
+    process.stdout.write(line1 + '\n' + line2)
+    fileWrite(`[${pctStr}] ✓${opts.ok} ⊘${opts.empty} ✗${opts.fail} ⬜${remaining}${opts.medianProducts !== null ? ` ~${opts.medianProducts}p/cat` : ''}  ETA ${opts.etaStr}${opts.label ? '  ' + opts.label : ''}`)
+    _progressLines = 2
+  },
+
+  // ── Phase 2 panel ──────────────────────────────────────────────────────────
+
+  /**
+   * Two-line in-place stats panel for Phase 2 (SP-API enrichment).
+   *  Line 1: progress bar + ETA + current ASIN
+   *  Line 2: ✓ enriched  ✗ failed  ⬜ remaining
+   */
+  enrichPanel: (opts: {
+    done: number
+    total: number
+    ok: number
+    fail: number
+    etaStr: string
+    label?: string
+  }) => {
+    const pct    = opts.total > 0 ? Math.round((opts.done / opts.total) * 100) : 0
+    const filled = Math.floor(pct / 5)
+    const bar    = C.green + '█'.repeat(filled) + C.reset + C.gray + '░'.repeat(20 - filled) + C.reset
+    const pctStr = String(pct).padStart(3) + '%'
+    const remaining = opts.total - opts.done
+
+    const line1 = (
+      `\r[${bar}] ${C.bold}${pctStr}${C.reset}` +
+      `  ${C.gray}ETA ${opts.etaStr}${C.reset}` +
+      (opts.label ? `  ${C.dim}▸ ${trunc(opts.label, 40)}${C.reset}` : '') +
+      '   '
+    )
+    const line2 = (
+      `\r${C.green}✓ ${opts.ok} enriched${C.reset}` +
+      `  ${C.red}✗ ${opts.fail} failed${C.reset}` +
+      `  ${C.gray}⬜ ${remaining} remaining${C.reset}` +
+      '   '
+    )
+    process.stdout.write(line1 + '\n' + line2)
+    fileWrite(`[${pctStr}] ✓${opts.ok} ✗${opts.fail} ⬜${remaining}  ETA ${opts.etaStr}${opts.label ? '  ' + opts.label : ''}`)
+    _progressLines = 2
   },
 
   // ── Scraper events ─────────────────────────────────────────────────────────
@@ -167,12 +256,18 @@ export const log = {
    * Example:
    *   ✓  Electronics › Headphones  [404809011]  48 products
    */
-  scrape: (categoryId: string, name: string, fullPath: string, count: number) => {
+  scrape: (categoryId: string, name: string, fullPath: string, count: number, totalBadges?: number) => {
     clearProgress()
     const label = trunc(fullPath || name, 45)
+    // Show "count/totalBadges" when we know how many ranked items Amazon has on the page.
+    // e.g. "92/100 products" means 92 parsed out of 100 real ranked items.
+    // "38 products" means Amazon listed exactly 38 ranked items (no parse failures).
+    const countStr = totalBadges && totalBadges > count
+      ? `${C.cyan}${count}${C.reset}${C.gray}/${totalBadges}${C.reset}`
+      : `${C.cyan}${count}${C.reset}`
     emit(
       `${ts()} ${C.green}✓${C.reset}  ${C.white}${label}${C.reset}  ` +
-      `${C.gray}[${categoryId}]${C.reset}  ${C.cyan}${count}${C.reset} products`
+      `${C.gray}[${categoryId}]${C.reset}  ${countStr} products`
     )
   },
 
@@ -457,6 +552,7 @@ export const log = {
 
   summary: (stats: {
     scrapedOk: number
+    scrapedEmpty: number
     scrapedFail: number
     uniqueAsins: number
     enrichedOk: number
@@ -464,6 +560,7 @@ export const log = {
     bestSellerEdges: number
     organicEdges: number
     elapsedMs: number
+    medianProducts: number | null
   }, mode: 'full' | 'test' | 'upload-test') => {
     clearProgress()
 
@@ -476,7 +573,8 @@ export const log = {
 
     const modeNote = mode === 'test' ? 'no DB writes' : mode === 'upload-test' ? 'DB writes ON' : ''
     const rows: [string, string][] = [
-      ['Categories',        `${stats.scrapedOk} scraped / ${stats.scrapedFail} failed`],
+      ['Categories',        `${stats.scrapedOk} scraped / ${stats.scrapedEmpty} empty / ${stats.scrapedFail} failed`],
+      ['Median products',   stats.medianProducts !== null ? `${stats.medianProducts} per category` : 'n/a'],
       ['Unique ASINs',      String(stats.uniqueAsins)],
       ['Enriched',          `${stats.enrichedOk} ok / ${stats.enrichedFail} failed`],
       ['Best seller edges', String(stats.bestSellerEdges)],

@@ -1,4 +1,4 @@
-import { chromium, type Browser, type BrowserContext, type Page } from 'playwright'
+import { chromium, type Browser, type BrowserContext, type Page, type BrowserContextOptions } from 'playwright'
 import { CONFIG } from './config'
 
 const USER_AGENTS = [
@@ -37,8 +37,19 @@ export async function launchBrowser(): Promise<Browser> {
   })
 }
 
-/** Single long-lived context — reused across all category scrapes. */
+/**
+ * Context rotation strategy:
+ *  - One BrowserContext is shared across scrapes to maintain Amazon session cookies (anti-bot).
+ *  - Every CONTEXT_ROTATE_EVERY categories the context is recycled: we snapshot its storageState
+ *    (cookies + localStorage), close it to free the V8 heap, then open a fresh context pre-seeded
+ *    with that snapshot so Amazon still sees a continuous session.
+ *  - On a hard block (CAPTCHA / login wall) we discard the snapshot entirely and do a clean warmup.
+ */
+const CONTEXT_ROTATE_EVERY = 50
+
 let sharedCtx: BrowserContext | null = null
+let savedStorageState: NonNullable<BrowserContextOptions['storageState']> | null = null
+let contextPageCount = 0
 
 export async function getSharedContext(browser: Browser): Promise<BrowserContext> {
   if (sharedCtx) return sharedCtx
@@ -47,6 +58,7 @@ export async function getSharedContext(browser: Browser): Promise<BrowserContext
   const vp = VIEWPORTS[Math.floor(Math.random() * VIEWPORTS.length)]
 
   sharedCtx = await browser.newContext({
+    ...(savedStorageState ? { storageState: savedStorageState } : {}),
     userAgent: ua,
     viewport: vp,
     locale: 'en-US',
@@ -103,25 +115,51 @@ export async function getSharedContext(browser: Browser): Promise<BrowserContext
   await sharedCtx.route('**/*.{woff,woff2,ttf,otf,eot}', r => r.abort())
   await sharedCtx.route('**/pixel.advertising.amazon.com/**', r => r.abort())
 
-  // Warmup — visit amazon.com homepage to acquire session cookies before any scraping
-  const warmupPage = await sharedCtx.newPage()
-  try {
-    await warmupPage.goto('https://www.amazon.com', { waitUntil: 'domcontentloaded', timeout: 30_000 })
-    await warmupPage.evaluate(() => window.scrollBy({ top: 300, behavior: 'smooth' }))
-    await warmupPage.waitForTimeout(1_500 + Math.random() * 1_000)
-  } catch { /* non-fatal */ } finally {
-    await warmupPage.close()
+  // Warmup — only needed when we have no saved session state.
+  // With a restored storageState the session cookies are already valid.
+  if (!savedStorageState) {
+    const warmupPage = await sharedCtx.newPage()
+    try {
+      await warmupPage.goto('https://www.amazon.com', { waitUntil: 'domcontentloaded', timeout: 30_000 })
+      await warmupPage.evaluate(() => window.scrollBy({ top: 300, behavior: 'smooth' }))
+      await warmupPage.waitForTimeout(1_500 + Math.random() * 1_000)
+    } catch { /* non-fatal */ } finally {
+      await warmupPage.close()
+    }
   }
 
   return sharedCtx
 }
 
+/**
+ * Rotate the context when the category threshold is reached.
+ * Snapshots the current cookies/localStorage so the new context inherits the Amazon session,
+ * then closes the old context to release the V8 heap.
+ */
+export async function rotateContextIfNeeded(browser: Browser): Promise<void> {
+  if (!sharedCtx || contextPageCount < CONTEXT_ROTATE_EVERY) return
+  try {
+    savedStorageState = await sharedCtx.storageState()
+  } catch { /* non-fatal — worst case we lose cookies but don't crash */ }
+  await sharedCtx.close().catch(() => { })
+  sharedCtx = null
+  contextPageCount = 0
+}
+
+/**
+ * Hard reset — called when Amazon blocks us (CAPTCHA / login wall).
+ * Discards the saved session and forces a full warmup on the next context.
+ */
 export function resetSharedContext(): void {
   if (sharedCtx) { sharedCtx.close().catch(() => { }); sharedCtx = null }
+  savedStorageState = null
+  contextPageCount = 0
 }
 
 export async function newContext(browser: Browser): Promise<{ page: Page; ctx: BrowserContext }> {
+  await rotateContextIfNeeded(browser)
   const ctx = await getSharedContext(browser)
+  contextPageCount++
   const page = await ctx.newPage()
   return { page, ctx }
 }
