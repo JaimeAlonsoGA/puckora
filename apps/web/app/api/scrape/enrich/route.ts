@@ -29,6 +29,7 @@ import { ScrapeResultSchema } from '@puckora/scraper-core'
 import { SCRAPE_JOB_STATUS, SCRAPE_PRODUCT_STATUS } from '@puckora/scraper-core'
 import { upsertAmazonProduct } from '@/services/products'
 import { updateScrapeJob } from '@/services/scrape'
+import { getKeywordForJob, upsertKeywordProduct } from '@/services/keywords'
 import type { AmazonProductInsert } from '@puckora/types'
 import type { ScrapedListing } from '@puckora/scraper-core'
 
@@ -153,8 +154,8 @@ export async function POST(req: NextRequest) {
             error: result.blocked
                 ? 'Scraper was blocked on this page'
                 : upsertErrors.length > 0
-                  ? `${upsertErrors.length} upsert error(s): ${upsertErrors.slice(0, 3).join('; ')}`
-                  : null,
+                    ? `${upsertErrors.length} upsert error(s): ${upsertErrors.slice(0, 3).join('; ')}`
+                    : null,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             result: result as any,
             executor: result.executor,
@@ -165,18 +166,39 @@ export async function POST(req: NextRequest) {
         console.error('[scrape/enrich] updateScrapeJob failed:', err)
     }
 
-    // 6. Background SP-API enrichment ----------------------------------------
-    // Fire-and-forget: enrich fresh ASINs without blocking the response.
-    // The enrichment pipeline uses the admin client and is idempotent.
+    // 6. Link listings to keyword context -------------------------------------
+    // If this scrape was triggered by a keyword search, link each ASIN to the
+    // keyword via amazon_keyword_products. Conflicts are silently ignored.
     if (!result.blocked && result.listings.length > 0) {
-        const asins = result.listings.map((l) => l.asin).filter(Boolean)
+        try {
+            const keywordRow = await getKeywordForJob(adminClient, result.job_id)
+            if (keywordRow) {
+                for (const listing of result.listings) {
+                    try {
+                        await upsertKeywordProduct(adminClient, {
+                            keyword_id: keywordRow.id,
+                            asin: listing.asin,
+                        })
+                    } catch (err) {
+                        console.error(`[scrape/enrich] upsertKeywordProduct failed for ${listing.asin}:`, err)
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('[scrape/enrich] getKeywordByScrapeJob failed:', err)
+        }
+    }
+
+    // 7. Background SP-API enrichment ----------------------------------------
+    // Fire-and-forget: enrich fresh ASINs without blocking the response.
+    // Pass the full listings so the pipeline has rank + price data for fees.
+    if (!result.blocked && result.listings.length > 0) {
+        const listings = result.listings
         after(async () => {
             try {
-                // Lazy-import SP-API client to keep the hot path clean
                 const { enrichAsinBatch } = await import('@/integrations/data-pipeline/enrich')
-                await enrichAsinBatch(adminClient, asins)
+                await enrichAsinBatch(adminClient, listings)
             } catch (err) {
-                // Enrichment failures are non-fatal — data is already in DB
                 console.error('[scrape/enrich] SP-API enrichment failed:', err)
             }
         })

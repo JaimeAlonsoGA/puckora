@@ -9,7 +9,7 @@ export function PageContainer({ children, className }: PageContainerProps) {
     return (
         <div
             className={cn(
-                'mx-auto w-full max-w-4xl px-[var(--space-6)] py-[var(--space-8)]',
+                'mx-auto w-full max-w-4xl px-6 py-8',
                 className,
             )}
         >

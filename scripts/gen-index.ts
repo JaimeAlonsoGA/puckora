@@ -63,6 +63,18 @@ function generateTypes(): void {
         (m) => m[1],
     )
 
+    // Extract view names
+    const viewsBlockMatch = content.match(
+        /Views\s*:\s*{([\s\S]*?)}\s*(?:,?\s*(Functions|Enums|CompositeTypes)\s*:|$)/,
+    )
+    const viewNames: string[] = []
+    if (viewsBlockMatch) {
+        const viewsBlock = viewsBlockMatch[1]
+        viewNames.push(
+            ...[...viewsBlock.matchAll(/^\s*([a-zA-Z0-9_]+)\s*:\s*{\s*Row:/gm)].map((m) => m[1]),
+        )
+    }
+
     // Extract enum names + their values from Constants.public.Enums
     // This is the most reliable source — it's a flat array literal per enum.
     const enumNames: string[] = []
@@ -105,7 +117,7 @@ function generateTypes(): void {
         }
     }
 
-    if (tableNames.length === 0 && enumNames.length === 0) {
+    if (tableNames.length === 0 && viewNames.length === 0 && enumNames.length === 0) {
         console.warn('⚠️ No tables or enums found')
         return
     }
@@ -121,7 +133,8 @@ function generateTypes(): void {
         'type TablesInsert<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Insert"]',
         'type TablesUpdate<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Update"]',
         'type Enums<T extends keyof Database["public"]["Enums"]> = Database["public"]["Enums"][T]',
-        'export type { Tables, TablesInsert, TablesUpdate, Enums }\n',
+        'type Views<T extends keyof Database["public"]["Views"]> = Database["public"]["Views"][T]["Row"]',
+        'export type { Tables, TablesInsert, TablesUpdate, Enums, Views }\n',
     ]
 
     if (tableNames.length > 0) {
@@ -133,6 +146,15 @@ function generateTypes(): void {
             lines.push(`export type ${pascal}Update = TablesUpdate<"${name}">`)
             lines.push('')
         })
+    }
+
+    if (viewNames.length > 0) {
+        lines.push('// Views')
+        viewNames.sort().forEach((name) => {
+            const pascal = snakeToPascal(name)
+            lines.push(`export type ${pascal} = Views<"${name}">`)
+        })
+        lines.push('')
     }
 
     // Build a set of already-reserved type names from tables to detect clashes
@@ -191,6 +213,7 @@ function generateTypes(): void {
 
     const summary: string[] = []
     if (tableNames.length > 0) summary.push(`${tableNames.length} table(s)`)
+    if (viewNames.length > 0) summary.push(`${viewNames.length} view(s)`)
     if (enumNames.length > 0) summary.push(`${enumNames.length} enum(s)`)
     console.log(`✅ Generated index.ts with ${summary.join(' and ')}`)
     if (skippedEnumTypes.length > 0) {

@@ -1,7 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { AppRoute } from '@/constants/routes'
-import { Heading, Body } from '@/components/building-blocks/typography'
-import { Stack, TextLink } from '@/components/building-blocks'
+import { Heading, Body, Stack, TextLink } from '@puckora/ui'
 import { LoginForm } from '../_components/login-form'
 
 /**

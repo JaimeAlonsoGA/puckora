@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Scaffold a new app module (page + client island + server data layer + query domain)
 ---
 

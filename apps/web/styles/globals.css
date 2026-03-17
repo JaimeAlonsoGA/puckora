@@ -9,4 +9,13 @@
 @source "../lib";
 @source "../../../packages";
 
-@import "./tokens.css";
+/* globals.css is the single design foundation: cockpit tokens, semantic vars,
+   spacing/typography scale, shadcn vars, @theme inline, and @layer base.   */
+@import "@puckora/ui/globals.css";
+
+/* shadcn/tailwind.css provides accordion @keyframes and Radix data-state
+   custom variants required by shadcn UI components.                        */
+@import "shadcn/tailwind.css";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));

@@ -1,0 +1,17 @@
+/* ─── Extension Sidebar — Tailwind CSS for shadow DOM injection ──────────────
+   Processed by @tailwindcss/postcss via ?inline import in each mount.tsx.
+   The resulting CSS string is injected as a <style> element inside the
+   shadow root — same token/utility stack as apps/web.
+
+   Usage in mount.tsx:
+     import sidebarStyles from '@/styles/sidebar.css?inline'
+     const style = document.createElement('style')
+     style.textContent = sidebarStyles
+     shadow.appendChild(style)
+   ────────────────────────────────────────────────────────────────────────── */
+@import "tailwindcss";
+@import "../../../../packages/ui/src/globals.css";
+
+/* Scan sidebar components and ui building blocks for class names */
+@source "../panels/sidebar";
+@source "../../../../packages/ui/src";

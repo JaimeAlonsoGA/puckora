@@ -5,29 +5,23 @@
  *
  * Detects whether the Puckora Chrome extension is installed and active.
  *
- * The extension's service worker injects `window.__puckora_ext = true` into
- * every Puckora web app tab on load (via chrome.scripting.executeScript).
- * We read this flag lazily on mount so SSR always returns isInstalled=false
- * (the flag is browser-only).
+ * Uses a postMessage REQUEST/READY handshake with the web-app-bridge content
+ * script (ISOLATED world). Script-tag injection is not used — the web app's
+ * CSP blocks inline scripts.
  *
- * Usage:
- *   const { isInstalled } = useExtension()
- *   if (!isInstalled) return <InstallPrompt />
+ * Flow:
+ *  1. On mount: send PUCKORA_EXT_REQUEST and listen for PUCKORA_EXT_READY.
+ *  2. Phase A: re-send REQUEST every 150ms for up to 2s (fast detection).
+ *  3. Phase B: re-send REQUEST every 3s indefinitely (late-install detection).
+ *  4. After 2s without a reply: mark as not-installed but keep Phase B running.
  */
 
 import { useState, useEffect } from 'react'
 
-declare global {
-    interface Window {
-        /** Set by the Puckora Chrome extension service worker */
-        __puckora_ext?: boolean
-    }
-}
-
 export interface UseExtensionReturn {
-    /** true once the extension flag has been confirmed present */
+    /** true once the extension has been confirmed present */
     isInstalled: boolean
-    /** false while we haven't yet checked (avoids flash on mount) */
+    /** true while the initial 2s detection window hasn't closed yet */
     isChecking: boolean
 }
 
@@ -36,14 +30,52 @@ export function useExtension(): UseExtensionReturn {
     const [isChecking, setIsChecking] = useState(true)
 
     useEffect(() => {
-        // The extension may inject the flag slightly after mount.
-        // A short timeout lets the service worker complete its injection.
-        const id = setTimeout(() => {
-            setIsInstalled(!!window.__puckora_ext)
-            setIsChecking(false)
-        }, 300)
+        let phaseB: ReturnType<typeof setInterval> | null = null
+        let detected = false
 
-        return () => clearTimeout(id)
+        function found() {
+            if (detected) return
+            detected = true
+            setIsInstalled(true)
+            setIsChecking(false)
+            clearInterval(fastId)
+            if (phaseB) {
+                clearInterval(phaseB)
+                phaseB = null
+            }
+        }
+
+        function request() {
+            window.postMessage({ type: 'PUCKORA_EXT_REQUEST' }, '*')
+        }
+
+        function onMessage(event: MessageEvent) {
+            if (event.source !== window) return
+            if (event.data?.type === 'PUCKORA_EXT_READY') found()
+        }
+        window.addEventListener('message', onMessage)
+
+        // Phase A: send REQUEST every 150ms for up to 2s
+        let attempts = 0
+        const fastId = setInterval(() => {
+            attempts++
+            request()
+            if (attempts >= 14) {
+                clearInterval(fastId)
+                setIsChecking(false)
+                // Phase B: keep requesting for late installs
+                phaseB = setInterval(request, 3000)
+            }
+        }, 150)
+
+        // Fire the first request immediately
+        request()
+
+        return () => {
+            clearInterval(fastId)
+            if (phaseB) clearInterval(phaseB)
+            window.removeEventListener('message', onMessage)
+        }
     }, [])
 
     return { isInstalled, isChecking }

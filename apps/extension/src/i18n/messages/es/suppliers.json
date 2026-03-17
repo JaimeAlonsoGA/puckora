@@ -1,0 +1,10 @@
+{
+    "title": "Búsqueda multiplataforma",
+    "description": "Busca simultáneamente en Amazon y Alibaba para comparar costes de aprovisionamiento.",
+    "placeholder": "ej. tabla de cortar de bambú",
+    "search": "Buscar",
+    "openingSearch": "Abriendo búsquedas de Amazon y Alibaba para \"{{keyword}}\" en nuevas pestañas.",
+    "openAmazon": "Abrir Amazon",
+    "openAlibaba": "Abrir Alibaba",
+    "note": "Puckora analizará automáticamente los resultados y los mostrará aquí cuando el scraper de la extensión finalice (requiere cuenta Puckora Pro)."
+}

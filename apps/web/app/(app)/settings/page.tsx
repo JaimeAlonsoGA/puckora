@@ -1,11 +1,12 @@
 import { Suspense } from 'react'
 import { getCachedUser } from '@/server/users'
 import { PageContainer } from '@/components/layout/page-container'
-import { Heading, Body } from '@/components/building-blocks/typography'
+import { Heading, Body } from '@puckora/ui'
 import { SettingsSkeleton } from '@/app/(app)/settings/_components/settings-skeleton'
 import { ProfileForm } from '@/app/(app)/settings/_components/profile-form'
 import { MarketplaceSelector } from '@/app/(app)/settings/_components/marketplace-selector'
 import { LanguageSelector } from '@/app/(app)/settings/_components/language-selector'
+import { ExtensionCard } from '@/app/(app)/settings/_components/extension-card'
 import { getTranslations } from 'next-intl/server'
 
 export default async function SettingsPage() {
@@ -33,6 +34,7 @@ async function SettingsContent() {
             <ProfileForm profile={user} />
             <MarketplaceSelector currentMarketplace={user.marketplace ?? 'US'} />
             <LanguageSelector currentLanguage={user.language ?? 'en'} />
+            <ExtensionCard />
         </div>
     )
 }

@@ -23,6 +23,20 @@
     },
     "nav": {
         "pulse": "Pulse",
-        "settings": "Configuración"
+        "settings": "Configuración",
+        "search": "Búsqueda Amazon",
+        "suppliers": "Proveedores",
+        "notebook": "Notas",
+        "tools": "Herramientas",
+        "pucki": "Pucki",
+        "markedProducts": "Productos guardados",
+        "markedEmpty": "Marca productos mientras exploras.\nAparecerán aquí.",
+        "researchGraph": "Grafo de investigación",
+        "graphEmpty": "empieza cuando explores",
+        "searchContext": "Contexto de búsqueda",
+        "contextEmpty": "Busca productos para ver el contexto aquí.",
+        "appName": "Puckora",
+        "appTagline": "tu aliado vendedor",
+        "topbarSearchPlaceholder": "Busca entre 3,2M productos…"
     }
 }

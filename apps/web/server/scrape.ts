@@ -9,7 +9,7 @@ import 'server-only'
 import { cache } from 'react'
 import { createServerClient } from '@/integrations/supabase/server'
 import { getScrapeJob, listPendingScrapeJobs } from '@/services/scrape'
-import type { ScrapeJob } from '@/types/scrape'
+import type { ScrapeJob } from '@puckora/types'
 
 /**
  * Fetch a single scrape job by ID. Deduplicated per request.

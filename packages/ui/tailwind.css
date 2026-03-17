@@ -1,0 +1,79 @@
+/* ─── puckora Design System — Tailwind v4 theme ─────────────────────────────
+   Import this file in Tailwind v4 apps to enable utility class aliases
+   (bg-sf-bg, text-sf-text, etc.) and custom font variables.
+
+   Usage (globals.css):
+     @import "tailwindcss";
+     @import "@puckora/ui/tailwind.css";
+     @import "@puckora/ui/tokens.css";
+   ────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+    /* Surfaces */
+    --color-sf-bg: #FFFFFF;
+    --color-sf-surface: #F7F7F4;
+    --color-sf-surface-alt: #F0EFE9;
+
+    /* Borders — ultramarine */
+    --color-sf-border: rgba(55, 48, 163, 0.15);
+    --color-sf-border-strong: #3730A3;
+
+    /* Gold — primary brand */
+    --color-sf-gold: #A67C00;
+    --color-sf-gold-dark: #855F00;
+
+    /* Scarlet — secondary accent */
+    --color-sf-scarlet: #C0152A;
+    --color-sf-scarlet-dark: #960F20;
+
+    /* Purple — tertiary accent */
+    --color-sf-purple: #6B1D8A;
+    --color-sf-purple-dark: #521669;
+
+    /* Text */
+    --color-sf-text: #111111;
+    --color-sf-text-sub: #555555;
+    --color-sf-text-muted: #999999;
+    --color-sf-text-inv: #FFFFFF;
+
+    /* Semantic */
+    --color-sf-success: #1A6B3C;
+    --color-sf-warning: #92500A;
+    --color-sf-error: #A31525;
+    --color-sf-info: #1B3FA8;
+
+    /* Fonts */
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* ── Semantic convention aliases ───────────────────────────────────────────
+       These map the component-patterns.md class vocabulary to --sf-* tokens.
+       Rule: never change these aliases; update the --sf-* source instead.
+       ──────────────────────────────────────────────────────────────────────── */
+
+    /* Text */
+    --color-text-primary: var(--sf-text);
+    --color-text-secondary: var(--sf-text-sub);
+    --color-text-muted: var(--sf-text-muted);
+    --color-text-inverse: var(--sf-text-inv);
+
+    /* Surfaces */
+    --color-surface-primary: var(--sf-bg);
+    --color-surface-secondary: var(--sf-surface);
+    --color-surface-tertiary: var(--sf-surface-alt);
+
+    /* Borders */
+    --color-border: var(--sf-border);
+    --color-border-strong: var(--sf-border-strong);
+
+    /* Accents */
+    --color-accent-primary: var(--sf-gold);
+    --color-accent-secondary: var(--sf-scarlet);
+    --color-accent-tertiary: var(--sf-purple);
+
+    /* Semantic status */
+    --color-success: var(--sf-success);
+    --color-warning: var(--sf-warning);
+    --color-error: var(--sf-error);
+    --color-info: var(--sf-info);
+}

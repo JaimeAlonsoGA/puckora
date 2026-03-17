@@ -23,6 +23,20 @@
     },
     "nav": {
         "pulse": "Pulse",
-        "settings": "Settings"
+        "settings": "Settings",
+        "search": "Amazon search",
+        "suppliers": "Suppliers",
+        "notebook": "Notebook",
+        "tools": "Tools",
+        "pucki": "Pucki",
+        "markedProducts": "Marked products",
+        "markedEmpty": "Mark products as you explore.\nThey appear here.",
+        "researchGraph": "Research graph",
+        "graphEmpty": "starts when you explore",
+        "searchContext": "Search context",
+        "contextEmpty": "Search for products to see context here.",
+        "appName": "Puckora",
+        "appTagline": "your seller pal",
+        "topbarSearchPlaceholder": "Search 3.2M products…"
     }
 }

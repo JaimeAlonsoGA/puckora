@@ -11,7 +11,7 @@
 import { queryOptions, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/integrations/supabase/client'
 import { scrapeKeys } from './_keys'
-import type { ScrapeJob } from '@/types/scrape'
+import type { ScrapeJob } from '@puckora/types'
 import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
 
 // ---------------------------------------------------------------------------

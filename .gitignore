@@ -45,9 +45,6 @@ Thumbs.db
 supabase/.temp/
 supabase/.branches/
 
-# scraper runtime state
-apps/scraper/checkpoint.json
-
 # playwright
 playwright-report/
 test-results/
@@ -58,9 +55,10 @@ coverage/
 # cache
 .cache/
 
-# sensible file 
-amazon-browse-nodes.xlsx
-scraper-cache.ndjson
-test-run.log
-upload-test.log
+# scraper — runtime state, generated output & seed data
+apps/scraper/checkpoint.json
+apps/scraper/*.ndjson
+apps/scraper/*.log
+apps/scraper/data/**
+!apps/scraper/data/.gitkeep
 checkpoint.json

@@ -38,6 +38,25 @@
             "description": "Manage your sign-in methods.",
             "connectedWith": "Connected with {provider}",
             "signOutConfirm": "Are you sure you want to sign out?"
+        },
+        "extension": {
+            "title": "Browser Extension",
+            "description": "The Puckora Chrome extension enables Amazon scraping directly from your browser. Requires Chrome 114 or later.",
+            "statusChecking": "Checking…",
+            "statusInstalled": "Active",
+            "statusNotInstalled": "Not installed",
+            "statusUnsynced": "Not synced",
+            "install": "Install for Chrome",
+            "notInstalledHint": "The extension is not installed yet. Install it to unlock Amazon scraping from your browser.",
+            "featureScraping": "Check Amazon search results in real time",
+            "featureAnalysis": "Scan product pages with one click",
+            "featureSuppliers": "Find suppliers on GlobalSources",
+            "rowInstalled": "Extension installed",
+            "rowSynced": "Account synced",
+            "rowUnsynced": "Account not synced",
+            "unsyncedHint": "Open the extension popup and sign in — or click Sync now to push your session automatically.",
+            "resync": "Sync now",
+            "worksOn": "Works on"
         }
     }
 }

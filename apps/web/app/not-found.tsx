@@ -1,6 +1,5 @@
 import { getTranslations } from 'next-intl/server'
-import { Heading, Body } from '@/components/building-blocks/typography'
-import { Button } from '@/components/building-blocks'
+import { Heading, Body, Button } from '@puckora/ui'
 import { AppRoute } from '@/constants/routes'
 
 export default async function NotFoundPage() {

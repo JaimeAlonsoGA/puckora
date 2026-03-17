@@ -1,6 +1,5 @@
 import { cn } from '@puckora/utils'
-import { Label } from '@/components/building-blocks/typography'
-import { Caption } from '@/components/building-blocks/typography'
+import { Label, Caption } from '@puckora/ui'
 
 type FormFieldProps = {
     label: string
@@ -20,12 +19,12 @@ export function FormField({
     className,
 }: FormFieldProps) {
     return (
-        <div className={cn('flex flex-col gap-[var(--space-1-5)]', className)}>
+        <div className={cn('flex flex-col gap-1.5', className)}>
             <Label htmlFor={htmlFor}>{label}</Label>
             {description && <Caption>{description}</Caption>}
             {children}
             {error && (
-                <Caption className="text-[color:var(--text-error)]" role="alert">
+                <Caption className="text-error-fg" role="alert">
                     {error}
                 </Caption>
             )}

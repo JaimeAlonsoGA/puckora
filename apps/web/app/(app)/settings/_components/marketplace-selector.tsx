@@ -6,10 +6,9 @@ import { useInvalidateUser } from '@/queries/users'
 import { useState } from 'react'
 import { MARKETPLACES } from '@puckora/types'
 import { AppRoute } from '@/constants/routes'
-import { Surface, Alert } from '@/components/building-blocks'
+import { Surface, Alert, CardHeader } from '@puckora/ui'
 import { FormField } from '@/components/form/form-field'
 import { FormSelect } from '@/components/form/form-select'
-import { Subheading, Body } from '@/components/building-blocks/typography'
 
 type MarketplaceSelectorProps = {
     currentMarketplace: string
@@ -53,10 +52,7 @@ export function MarketplaceSelector({ currentMarketplace }: MarketplaceSelectorP
 
     return (
         <Surface variant="card" padding="lg" border="default">
-            <div className="mb-[var(--space-5)] flex flex-col gap-[var(--space-1)]">
-                <Subheading>{t('title')}</Subheading>
-                <Body size="sm">{t('description')}</Body>
-            </div>
+            <CardHeader title={t('title')} description={t('description')} />
 
             <FormField label={t('label')} htmlFor="marketplace">
                 <FormSelect
@@ -68,7 +64,7 @@ export function MarketplaceSelector({ currentMarketplace }: MarketplaceSelectorP
                 />
             </FormField>
 
-            {error && <Alert variant="error" className="mt-[var(--space-3)]">{error}</Alert>}
+            {error && <Alert variant="error" className="mt-3">{error}</Alert>}
         </Surface>
     )
 }

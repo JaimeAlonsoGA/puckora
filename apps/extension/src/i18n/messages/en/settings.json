@@ -1,0 +1,5 @@
+{
+    "title": "Settings",
+    "preferredMarketplace": "Preferred marketplace",
+    "marketplaceHint": "Sets the default Amazon marketplace for all analysis and scraping."
+}

@@ -7,8 +7,7 @@ import { SettingsUpdateSchema } from '@puckora/types/schemas'
 import { useFormAction } from '@/hooks/use-form-action'
 import { updateProfileAction } from '@/app/(app)/actions'
 import { useInvalidateUser } from '@/queries/users'
-import { Surface, Button, Alert } from '@/components/building-blocks'
-import { Subheading, Body } from '@/components/building-blocks/typography'
+import { Surface, Button, Alert, CardHeader } from '@puckora/ui'
 import { FormField } from '@/components/form/form-field'
 import { FormInput } from '@/components/form/form-input'
 
@@ -40,12 +39,9 @@ export function ProfileForm({ profile }: ProfileFormProps) {
 
     return (
         <Surface variant="card" padding="lg" border="default">
-            <div className="mb-[var(--space-5)] flex flex-col gap-[var(--space-1)]">
-                <Subheading>{t('title')}</Subheading>
-                <Body size="sm">{t('description')}</Body>
-            </div>
+            <CardHeader title={t('title')} description={t('description')} />
 
-            <form onSubmit={onSubmit} className="flex flex-col gap-[var(--space-4)]">
+            <form onSubmit={onSubmit} className="flex flex-col gap-4">
                 <FormField
                     label={t('fullName')}
                     htmlFor="display_name"

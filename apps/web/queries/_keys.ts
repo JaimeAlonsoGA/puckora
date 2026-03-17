@@ -22,6 +22,8 @@ export const categoryKeys = {
     byMarketplace: (marketplace: string) =>
         [...categoryKeys.all, marketplace] as const,
     detail: (id: string) => [...categoryKeys.all, 'detail', id] as const,
+    topLevel: (marketplace: string) =>
+        [...categoryKeys.byMarketplace(marketplace), 'topLevel'] as const,
 }
 
 export const scrapeKeys = {
@@ -29,3 +31,10 @@ export const scrapeKeys = {
     detail: (jobId: string) => [...scrapeKeys.all, 'detail', jobId] as const,
     pending: () => [...scrapeKeys.all, 'pending'] as const,
 }
+
+export const keywordKeys = {
+    all: ['keywords'] as const,
+    results: (keyword: string, marketplace: string) =>
+        [...keywordKeys.all, 'results', keyword, marketplace] as const,
+}
+

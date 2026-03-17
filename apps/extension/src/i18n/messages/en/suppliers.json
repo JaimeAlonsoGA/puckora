@@ -1,0 +1,10 @@
+{
+    "title": "Cross-platform search",
+    "description": "Search Amazon and Alibaba simultaneously to compare sourcing costs.",
+    "placeholder": "e.g. bamboo cutting board",
+    "search": "Search",
+    "openingSearch": "Opening Amazon and Alibaba searches for \"{{keyword}}\" in new tabs.",
+    "openAmazon": "Open Amazon",
+    "openAlibaba": "Open Alibaba",
+    "note": "Puckora will automatically parse results and surface them here when the extension scraper completes (requires a Puckora Pro account)."
+}

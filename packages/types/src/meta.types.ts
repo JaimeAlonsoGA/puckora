@@ -51,3 +51,4 @@ export const MARKETPLACES: readonly MarketplaceInfo[] = [
   { id: 'BE', name: 'Belgium', flag: '🇧🇪', domain: 'amazon.com.be', currency: 'EUR' },
   { id: 'TR', name: 'Turkey', flag: '🇹🇷', domain: 'amazon.com.tr', currency: 'TRY' },
 ] as const
+

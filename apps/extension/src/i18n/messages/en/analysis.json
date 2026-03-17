@@ -1,0 +1,14 @@
+{
+    "loading": "Analysing product…",
+    "error": "Could not load analysis. Try refreshing the page.",
+    "empty": "Navigate to an Amazon product page to see financial analysis.",
+    "listingsCount": "{{count}} listing on this page",
+    "listingsCount_other": "{{count}} listings on this page",
+    "fbaFee": "FBA Fee",
+    "fbaFeeHint": "Estimated fulfilment fee",
+    "referralFee": "Referral Fee",
+    "referralFeeHint": "Category referral rate",
+    "estMargin": "Est. Margin",
+    "bsr": "BSR",
+    "bsrHint": "Best Sellers Rank"
+}

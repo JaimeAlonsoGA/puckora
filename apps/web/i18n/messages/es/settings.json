@@ -33,6 +33,25 @@
             "manageBilling": "Administrar facturación",
             "upgradePlan": "Mejorar plan"
         },
+        "extension": {
+            "title": "Extensión de navegador",
+            "description": "La extensión Puckora para Chrome permite raspar Amazon directamente desde tu navegador. Requiere Chrome 114 o superior.",
+            "statusChecking": "Verificando…",
+            "statusInstalled": "Activa",
+            "statusNotInstalled": "No instalada",
+            "statusUnsynced": "Sin sincronizar",
+            "install": "Instalar para Chrome",
+            "notInstalledHint": "La extensión aún no está instalada. Instálala para habilitar el scraping de Amazon desde tu navegador.",
+            "featureScraping": "Extrae resultados de búsqueda de Amazon en tiempo real",
+            "featureAnalysis": "Analiza páginas de producto con un clic",
+            "featureSuppliers": "Encuentra proveedores en Alibaba para cualquier producto",
+            "rowInstalled": "Extensión instalada",
+            "rowSynced": "Cuenta sincronizada",
+            "rowUnsynced": "Cuenta no sincronizada",
+            "unsyncedHint": "Abre el popup de la extensión e inicia sesión, o haz clic en Sincronizar ahora para enviar tu sesión automáticamente.",
+            "resync": "Sincronizar ahora",
+            "worksOn": "Funciona en"
+        },
         "auth": {
             "title": "Autenticación",
             "description": "Administra tus métodos de inicio de sesión.",

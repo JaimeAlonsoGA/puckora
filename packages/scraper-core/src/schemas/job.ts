@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod'
-import type { ScrapedListing } from '../parsers/amazon-search'
+import type { ScrapedListing } from '../parsers/amazon/search'
 
 import {
     ScrapeJobTypeEnum,

@@ -3,14 +3,15 @@
     "name": "Puckora",
     "version": "0.1.0",
     "description": "Amazon FBA product research — powered by Puckora",
-
     "permissions": [
         "storage",
         "tabs",
-        "offscreen"
+        "scripting",
+        "alarms"
     ],
-
     "host_permissions": [
+        "http://localhost:3000/*",
+        "https://app.puckora.com/*",
         "https://www.amazon.com/*",
         "https://www.amazon.co.uk/*",
         "https://www.amazon.de/*",
@@ -19,43 +20,112 @@
         "https://www.amazon.it/*",
         "https://www.amazon.es/*",
         "https://www.amazon.ca/*",
+        "https://www.amazon.com.mx/*",
+        "https://www.amazon.com.au/*",
+        "https://www.amazon.in/*",
+        "https://www.amazon.ae/*",
+        "https://www.amazon.sg/*",
+        "https://www.amazon.sa/*",
+        "https://www.amazon.nl/*",
+        "https://www.amazon.se/*",
+        "https://www.amazon.pl/*",
+        "https://www.amazon.com.tr/*",
+        "https://www.amazon.com.br/*",
         "https://www.alibaba.com/*",
         "https://www.1688.com/*"
     ],
-
     "background": {
-        "service_worker": "background/service-worker.js",
+        "service_worker": "background.js",
         "type": "module"
     },
-
     "content_scripts": [
         {
-            "matches": ["https://www.amazon.com/s*", "https://www.amazon.co.uk/s*", "https://www.amazon.de/s*"],
-            "js": ["content-scripts/amazon-search.js"],
+            "matches": [
+                "https://www.amazon.com/s*",
+                "https://www.amazon.co.uk/s*",
+                "https://www.amazon.de/s*",
+                "https://www.amazon.co.jp/s*",
+                "https://www.amazon.fr/s*",
+                "https://www.amazon.it/s*",
+                "https://www.amazon.es/s*",
+                "https://www.amazon.ca/s*"
+            ],
+            "js": [
+                "content-amazon-search.js"
+            ],
+            "type": "module",
             "run_at": "document_idle"
         },
         {
-            "matches": ["https://www.amazon.com/dp/*", "https://www.amazon.co.uk/dp/*", "https://www.amazon.de/dp/*"],
-            "js": ["content-scripts/amazon-product.js"],
+            "matches": [
+                "https://www.amazon.com/dp/*",
+                "https://www.amazon.co.uk/dp/*",
+                "https://www.amazon.de/dp/*",
+                "https://www.amazon.co.jp/dp/*",
+                "https://www.amazon.fr/dp/*",
+                "https://www.amazon.it/dp/*",
+                "https://www.amazon.es/dp/*",
+                "https://www.amazon.ca/dp/*"
+            ],
+            "js": [
+                "content-amazon-product.js"
+            ],
+            "type": "module",
             "run_at": "document_idle"
+        },
+        {
+            "matches": [
+                "https://www.alibaba.com/trade/search*",
+                "https://www.alibaba.com/products/*"
+            ],
+            "js": [
+                "content-alibaba-search.js"
+            ],
+            "type": "module",
+            "run_at": "document_idle"
+        },
+        {
+            "matches": [
+                "http://localhost:3000/*",
+                "https://app.puckora.com/*"
+            ],
+            "js": [
+                "content-web-app-bridge.js"
+            ],
+            "run_at": "document_start"
         }
     ],
-
+    "externally_connectable": {
+        "matches": [
+            "http://localhost:3000/*",
+            "https://app.puckora.com/*"
+        ]
+    },
     "action": {
-        "default_popup": "popup/popup.html",
+        "default_popup": "panels/popup/index.html",
         "default_title": "Puckora"
     },
-
     "icons": {
-        "16":  "icons/icon16.png",
-        "48":  "icons/icon48.png",
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
         "128": "icons/icon128.png"
     },
-
     "web_accessible_resources": [
         {
-            "resources": ["sidebar/*"],
-            "matches": ["https://www.amazon.com/*", "https://www.amazon.co.uk/*", "https://www.amazon.de/*"]
+            "resources": [
+                "chunks/*"
+            ],
+            "matches": [
+                "https://www.amazon.com/*",
+                "https://www.amazon.co.uk/*",
+                "https://www.amazon.de/*",
+                "https://www.amazon.co.jp/*",
+                "https://www.amazon.fr/*",
+                "https://www.amazon.it/*",
+                "https://www.amazon.es/*",
+                "https://www.amazon.ca/*",
+                "https://www.alibaba.com/*"
+            ]
         }
     ]
 }

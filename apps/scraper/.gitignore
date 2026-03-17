@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+
+# Logs
+*.log
+
+# Runtime scraper outputs — generated, never committed
+/runs/**/*.json
+/runs/**/*.ndjson

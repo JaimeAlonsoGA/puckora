@@ -1,0 +1,14 @@
+{
+    "loading": "Analizando producto…",
+    "error": "No se pudo cargar el análisis. Intenta recargar la página.",
+    "empty": "Navega a una página de producto de Amazon para ver el análisis financiero.",
+    "listingsCount": "{{count}} resultado en esta página",
+    "listingsCount_other": "{{count}} resultados en esta página",
+    "fbaFee": "Comisión FBA",
+    "fbaFeeHint": "Estimación de la tarifa de fulfillment",
+    "referralFee": "Comisión de referido",
+    "referralFeeHint": "Porcentaje de referido por categoría",
+    "estMargin": "Margen est.",
+    "bsr": "BSR",
+    "bsrHint": "Ranking de los más vendidos"
+}

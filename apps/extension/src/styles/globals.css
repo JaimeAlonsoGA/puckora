@@ -1,0 +1,15 @@
+/* ─── Extension Popup — Design Foundation ──────────────────────────────────
+   Same token/utility stack as apps/web so the popup is visually identical
+   to the main web app.
+
+   Import order matters:
+     1. tailwindcss  — generates utility classes + base resets
+     2. globals.css  — cockpit tokens, shadcn semantic vars, @theme inline,
+                       radius/spacing/typography scale
+   ────────────────────────────────────────────────────────────────────────── */
+@import "tailwindcss";
+@import "../../../../packages/ui/src/globals.css";
+
+/* Explicit sources so Tailwind v4 scanner picks up components outside CWD */
+@source "../panels";
+@source "../../../../packages/ui/src";

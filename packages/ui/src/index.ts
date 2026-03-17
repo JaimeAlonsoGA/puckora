@@ -1,3 +1,18 @@
-// Shared UI package — re-exports from building blocks
-// Components will be added here as the design system grows
-export { }
+export { LinkProvider, useLinkComponent } from './link-context'
+export type { LinkComponent } from './link-context'
+export { Button } from './button'
+export { Icon } from './icon'
+export { Stack } from './stack'
+export { Surface } from './surface'
+export { Divider } from './divider'
+export { Badge } from './badge'
+export { Alert } from './alert'
+export { TextLink } from './text-link'
+export { Display, Heading, Subheading, Body, Caption, Label, Mono } from './typography'
+// Composite building blocks
+export { DataCard } from './data-card'
+export { KpiCard } from './kpi-card'
+export { StatItem } from './stat-item'
+export { CardHeader } from './card-header'
+export { ListToolbar } from './list-toolbar'
+export { TableHeader, TableHeaderCell } from './table-header'

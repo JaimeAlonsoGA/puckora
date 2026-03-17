@@ -1,5 +1,4 @@
-import { Body } from '@/components/building-blocks/typography'
-import { Subheading } from '@/components/building-blocks/typography'
+import { Body, Subheading } from '@puckora/ui'
 import { cn } from '@puckora/utils'
 
 type EmptyStateProps = {
@@ -14,14 +13,14 @@ export function EmptyState({ title, description, icon, action, className }: Empt
     return (
         <div
             className={cn(
-                'flex flex-col items-center justify-center gap-[var(--space-4)] py-[var(--space-16)] text-center',
+                'flex flex-col items-center justify-center gap-4 py-16 text-center',
                 className,
             )}
         >
             {icon && (
-                <div className="text-[color:var(--text-tertiary)]">{icon}</div>
+                <div className="text-faint">{icon}</div>
             )}
-            <div className="flex flex-col gap-[var(--space-1)]">
+            <div className="flex flex-col gap-1">
                 <Subheading>{title}</Subheading>
                 {description && <Body size="sm">{description}</Body>}
             </div>

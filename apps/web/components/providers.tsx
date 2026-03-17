@@ -4,15 +4,18 @@
  * Providers
  *
  * Single client component boundary at the root of the tree.
- * All client-side infrastructure (QueryClient, next-intl) lives here.
+ * All client-side infrastructure (QueryClient, next-intl, LinkProvider) lives here.
  * `children` is passed as a prop from the Server Component layout,
  * so page Server Components are never pulled into this client boundary.
  */
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NextIntlClientProvider } from 'next-intl'
+import { ThemeProvider } from 'next-themes'
 import { useState } from 'react'
 import type { AbstractIntlMessages } from 'next-intl'
+import Link from 'next/link'
+import { LinkProvider, type LinkComponent } from '@puckora/ui'
 
 type ProvidersProps = {
     children: React.ReactNode
@@ -41,10 +44,15 @@ export function Providers({ children, locale, messages, timeZone }: ProvidersPro
     )
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <NextIntlClientProvider locale={locale} messages={messages} timeZone={timeZone}>
-                {children}
-            </NextIntlClientProvider>
-        </QueryClientProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
+            <LinkProvider linkComponent={Link as LinkComponent}>
+                <QueryClientProvider client={queryClient}>
+                    <NextIntlClientProvider locale={locale} messages={messages} timeZone={timeZone}>
+                        {children}
+                    </NextIntlClientProvider>
+                </QueryClientProvider>
+            </LinkProvider>
+        </ThemeProvider>
     )
 }
+

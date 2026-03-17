@@ -47,9 +47,32 @@ export {
     parsePrice,
     parseRating,
     parseReviewCount,
-} from './parsers/amazon-search'
+} from './parsers/amazon/search'
 
 export {
     isBlocked,
     isEmptyCategory,
-} from './parsers/block-detection'
+} from './parsers/amazon/block-detection'
+
+// ─── GLOBALSOURCES PARSERS ────────────────────────────────────────────────────
+export {
+    parseGlobalSourcesListingCard,
+} from './parsers/globalsources/listing'
+
+export type {
+    GlobalSourcesListingCard,
+    RawGlobalSourcesCard,
+} from './parsers/globalsources/listing'
+
+export {
+    parseGlobalSourcesProductDetail,
+} from './parsers/globalsources/product'
+
+export type {
+    GlobalSourcesProductDetail,
+    RawGlobalSourcesProductPage,
+    PriceTier,
+} from './parsers/globalsources/product'
+
+// ─── BROWSER CONSTANTS ───────────────────────────────────────────────────────
+export { USER_AGENTS, VIEWPORTS, pickUserAgent, pickViewport } from './browser'

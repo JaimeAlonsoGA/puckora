@@ -67,6 +67,63 @@ export type Database = {
           },
         ]
       }
+      amazon_keyword_products: {
+        Row: {
+          asin: string
+          keyword_id: string
+        }
+        Insert: {
+          asin: string
+          keyword_id: string
+        }
+        Update: {
+          asin?: string
+          keyword_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "amazon_keyword_products_asin_fkey"
+            columns: ["asin"]
+            isOneToOne: false
+            referencedRelation: "amazon_products"
+            referencedColumns: ["asin"]
+          },
+          {
+            foreignKeyName: "amazon_keyword_products_keyword_id_fkey"
+            columns: ["keyword_id"]
+            isOneToOne: false
+            referencedRelation: "amazon_keywords"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      amazon_keywords: {
+        Row: {
+          id: string
+          keyword: string
+          last_searched_at: string
+          marketplace: string
+          total_results: number | null
+          unique_brands: number | null
+        }
+        Insert: {
+          id?: string
+          keyword: string
+          last_searched_at?: string
+          marketplace?: string
+          total_results?: number | null
+          unique_brands?: number | null
+        }
+        Update: {
+          id?: string
+          keyword?: string
+          last_searched_at?: string
+          marketplace?: string
+          total_results?: number | null
+          unique_brands?: number | null
+        }
+        Relationships: []
+      }
       amazon_products: {
         Row: {
           asin: string
@@ -166,6 +223,246 @@ export type Database = {
           scrape_status?: Database["public"]["Enums"]["product_scrape_status"]
           title?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      gs_categories: {
+        Row: {
+          created_at: string
+          gs_category_id: string | null
+          id: string
+          last_scraped_at: string | null
+          name: string | null
+          people_also_search: string[]
+          scrape_status: Database["public"]["Enums"]["gs_category_scrape_status"]
+          slug: string | null
+          top_categories: string[]
+          trending: string[]
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          gs_category_id?: string | null
+          id?: string
+          last_scraped_at?: string | null
+          name?: string | null
+          people_also_search?: string[]
+          scrape_status?: Database["public"]["Enums"]["gs_category_scrape_status"]
+          slug?: string | null
+          top_categories?: string[]
+          trending?: string[]
+          url: string
+        }
+        Update: {
+          created_at?: string
+          gs_category_id?: string | null
+          id?: string
+          last_scraped_at?: string | null
+          name?: string | null
+          people_also_search?: string[]
+          scrape_status?: Database["public"]["Enums"]["gs_category_scrape_status"]
+          slug?: string | null
+          top_categories?: string[]
+          trending?: string[]
+          url?: string
+        }
+        Relationships: []
+      }
+      gs_products: {
+        Row: {
+          brand_name: string | null
+          carton_height_cm: number | null
+          carton_length_cm: number | null
+          carton_weight_kg: number | null
+          carton_width_cm: number | null
+          category_breadcrumb: string[]
+          certifications: string[]
+          created_at: string | null
+          description: string | null
+          export_markets: string[]
+          fob_port: string | null
+          hts_code: string | null
+          id: string
+          image_primary: string | null
+          images: Json | null
+          item_height_cm: number | null
+          item_length_cm: number | null
+          item_weight_kg: number | null
+          item_width_cm: number | null
+          key_specifications: string | null
+          lead_time_days_max: number | null
+          lead_time_days_min: number | null
+          logistics_type: string | null
+          model_number: string | null
+          moq_quantity: number | null
+          moq_unit: string | null
+          name: string
+          payment_methods: string[]
+          people_also_search: string[]
+          price_high: number | null
+          price_low: number | null
+          price_tiers: Json | null
+          price_unit: string | null
+          product_info_text: string | null
+          scrape_status: Database["public"]["Enums"]["gs_scrape_status"]
+          scraped_at: string
+          source_category_id: string | null
+          supplier_id: string | null
+          units_per_carton: number | null
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          brand_name?: string | null
+          carton_height_cm?: number | null
+          carton_length_cm?: number | null
+          carton_weight_kg?: number | null
+          carton_width_cm?: number | null
+          category_breadcrumb?: string[]
+          certifications?: string[]
+          created_at?: string | null
+          description?: string | null
+          export_markets?: string[]
+          fob_port?: string | null
+          hts_code?: string | null
+          id: string
+          image_primary?: string | null
+          images?: Json | null
+          item_height_cm?: number | null
+          item_length_cm?: number | null
+          item_weight_kg?: number | null
+          item_width_cm?: number | null
+          key_specifications?: string | null
+          lead_time_days_max?: number | null
+          lead_time_days_min?: number | null
+          logistics_type?: string | null
+          model_number?: string | null
+          moq_quantity?: number | null
+          moq_unit?: string | null
+          name: string
+          payment_methods?: string[]
+          people_also_search?: string[]
+          price_high?: number | null
+          price_low?: number | null
+          price_tiers?: Json | null
+          price_unit?: string | null
+          product_info_text?: string | null
+          scrape_status?: Database["public"]["Enums"]["gs_scrape_status"]
+          scraped_at?: string
+          source_category_id?: string | null
+          supplier_id?: string | null
+          units_per_carton?: number | null
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          brand_name?: string | null
+          carton_height_cm?: number | null
+          carton_length_cm?: number | null
+          carton_weight_kg?: number | null
+          carton_width_cm?: number | null
+          category_breadcrumb?: string[]
+          certifications?: string[]
+          created_at?: string | null
+          description?: string | null
+          export_markets?: string[]
+          fob_port?: string | null
+          hts_code?: string | null
+          id?: string
+          image_primary?: string | null
+          images?: Json | null
+          item_height_cm?: number | null
+          item_length_cm?: number | null
+          item_weight_kg?: number | null
+          item_width_cm?: number | null
+          key_specifications?: string | null
+          lead_time_days_max?: number | null
+          lead_time_days_min?: number | null
+          logistics_type?: string | null
+          model_number?: string | null
+          moq_quantity?: number | null
+          moq_unit?: string | null
+          name?: string
+          payment_methods?: string[]
+          people_also_search?: string[]
+          price_high?: number | null
+          price_low?: number | null
+          price_tiers?: Json | null
+          price_unit?: string | null
+          product_info_text?: string | null
+          scrape_status?: Database["public"]["Enums"]["gs_scrape_status"]
+          scraped_at?: string
+          source_category_id?: string | null
+          supplier_id?: string | null
+          units_per_carton?: number | null
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gs_products_source_category_id_fkey"
+            columns: ["source_category_id"]
+            isOneToOne: false
+            referencedRelation: "gs_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gs_products_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "gs_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gs_suppliers: {
+        Row: {
+          business_types: string[]
+          country: string | null
+          created_at: string
+          employee_count: number | null
+          export_markets: string[]
+          id: string
+          main_products: string[]
+          name: string
+          platform_supplier_id: string
+          profile_url: string | null
+          trade_shows_count: number | null
+          updated_at: string
+          verifications: string[]
+          years_on_platform: number | null
+        }
+        Insert: {
+          business_types?: string[]
+          country?: string | null
+          created_at?: string
+          employee_count?: number | null
+          export_markets?: string[]
+          id?: string
+          main_products?: string[]
+          name: string
+          platform_supplier_id: string
+          profile_url?: string | null
+          trade_shows_count?: number | null
+          updated_at?: string
+          verifications?: string[]
+          years_on_platform?: number | null
+        }
+        Update: {
+          business_types?: string[]
+          country?: string | null
+          created_at?: string
+          employee_count?: number | null
+          export_markets?: string[]
+          id?: string
+          main_products?: string[]
+          name?: string
+          platform_supplier_id?: string
+          profile_url?: string | null
+          trade_shows_count?: number | null
+          updated_at?: string
+          verifications?: string[]
+          years_on_platform?: number | null
         }
         Relationships: []
       }
@@ -371,6 +668,8 @@ export type Database = {
     }
     Enums: {
       category_scrape_status: "pending" | "scraped" | "failed"
+      gs_category_scrape_status: "pending" | "scraped" | "failed"
+      gs_scrape_status: "scraped" | "failed"
       product_scrape_status: "scraped" | "enriched" | "enrichment_failed"
       scrape_executor: "extension" | "agent"
       scrape_job_status: "pending" | "claimed" | "running" | "done" | "failed"
@@ -388,121 +687,123 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+  | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+  ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+  : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-    ? R
-    : never
+  ? R
+  : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
+    DefaultSchema["Views"])
+  ? (DefaultSchema["Tables"] &
+    DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R
+    }
+  ? R
+  : never
+  : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof DefaultSchema["Tables"]
+  | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+  : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
+    Insert: infer I
+  }
+  ? I
+  : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+    Insert: infer I
+  }
+  ? I
+  : never
+  : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof DefaultSchema["Tables"]
+  | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+  : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
+    Update: infer U
+  }
+  ? U
+  : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+    Update: infer U
+  }
+  ? U
+  : never
+  : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof DefaultSchema["Enums"]
+  | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+  ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+  : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof DefaultSchema["CompositeTypes"]
+  | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+  ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+  : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never
 
 export const Constants = {
   public: {
     Enums: {
       category_scrape_status: ["pending", "scraped", "failed"],
+      gs_category_scrape_status: ["pending", "scraped", "failed"],
+      gs_scrape_status: ["scraped", "failed"],
       product_scrape_status: ["scraped", "enriched", "enrichment_failed"],
       scrape_executor: ["extension", "agent"],
       scrape_job_status: ["pending", "claimed", "running", "done", "failed"],

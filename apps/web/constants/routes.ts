@@ -7,19 +7,21 @@
  */
 export const AppRoute = {
     /** Default authenticated landing page */
-    home: '/pulse',
+    home: '/search',
     login: '/login',
     signup: '/signup',
     /** Module routes */
-    pulse: '/pulse',
+    search: '/search',
+    suppliers: '/suppliers',
+    notebook: '/notebook',
+    tools: '/tools',
+    pucki: '/pucki',
     settings: '/settings',
     /** API endpoints */
     apiSettings: '/api/settings',
     apiPulseSearch: '/api/pulse/search',
     apiPulseAmazonMatch: '/api/pulse/amazon-match',
     apiScrapeEnrich: '/api/scrape/enrich',
-    /** Search / scraper */
-    search: '/search',
 } as const
 
 export type AppRoutePath = (typeof AppRoute)[keyof typeof AppRoute]

@@ -11,9 +11,9 @@ Next.js 16 · React 19 · TypeScript 5.8 · Tailwind v4 · Supabase SSR · TanSt
 
 **Query layer.** All TanStack Query definitions live in `queries/`. Never define `queryKey` or `queryFn` inline. Never import `useQueryClient` in a component — use domain invalidation hooks (e.g. `useInvalidateProfile()`).
 
-**Token system.** Only semantic tokens (`--surface-*`, `--text-*`, `--border-*`, `--brand-*`, `--space-*`). Never raw `--sf-*` in components.
+**Token system.** Only semantic tailwind syntax utility tokens (`surface-*`, `text-*`, `border-*`, `brand-*`, `space-*`). Never raw `--sf-*` or `var(--*)` in components.
 
-**Building blocks only.** Use `Surface`, `Button`, `Stack`, `Alert`, `Badge` etc. from `components/building-blocks/`. No raw `<div>` with hardcoded colors or spacing.
+**Building blocks only.** Use `Surface`, `Button`, `Stack`, `Alert`, `Badge` etc. from `packages/ui/src/`. No raw `<div>`, `<p>`, `<span>`, `<input>` etc. with hardcoded colors or spacing.
 
 **Server Actions over fetch.** For mutations: Server Action + `useFormAction` hook. Not manual `fetch` + `useState`.
 

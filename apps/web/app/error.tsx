@@ -1,8 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Heading, Body } from '@/components/building-blocks/typography'
-import { Button } from '@/components/building-blocks'
+import { Heading, Body, Button } from '@puckora/ui'
 
 export default function ErrorPage({
     error,

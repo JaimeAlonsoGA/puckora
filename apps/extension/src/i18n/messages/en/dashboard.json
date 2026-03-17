@@ -1,0 +1,10 @@
+{
+    "title": "Puckora",
+    "active": "Active",
+    "loggedInAs": "Logged in as",
+    "scrapeJobs": "Scrape Jobs",
+    "running": "Running",
+    "pending": "Pending",
+    "openApp": "Open app",
+    "logout": "Log out"
+}

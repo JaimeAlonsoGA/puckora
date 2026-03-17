@@ -1,7 +1,7 @@
 'use client'
 
 import { queryOptions, useQueryClient } from '@tanstack/react-query'
-import type { AppUser } from '@/types/users'
+import type { User } from '@puckora/types'
 import { userKeys } from './_keys'
 
 // ---------------------------------------------------------------------------
@@ -12,10 +12,10 @@ import { userKeys } from './_keys'
 export const userQueryOptions = () =>
     queryOptions({
         queryKey: userKeys.me(),
-        queryFn: async (): Promise<AppUser> => {
+        queryFn: async (): Promise<User> => {
             const res = await fetch('/api/settings')
             if (!res.ok) throw new Error('Failed to fetch user')
-            return res.json() as Promise<AppUser>
+            return res.json() as Promise<User>
         },
         staleTime: 30_000,
     })

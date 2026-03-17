@@ -1,0 +1,223 @@
+/* ─── Puckora Extension Tokens ───────────────────────────────────────────────
+   Shadow-DOM-safe CSS custom properties extracted from globals.css.
+   No @theme, no @layer, no @apply — plain :root{} only so browsers can parse
+   this as a raw <style> injection inside a shadow root.
+
+   Injected by every content-script mount.tsx:
+     import tokensRaw from '@puckora/ui/extension-tokens.css?raw'
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Cockpit tokens ── */
+:root {
+    /* Surface levels */
+    --bg1: #ffffff;
+    --bg2: #f5f4f0;
+    --bg3: #eeedea;
+
+    /* Status surfaces */
+    --bg-info: #e6f1fb;
+    --bg-warn: #faeeda;
+    --bg-success: #eaf3de;
+    --bg-danger: #fcebeb;
+
+    /* Text levels */
+    --t1: #1a1a18;
+    --t2: #5f5e5a;
+    --t3: #9c9a92;
+
+    /* Status text */
+    --t-info: #0c447c;
+    --t-warn: #633806;
+    --t-success: #27500a;
+    --t-danger: #791f1f;
+
+    /* Borders */
+    --b1: rgba(0, 0, 0, 0.28);
+    --b2: rgba(0, 0, 0, 0.15);
+    --b3: rgba(0, 0, 0, 0.07);
+
+    /* Brand */
+    --green: #1D9E75;
+    --green-bg: #E1F5EE;
+    --green-text: #085041;
+
+    /* Geometry */
+    --rad: 8px;
+    --rad-lg: 12px;
+}
+
+/* ── Semantic / backward-compat layer ── */
+:root {
+    --surface-base: var(--bg1);
+    --surface-secondary: var(--bg2);
+    --surface-card: var(--bg2);
+    --surface-sidebar: var(--bg2);
+    --surface-hover: var(--bg3);
+    --surface-active: var(--bg3);
+    --surface-input: var(--bg1);
+    --surface-error: var(--bg-danger);
+    --surface-success: var(--bg-success);
+    --surface-warning: var(--bg-warn);
+    --surface-info: var(--bg-info);
+    --surface-overlay: var(--t1);
+
+    --text-primary: var(--t1);
+    --text-secondary: var(--t2);
+    --text-muted: var(--t3);
+    --text-tertiary: var(--t3);
+    --text-inverse: #ffffff;
+    --text-brand: var(--green);
+    --text-error: var(--t-danger);
+    --text-success: var(--t-success);
+    --text-warning: var(--t-warn);
+    --text-info: var(--t-info);
+
+    --border-default: var(--b2);
+    --border-subtle: var(--b3);
+    --border-strong: var(--b1);
+    --border-focus: var(--green);
+    --border-error: var(--t-danger);
+    --border-input: var(--b2);
+
+    --error: var(--t-danger);
+    --success: var(--t-success);
+    --warning: var(--t-warn);
+    --info: var(--t-info);
+
+    --brand-primary: var(--green);
+    --brand-primary-hover: color-mix(in srgb, var(--green) 85%, black);
+    --brand-primary-active: color-mix(in srgb, var(--green) 75%, black);
+    --brand-primary-subtle: var(--green-bg);
+
+    /* Radius */
+    --radius-sm: 4px;
+    --radius-md: var(--rad);
+    --radius-lg: var(--rad-lg);
+    --radius-full: 9999px;
+
+    /* Spacing scale (4 px base) */
+    --space-0: 0px;
+    --space-1: 4px;
+    --space-1-5: 6px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    --space-24: 96px;
+
+    /* Typography scale */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+
+    /* Transitions */
+    --transition-fast: 150ms;
+    --transition-normal: 250ms;
+    --transition-slow: 400ms;
+
+    /* shadcn semantic layer */
+    --background: var(--bg1);
+    --foreground: var(--t1);
+    --card: var(--bg2);
+    --card-foreground: var(--t1);
+    --popover: var(--bg1);
+    --popover-foreground: var(--t1);
+    --primary: var(--green);
+    --primary-foreground: #ffffff;
+    --secondary: var(--bg2);
+    --secondary-foreground: var(--t2);
+    --muted: var(--bg3);
+    --muted-foreground: var(--t2);
+    --accent: var(--bg3);
+    --accent-foreground: var(--t1);
+    --destructive: #c0152a;
+    --destructive-foreground: #ffffff;
+    --border: var(--b2);
+    --input: var(--b2);
+    --ring: var(--green);
+    --radius: var(--rad);
+}
+
+/* ── Dark mode (OS preference) ── */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg1: #1c1c1a;
+        --bg2: #242422;
+        --bg3: #2c2c2a;
+
+        --bg-info: #042c53;
+        --bg-warn: #412402;
+        --bg-success: #173404;
+        --bg-danger: #501313;
+
+        --t1: #e8e6de;
+        --t2: #a8a69e;
+        --t3: #6a6860;
+
+        --t-info: #85b7eb;
+        --t-warn: #fac775;
+        --t-success: #97c459;
+        --t-danger: #f09595;
+
+        --b1: rgba(255, 255, 255, 0.28);
+        --b2: rgba(255, 255, 255, 0.14);
+        --b3: rgba(255, 255, 255, 0.07);
+
+        --green-bg: #04342C;
+        --green-text: #9FE1CB;
+    }
+}
+
+/* ── Base resets for the shadow root ── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+:host {
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: var(--text-sm);
+    -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+}
+
+::selection {
+    background: var(--green-bg);
+    color: var(--text-primary);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+}

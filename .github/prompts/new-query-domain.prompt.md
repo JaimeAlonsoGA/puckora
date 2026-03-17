@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Add a new TanStack Query domain to queries/
 ---
 
