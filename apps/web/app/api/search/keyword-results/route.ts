@@ -11,6 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/integrations/supabase/server'
+import { createFlyioDb } from '@/integrations/flyio/client'
 import { getKeyword, getProductsForKeyword } from '@/services/keywords'
 
 export async function GET(req: NextRequest) {
@@ -33,10 +34,11 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const keywordRow = await getKeyword(supabase, keyword, marketplace)
+        const db = createFlyioDb()
+        const keywordRow = await getKeyword(db, keyword, marketplace)
         if (!keywordRow) return NextResponse.json([])
 
-        const products = await getProductsForKeyword(supabase, keywordRow.id)
+        const products = await getProductsForKeyword(db, keywordRow.id)
         return NextResponse.json(products)
     } catch (err) {
         const message = err instanceof Error ? err.message : 'Internal error'

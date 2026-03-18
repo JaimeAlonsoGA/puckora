@@ -1,19 +1,14 @@
 /**
- * gs_categories DB operations.
- *
- * Two entry points:
- *  - bulkUpsertCategories()    Seed all ~778 GS leaf categories at scraper start.
- *                              Returns url → UUID map for FK lookups.
- *  - upsertGsCategorySignals() Persist PAS / trending / top-categories per-category.
+ * gs_categories DB operations — Drizzle/Fly.io version.
  */
+import { eq, sql } from 'drizzle-orm'
+import { gsCategories } from '@puckora/db'
 import type { DB } from '../../../shared/db'
 
 interface CategoryEntry {
     url: string
     name?: string
 }
-
-// ─── URL parsing helpers ──────────────────────────────────────────────────────
 
 function extractSlug(url: string): string | null {
     const m = url.match(/\/category\/([^/?]+)/)
@@ -26,12 +21,7 @@ function extractGsCategoryId(slug: string | null): string | null {
     return m?.[1] ?? null
 }
 
-// ─── BULK UPSERT (startup) ────────────────────────────────────────────────────
-
-/**
- * Upsert all categories from the loaded JSON list into gs_categories.
- * Safe to run on every scraper start. Returns Map<url, uuid>.
- */
+/** Upsert all categories. Returns Map<url, uuid>. */
 export async function bulkUpsertCategories(
     db: DB,
     categories: CategoryEntry[],
@@ -51,15 +41,22 @@ export async function bulkUpsertCategories(
 
     for (let i = 0; i < rows.length; i += BATCH) {
         const batch = rows.slice(i, i + BATCH)
-        const { data, error } = await db
-            .from('gs_categories')
-            .upsert(batch, { onConflict: 'url' })
-            .select('id, url')
-
-        if (error) {
-            console.error(`[db] gs_categories bulk upsert error (chunk ${i / BATCH + 1}):`, error.message)
-        } else if (data) {
-            allRows.push(...(data as { id: string; url: string }[]))
+        try {
+            const inserted = await db
+                .insert(gsCategories)
+                .values(batch)
+                .onConflictDoUpdate({
+                    target: gsCategories.url,
+                    set: {
+                        name: sql`excluded.name`,
+                        slug: sql`excluded.slug`,
+                        gs_category_id: sql`excluded.gs_category_id`,
+                    },
+                })
+                .returning({ id: gsCategories.id, url: gsCategories.url })
+            allRows.push(...inserted)
+        } catch (err) {
+            console.error(`[db] gs_categories bulk upsert error (chunk ${i / BATCH + 1}):`, (err as Error).message)
         }
     }
 
@@ -68,8 +65,6 @@ export async function bulkUpsertCategories(
     console.log(`[db] gs_categories: seeded ${map.size}/${categories.length} rows`)
     return map
 }
-
-// ─── SIGNALS UPSERT (per-category scrape) ────────────────────────────────────
 
 export async function upsertGsCategorySignals(
     db: DB,
@@ -80,21 +75,30 @@ export async function upsertGsCategorySignals(
         topCategories: string[]
     },
 ): Promise<void> {
-    const { error } = await db
-        .from('gs_categories')
-        .upsert(
-            {
+    try {
+        await db
+            .insert(gsCategories)
+            .values({
                 url: payload.url,
                 people_also_search: payload.peopleAlsoSearch,
                 trending: payload.trending,
                 top_categories: payload.topCategories,
                 scrape_status: 'scraped',
                 last_scraped_at: new Date().toISOString(),
-            },
-            { onConflict: 'url' },
-        )
-
-    if (error) {
-        console.error('[db] gs_categories signals upsert error:', error.message)
+            })
+            .onConflictDoUpdate({
+                target: gsCategories.url,
+                set: {
+                    people_also_search: sql`excluded.people_also_search`,
+                    trending: sql`excluded.trending`,
+                    top_categories: sql`excluded.top_categories`,
+                    scrape_status: sql`excluded.scrape_status`,
+                    last_scraped_at: sql`excluded.last_scraped_at`,
+                },
+            })
+    } catch (err) {
+        console.error('[db] gs_categories signals upsert error:', (err as Error).message)
     }
 }
+
+// ─── (end of file) ─────────────────────────────────────────────────────────

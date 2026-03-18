@@ -28,10 +28,8 @@ import { SCRAPE_PRODUCT_STATUS } from '@puckora/scraper-core'
 import { upsertAmazonProduct } from '@/services/products'
 import { updateKeyword, upsertKeywordProduct } from '@/services/keywords'
 import type { AmazonProductInsert } from '@puckora/types'
+import type { PgDb } from '@puckora/db'
 import type { CatalogItemResult } from '@puckora/sp-api'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
 
 function getMarketplaceId(marketplace: string): string {
     return SP_API_MARKETPLACE_ID[marketplace.toUpperCase()] ?? SP_API_MARKETPLACE_ID['US']!
@@ -81,7 +79,7 @@ function buildProductInsert(
  * @param marketplace - Puckora marketplace code (e.g. "US")
  */
 export async function runKeywordSearch(
-    supabase: SupabaseInstance,
+    db: PgDb,
     keywordId: string,
     keyword: string,
     marketplace: string,
@@ -102,7 +100,7 @@ export async function runKeywordSearch(
     }
 
     // Update keyword row with aggregate data from refinements
-    await updateKeyword(supabase, keywordId, {
+    await updateKeyword(db, keywordId, {
         total_results: response.numberOfResults,
         unique_brands: response.refinements?.brands?.length ?? null,
     })
@@ -114,10 +112,10 @@ export async function runKeywordSearch(
 
         try {
             // Upsert product first (FK required by keyword_products)
-            await upsertAmazonProduct(supabase, buildProductInsert(item.asin, parsed))
+            await upsertAmazonProduct(db, buildProductInsert(item.asin, parsed))
 
             // Link ASIN to this keyword search
-            await upsertKeywordProduct(supabase, {
+            await upsertKeywordProduct(db, {
                 keyword_id: keywordId,
                 asin: item.asin,
             })

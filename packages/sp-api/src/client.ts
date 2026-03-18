@@ -11,6 +11,7 @@
  */
 
 import { getSpApiConfig } from './config'
+import { noteRateLimit } from './rate-limiter'
 import type { LwaTokenCache, LwaTokenResponse, SpApiDimension, SpApiDimensions } from './types'
 
 const LWA_TOKEN_URL = 'https://api.amazon.com/auth/o2/token'
@@ -93,6 +94,7 @@ export async function spApiCall<T>(
     url: string,
     options: RequestInit = {},
     attempt = 0,
+    operation = 'default',
 ): Promise<T | null> {
     const cfg = getSpApiConfig()
     const token = await getLwaAccessToken()
@@ -110,33 +112,34 @@ export async function spApiCall<T>(
     // 401 — token rejected; invalidate + retry once
     if (res.status === 401 && attempt === 0) {
         invalidateLwaToken()
-        return spApiCall<T>(url, options, attempt + 1)
+        return spApiCall<T>(url, options, attempt + 1, operation)
     }
 
     // 429 — honour Retry-After when present; fall back to configured value
     if (res.status === 429) {
         if (attempt >= cfg.retryMax) {
-            console.warn(`SP-API 429 — max retries reached for ${url}`)
+            console.warn(`SP-API ${operation} 429 — max retries reached for ${url}`)
             return null
         }
         const retryAfterSec = parseFloat(res.headers.get('Retry-After') ?? '')
         const waitMs = Number.isFinite(retryAfterSec) && retryAfterSec > 0
             ? Math.ceil(retryAfterSec * 1_000) + 200   // Amazon's header + 200 ms buffer
             : cfg.retryOn429Ms                          // fallback
-        console.warn(`SP-API 429 — waiting ${(waitMs / 1_000).toFixed(1)}s (attempt ${attempt + 1})`)
+        noteRateLimit(operation, waitMs)
+        console.warn(`SP-API ${operation} 429 — waiting ${(waitMs / 1_000).toFixed(1)}s (attempt ${attempt + 1})`)
         await sleep(waitMs)
-        return spApiCall<T>(url, options, attempt + 1)
+        return spApiCall<T>(url, options, attempt + 1, operation)
     }
 
     // 503 — server error, back off
     if (res.status === 503) {
         if (attempt >= cfg.retryMax) {
-            console.warn(`SP-API 503 — max retries reached for ${url}`)
+            console.warn(`SP-API ${operation} 503 — max retries reached for ${url}`)
             return null
         }
-        console.warn(`SP-API 503 — waiting ${cfg.retryOn503Ms / 1000}s (attempt ${attempt + 1})`)
+        console.warn(`SP-API ${operation} 503 — waiting ${cfg.retryOn503Ms / 1000}s (attempt ${attempt + 1})`)
         await sleep(cfg.retryOn503Ms)
-        return spApiCall<T>(url, options, attempt + 1)
+        return spApiCall<T>(url, options, attempt + 1, operation)
     }
 
     // 404 — product not found in marketplace; not an error
@@ -145,10 +148,10 @@ export async function spApiCall<T>(
     // Other non-OK: log + retry with short backoff
     if (!res.ok) {
         const body = await res.text()
-        console.warn(`SP-API ${res.status} for ${url}: ${body.slice(0, 200)}`)
+        console.warn(`SP-API ${operation} ${res.status} for ${url}: ${body.slice(0, 200)}`)
         if (attempt < cfg.retryMax) {
             await sleep(5_000)
-            return spApiCall<T>(url, options, attempt + 1)
+            return spApiCall<T>(url, options, attempt + 1, operation)
         }
         return null
     }

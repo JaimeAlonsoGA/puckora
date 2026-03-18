@@ -6,7 +6,7 @@
  * and `npm run gen:types` regenerates @puckora/types.
  */
 
-import type { AppUser, AppUserUpdate } from '@/types/users'
+import type { User as AppUser, UserUpdate as AppUserUpdate } from '@puckora/types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SupabaseInstance = any

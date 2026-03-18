@@ -435,7 +435,7 @@ export interface CatalogItemResult {
     listing_date: string | null
 
     // All category ranks this ASIN appears in
-    category_ranks: Array<{ classificationId: string; rank: number }>
+    category_ranks: Array<{ classificationId: string; title: string; rank: number }>
 }
 
 /**

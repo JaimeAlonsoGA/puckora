@@ -3,11 +3,11 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "scrape:amazon": "NODE_OPTIONS=--max-old-space-size=8192 tsx scrapers/amazon/index.ts",
+    "scrape:amazon": "MAX_CATS_PER_RUN=6000 NODE_OPTIONS=--max-old-space-size=8192 tsx scrapers/amazon/index.ts",
     "scrape:amazon:test": "tsx scrapers/amazon/index.ts --test 5",
     "scrape:amazon:debug": "tsx scrapers/amazon/index.ts --upload-test 1",
     "scrape:amazon:upload-test": "NODE_OPTIONS=--max-old-space-size=8192 tsx scrapers/amazon/index.ts --upload-test 10",
-    "scrape:amazon:resume": "NODE_OPTIONS=--max-old-space-size=8192 tsx scrapers/amazon/index.ts --resume",
+    "scrape:amazon:resume": "MAX_CATS_PER_RUN=6000 NODE_OPTIONS=--max-old-space-size=8192 tsx scrapers/amazon/index.ts --resume",
     "scrape:globalsources": "NODE_OPTIONS=--max-old-space-size=8192 tsx scrapers/globalsources/index.ts",
     "scrape:globalsources:test": "tsx scrapers/globalsources/index.ts --test 1",
     "scrape:globalsources:upload-test": "tsx scrapers/globalsources/index.ts --upload-test 3",
@@ -20,10 +20,13 @@
     "new-scraper": "bash scripts/new-scraper.sh"
   },
   "dependencies": {
+    "@puckora/db": "*",
     "@puckora/scraper-core": "*",
     "@puckora/sp-api": "*",
     "@puckora/types": "*",
     "@puckora/utils": "*",
+    "@puckora/vectors": "*",
+    "pg": "^8.13.3",
     "@supabase/supabase-js": "^2.39.0",
     "dotenv": "^16.4.0",
     "playwright": "^1.41.0",
@@ -31,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "@types/pg": "^8.11.10",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.3.3"

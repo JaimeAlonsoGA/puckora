@@ -124,7 +124,7 @@ export async function getCatalogItemParsed(
         `?marketplaceIds=${marketplaceId}&includedData=${includedData}&locale=en_US`
 
     await acquireRateToken('getCatalogItem')
-    const raw = await spApiCall<RawCatalogResponse>(url)
+    const raw = await spApiCall<RawCatalogResponse>(url, {}, 0, 'getCatalogItem')
     if (!raw) return null
 
     // ── Summaries ──────────────────────────────────────────────────────────────
@@ -180,6 +180,7 @@ export async function getCatalogItemParsed(
     // classification ranks only — displayGroupRanks use string keys not in our DB
     const category_ranks = (ranksEntry?.classificationRanks ?? []).map((r) => ({
         classificationId: r.classificationId,
+        title: r.title,
         rank: r.rank,
     }))
 
@@ -240,6 +241,9 @@ export async function getCatalogItem(params: GetCatalogItemParams): Promise<Cata
     await acquireRateToken('getCatalogItem')
     return spApiCall<CatalogItem>(
         `${regionEndpoint}/catalog/2022-04-01/items/${encodeURIComponent(params.asin)}?${query.toString()}`,
+        {},
+        0,
+        'getCatalogItem',
     )
 }
 
@@ -271,6 +275,9 @@ export async function searchCatalogItems(
     await acquireRateToken('searchCatalogItems')
     return spApiCall<SearchCatalogItemsResponse>(
         `${regionEndpoint}/catalog/2022-04-01/items?${query.toString()}`,
+        {},
+        0,
+        'searchCatalogItems',
     )
 }
 
@@ -421,6 +428,7 @@ export function parseCatalogItem(
         item.salesRanks?.find((r) => r.marketplaceId === marketplaceId) ?? item.salesRanks?.[0]
     const category_ranks = (ranksEntry?.classificationRanks ?? []).map((r) => ({
         classificationId: r.classificationId,
+        title: r.title,
         rank: r.rank,
     }))
 

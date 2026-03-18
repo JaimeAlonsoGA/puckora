@@ -1,9 +1,17 @@
 # puckora — Copilot Instructions
 
-Monorepo: `apps/web` (Next.js 16), `apps/scraper` (Node), `apps/extension` (Chrome). Work only in scope.
+Monorepo: `apps/web` (Next.js 16), `apps/scraper` (Node), `apps/extension` (Chrome), shared packages including `packages/db`, `packages/sp-api`, and `packages/vectors`. Work only in scope.
 
 ## Stack (web)
 Next.js 16 · React 19 · TypeScript 5.8 · Tailwind v4 · Supabase SSR · TanStack Query v5 · next-intl v4 · react-hook-form + Zod v3
+
+## Data architecture
+
+- Supabase Postgres = auth, users, scrape jobs, realtime-driven app state
+- Fly.io Postgres = canonical catalog data (`amazon_*`, `gs_*`, `product_category_ranks`, `product_financials`)
+- Local / tailnet Postgres + `pgvector` = derived semantic-search index owned by `packages/vectors`
+- `DATABASE_PROXY_URL` is the preferred local-dev override for Fly access when a local `fly proxy` tunnel is running
+- Vector operations are package-owned: use root `vectors:*` scripts or `packages/vectors/scripts/*`, never scraper-local wrappers
 
 ## Non-negotiable rules
 
@@ -30,6 +38,8 @@ Next.js 16 · React 19 · TypeScript 5.8 · Tailwind v4 · Supabase SSR · TanSt
 - App types = `types/{domain}.ts`
 
 **imports:** `@/` for web-app internal, `@puckora/types`, `@puckora/utils`, `@puckora/ui` for packages.
+
+**Vector boundary:** `packages/vectors` owns sync, watch, batch, backfill, status, and query tooling. `apps/scraper` produces source data in Fly; it does not own vector CLIs.
 
 ## Full reference
 See `AGENTS.md` at repo root.

@@ -15,13 +15,13 @@ import 'server-only'
 
 import { cache } from 'react'
 import { unstable_cache } from 'next/cache'
-import { createAnonClient } from '@/integrations/supabase/anon'
+import { createFlyioDb } from '@/integrations/flyio/client'
 import { getTopLevelCategories } from '@/services/categories'
 import type { AmazonCategory } from '@puckora/types'
 
 const _fetchTopCategories = unstable_cache(
     async (marketplace: string): Promise<AmazonCategory[]> => {
-        return getTopLevelCategories(createAnonClient(), marketplace)
+        return getTopLevelCategories(createFlyioDb(), marketplace)
     },
     ['amazon-top-categories'],
     { revalidate: false, tags: ['amazon-categories'] },

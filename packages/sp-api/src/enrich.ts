@@ -80,6 +80,7 @@ export function enrichAsin(
     const ranks: CategoryRankRow[] = (catalog?.category_ranks ?? []).map((r) => ({
         asin,
         category_id: r.classificationId,
+        category_name: r.title,
         rank: r.rank,
         rank_type: 'organic' as const,
         observed_at: now,

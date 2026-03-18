@@ -1,38 +1,13 @@
 /**
- * gs_suppliers DB operations.
- *
- * gs_suppliers is platform-agnostic — rows keyed by (platform, platform_supplier_id).
- * upsertGsSupplier()      — from product detail page, returns row UUID for FK.
- * upsertGsSupplierCards() — from supplier listing page, enriches existing rows.
+ * gs_suppliers DB operations — Drizzle/Fly.io version.
  */
+import { sql } from 'drizzle-orm'
+import { gsSuppliers } from '@puckora/db'
 import { log } from '../../../shared/logger'
 import type { GlobalSourcesProductDetail } from '@puckora/scraper-core'
 import type { GsSupplierCard } from '../pages/supplier-listing'
 import type { DB } from '../../../shared/db'
 
-// ─── TYPES ───────────────────────────────────────────────────────────────────
-
-interface SupplierRow {
-    platform_supplier_id: string
-    profile_url: string | null
-    name: string
-    country?: string | null
-    years_on_platform: number | null
-    business_types: string[]
-    trade_shows_count: number | null
-    main_products?: string[]
-    employee_count?: number | null
-    export_markets?: string[]
-    verifications?: string[]
-}
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-
-/**
- * Extract the numeric supplier ID from a GS profile URL.
- * "//ldnio.manufacturer.globalsources.com/homepage_6008851380496.htm"
- * → "6008851380496"
- */
 export function extractGsSupplierId(profileUrl: string): string | null {
     const m = profileUrl.match(/homepage[_-](\d{8,})\.htm/)
     if (m) return m[1]
@@ -41,21 +16,11 @@ export function extractGsSupplierId(profileUrl: string): string | null {
     return null
 }
 
-/**
- * Parse a GS employee count string into a representative number.
- * "51-100" → 51, "101-500" → 101, ">1000" → 1001, "Unknown" → null
- */
 function parseEmployeeCount(raw: string): number | null {
     const m = raw.match(/(\d+)/)
     return m ? parseInt(m[1], 10) : null
 }
 
-// ─── UPSERT (from product detail) ────────────────────────────────────────────
-
-/**
- * Upsert one GS supplier from a scraped product detail.
- * Returns the supplier row's UUID, or null on error / missing ID.
- */
 export async function upsertGsSupplier(
     db: DB,
     detail: GlobalSourcesProductDetail,
@@ -68,71 +33,79 @@ export async function upsertGsSupplier(
 
     if (!supplierId) return null
 
-    const row: SupplierRow = {
-        platform_supplier_id: supplierId,
-        profile_url: detail.supplier_url,
-        name: detail.supplier_name,
-        country: detail.supplier_country ?? undefined,
-        years_on_platform: detail.supplier_years_gs,
-        business_types: detail.supplier_business_types,
-        trade_shows_count: detail.supplier_trade_shows_count,
-        verifications: detail.supplier_verifications?.length
-            ? detail.supplier_verifications
-            : undefined,
-    }
+    try {
+        const rows = await db
+            .insert(gsSuppliers)
+            .values({
+                platform_supplier_id: supplierId,
+                profile_url: detail.supplier_url ?? null,
+                name: detail.supplier_name,
+                country: detail.supplier_country ?? null,
+                years_on_platform: detail.supplier_years_gs ?? null,
+                business_types: detail.supplier_business_types ?? [],
+                trade_shows_count: detail.supplier_trade_shows_count ?? null,
+                verifications: detail.supplier_verifications?.length ? detail.supplier_verifications : [],
+            })
+            .onConflictDoUpdate({
+                target: gsSuppliers.platform_supplier_id,
+                set: {
+                    profile_url: sql`excluded.profile_url`,
+                    name: sql`excluded.name`,
+                    country: sql`excluded.country`,
+                    years_on_platform: sql`excluded.years_on_platform`,
+                    business_types: sql`excluded.business_types`,
+                    verifications: sql`excluded.verifications`,
+                    updated_at: sql`now()`,
+                },
+            })
+            .returning({ id: gsSuppliers.id })
 
-    const { data, error } = await db
-        .from('gs_suppliers')
-        .upsert(row, { onConflict: 'platform_supplier_id', ignoreDuplicates: false })
-        .select('id')
-        .single()
-
-    if (error) {
-        log.db.error('gs_suppliers', 'upsert', error)
+        return rows[0]?.id ?? null
+    } catch (err) {
+        log.db.error('gs_suppliers', 'upsert', err as Error)
         return null
     }
-
-    return (data as any)?.id ?? null
 }
 
-// ─── UPSERT CARDS (from supplier listing) ────────────────────────────────────
-
-/**
- * Upsert supplier cards from the supplier listing page.
- * Enriches existing rows with main_products, employee_count, export_markets.
- */
 export async function upsertGsSupplierCards(
     db: DB,
     cards: GsSupplierCard[],
 ): Promise<void> {
-    const rows: SupplierRow[] = []
-
-    for (const card of cards) {
-        if (!card.platformSupplierId) continue
-        rows.push({
-            platform_supplier_id: card.platformSupplierId,
-            profile_url: card.profileUrl || null,
+    const rows = cards
+        .filter(c => !!c.platformSupplierId)
+        .map(card => ({
+            platform_supplier_id: card.platformSupplierId!,
+            profile_url: card.profileUrl ?? null,
             name: card.name,
-            country: card.country,
-            years_on_platform: card.yearsOnGs,
-            business_types: card.businessTypes,
-            trade_shows_count: null,
-            main_products: card.mainProducts,
+            country: card.country ?? null,
+            years_on_platform: card.yearsOnGs ?? null,
+            business_types: card.businessTypes ?? [],
+            trade_shows_count: null as number | null,
+            main_products: card.mainProducts ?? [],
             employee_count: card.employeeCount ? parseEmployeeCount(card.employeeCount) : null,
-            export_markets: card.exportMarkets,
-            verifications: card.verifications,
-        })
-    }
+            export_markets: card.exportMarkets ?? [],
+            verifications: card.verifications ?? [],
+        }))
 
     if (rows.length === 0) return
 
-    const { error } = await db
-        .from('gs_suppliers')
-        .upsert(rows, { onConflict: 'platform_supplier_id', ignoreDuplicates: false })
-
-    if (error) {
-        log.db.error('gs_suppliers', 'upsert (cards)', error)
-    } else {
+    try {
+        await db
+            .insert(gsSuppliers)
+            .values(rows)
+            .onConflictDoUpdate({
+                target: gsSuppliers.platform_supplier_id,
+                set: {
+                    main_products: sql`excluded.main_products`,
+                    employee_count: sql`excluded.employee_count`,
+                    export_markets: sql`excluded.export_markets`,
+                    updated_at: sql`now()`,
+                },
+            })
         log.db.uploadDone('gs_suppliers', rows.length, 0)
+    } catch (err) {
+        log.db.error('gs_suppliers', 'upsert (cards)', err as Error)
     }
 }
+
+// ─── (end of file) ─────────────────────────────────────────────────────────

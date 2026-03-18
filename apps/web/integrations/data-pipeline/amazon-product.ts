@@ -15,12 +15,10 @@ import type {
 } from '@/integrations/apify/types'
 import { upsertAmazonProduct } from '@/services/products'
 import type { AmazonProductInsert } from '@puckora/types'
+import type { PgDb } from '@puckora/db'
 import { parseDomainFromUrl } from '@puckora/utils'
 import { parseRatingNumber } from './utils'
 import { SCRAPE_PRODUCT_STATUS } from '@puckora/scraper-core'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
 
 function normaliseProductInsert(raw: AmazonProductDetailsOutput): AmazonProductInsert {
     return {
@@ -51,7 +49,7 @@ export interface FetchAmazonProductResult {
  * Fetch one Amazon product by URL, normalise, and upsert into amazon_products.
  */
 export async function fetchAndPersistAmazonProduct(
-    supabase: SupabaseInstance,
+    db: PgDb,
     productUrl: string,
 ): Promise<FetchAmazonProductResult> {
     let raw: AmazonProductDetailsOutput | null = null
@@ -75,7 +73,7 @@ export async function fetchAndPersistAmazonProduct(
     }
 
     try {
-        await upsertAmazonProduct(supabase, normaliseProductInsert(raw))
+        await upsertAmazonProduct(db, normaliseProductInsert(raw))
         return { asin: raw.asin, status: 'upserted' }
     } catch (err) {
         return {

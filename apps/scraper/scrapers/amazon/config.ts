@@ -39,4 +39,9 @@ export const AMAZON_CONFIG = {
     checkpoint_file: './runs/amazon/checkpoint.json',
     scrape_cache_file: './runs/amazon/cache.ndjson',
     batch_size: 50,
+
+    // ── Batch mode ────────────────────────────────────────────────────────────
+    // Phase 1 processes this many categories then exits 42 for resume.sh to restart.
+    // 0 = no limit (default). Set via MAX_CATS_PER_RUN env var.
+    max_cats_per_run: parseInt(process.env['MAX_CATS_PER_RUN'] ?? '0', 10) || 0,
 } as const

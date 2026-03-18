@@ -19,7 +19,7 @@ import { log } from '../../shared/logger'
 import { loadCheckpoint, saveCheckpoint, freshCheckpoint } from './checkpoint'
 import { initScrapeCache, appendScrapeCache, loadScrapeCache } from './cache'
 import { scrapeCategory } from './pages/category'
-import { loadCategoriesFromSupabase, markCategoryScraped, markCategoryFailed } from './db/categories'
+import { ensureRankCategoriesExist, loadCategories, markCategoryScraped, markCategoryFailed } from './db/categories'
 import { createDb } from '../../shared/db'
 import { upsertProducts, upsertRanks } from './db/products'
 import { launchBrowser } from './browser'
@@ -28,6 +28,14 @@ import type { CatalogItemResult } from '@puckora/sp-api'
 import type { ProductRow, CategoryRankRow, ScrapedProduct, CategoryNode } from './types'
 import { eta, jitter } from '../../shared/utils'
 import { parseScraperArgs } from '../../shared/cli'
+
+function pickUsablePrice(...candidates: Array<number | null | undefined>): number | null {
+    for (const candidate of candidates) {
+        if (candidate != null && Number.isFinite(candidate) && candidate > 0) return candidate
+    }
+
+    return null
+}
 
 // ─── ARGS ────────────────────────────────────────────────────────────────────
 
@@ -44,15 +52,22 @@ async function main() {
     const db = createDb()
     const browser = await launchBrowser()
     log.info(AMAZON_CONFIG.proxy_url ? `Proxy: ${AMAZON_CONFIG.proxy_url.replace(/:[^:@]+@/, ':***@')}` : 'No proxy — using local IP')
+    const existingCheckpoint = loadCheckpoint()
 
     let categories: CategoryNode[]
     try {
-        categories = await loadCategoriesFromSupabase(db, { singleId: SINGLE_ID ?? undefined })
-        log.success(`Loaded ${categories.length} categories from Supabase`)
+        categories = await loadCategories(db, { singleId: SINGLE_ID ?? undefined })
+        log.success(`Loaded ${categories.length} categories from Fly.io`)
     } catch (e) {
-        log.error((e as Error).message)
-        await browser.close()
-        process.exit(1)
+        const message = (e as Error).message
+        if (IS_RESUME && existingCheckpoint && message.includes('No categories found')) {
+            categories = []
+            log.info('Resume mode: no pending categories remain in Fly.io — continuing with cached enrichment work only')
+        } else {
+            log.error(message)
+            await browser.close()
+            process.exit(1)
+        }
     }
 
     if (TEST_LIMIT) categories = categories.slice(0, TEST_LIMIT)
@@ -60,7 +75,7 @@ async function main() {
     if (SINGLE_ID) categories = categories.filter(c => c.id === SINGLE_ID)
 
     // Checkpoint / resume
-    let cp = loadCheckpoint()
+    let cp = existingCheckpoint
     if (IS_RESUME && cp) {
         const done = new Set(cp.scraped_ids)
         const before = categories.length
@@ -162,6 +177,15 @@ async function main() {
         }
 
         if ((scraped_ok + scraped_empty + scraped_fail) % 50 === 0 && !IS_TEST) saveCheckpoint(cp)
+
+        const batchDone = scraped_ok + scraped_empty + scraped_fail
+        if (!IS_TEST && AMAZON_CONFIG.max_cats_per_run > 0 && batchDone >= AMAZON_CONFIG.max_cats_per_run) {
+            saveCheckpoint(cp)
+            log.info(`Batch limit (${AMAZON_CONFIG.max_cats_per_run}) reached after ${batchDone} categories — restart with scrape:amazon:resume (exit 42)`)
+            await browser.close()
+            process.exit(42)
+        }
+
         await jitter(AMAZON_CONFIG.delay_min_ms, AMAZON_CONFIG.delay_max_ms)
     }
 
@@ -248,7 +272,10 @@ async function main() {
         const batchPriced = batch
             .map(asin => ({
                 asin,
-                price: catalogBatch.get(asin)?.list_price ?? allProducts.get(asin)!.price,
+                price: pickUsablePrice(
+                    catalogBatch.get(asin)?.list_price,
+                    allProducts.get(asin)?.price,
+                ),
             }))
             .filter((x): x is { asin: string; price: number } => x.price !== null)
         const feeBatch = await getFeesEstimatesBatch(batchPriced)
@@ -331,7 +358,11 @@ async function main() {
                 if (!failedEnrichmentAsins.has(e.asin)) deduped.set(`${e.asin}:${e.category_id}`, e)
             }
             await upsertProducts(db, enrichedProducts.splice(0))
-            if (deduped.size > 0) await upsertRanks(db, [...deduped.values()])
+            if (deduped.size > 0) {
+                const dedupedRows = [...deduped.values()]
+                await ensureRankCategoriesExist(db, dedupedRows)
+                await upsertRanks(db, dedupedRows)
+            }
             saveCheckpoint(cp)
             log.flush(enriched_ok, enriched_fail)
         }
@@ -344,7 +375,11 @@ async function main() {
         for (const e of pendingRanks) {
             if (!failedEnrichmentAsins.has(e.asin)) deduped.set(`${e.asin}:${e.category_id}`, e)
         }
-        if (deduped.size > 0) await upsertRanks(db, [...deduped.values()])
+        if (deduped.size > 0) {
+            const dedupedRows = [...deduped.values()]
+            await ensureRankCategoriesExist(db, dedupedRows)
+            await upsertRanks(db, dedupedRows)
+        }
         saveCheckpoint(cp)
     }
 

@@ -1,5 +1,5 @@
 /**
- * Supabase service layer — amazon_keywords + amazon_keyword_products tables.
+ * Drizzle service layer — amazon_keywords + amazon_keyword_products (Fly.io Postgres).
  *
  * amazon_keywords         = one row per unique (keyword, marketplace) pair.
  *                           Canonical market data — not user-scoped. Upserted
@@ -9,13 +9,12 @@
  *   Both the extension scraper and SP-API background track write to this table;
  *   conflicts are silently ignored (ON CONFLICT DO NOTHING).
  *
- * All functions accept a typed Supabase instance so they work from both
- * Server Components (createServerClient) and Route Handlers (admin client).
+ * NOTE: getKeywordForJob requires both a PgDb (keywords on Fly.io) and a
+ * Supabase instance (scrape_jobs stays on Supabase). Callers must provide both.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
-
+import { eq, and, inArray, sql } from 'drizzle-orm'
+import { type PgDb, amazonKeywords, amazonKeywordProducts, productFinancialsView } from '@puckora/db'
 import type {
     AmazonKeyword,
     AmazonKeywordInsert,
@@ -24,6 +23,9 @@ import type {
     ProductFinancial,
 } from '@puckora/types'
 import { getScrapeJob } from '@/services/scrape'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SupabaseInstance = any
 
 // ---------------------------------------------------------------------------
 // amazon_keywords
@@ -34,20 +36,25 @@ import { getScrapeJob } from '@/services/scrape'
  * Bumps last_searched_at and returns the canonical row.
  */
 export async function upsertKeyword(
-    supabase: SupabaseInstance,
+    db: PgDb,
     insert: AmazonKeywordInsert,
 ): Promise<AmazonKeyword> {
-    const { data, error } = await supabase
-        .from('amazon_keywords')
-        .upsert(
-            { ...insert, last_searched_at: new Date().toISOString() },
-            { onConflict: 'keyword,marketplace', ignoreDuplicates: false },
-        )
-        .select('*')
-        .single()
-
-    if (error) throw new Error(`upsertKeyword failed: ${error.message}`)
-    return data as AmazonKeyword
+    const rows = await db
+        .insert(amazonKeywords)
+        .values({
+            ...insert,
+            last_searched_at: new Date().toISOString(),
+        } as typeof amazonKeywords.$inferInsert)
+        .onConflictDoUpdate({
+            target: [amazonKeywords.keyword, amazonKeywords.marketplace],
+            set: {
+                total_results: sql`excluded.total_results`,
+                unique_brands: sql`excluded.unique_brands`,
+                last_searched_at: sql`excluded.last_searched_at`,
+            },
+        })
+        .returning()
+    return rows[0] as AmazonKeyword
 }
 
 /**
@@ -55,16 +62,14 @@ export async function upsertKeyword(
  * Only `total_results` and `unique_brands` are written here.
  */
 export async function updateKeyword(
-    supabase: SupabaseInstance,
+    db: PgDb,
     id: string,
     update: AmazonKeywordUpdate,
 ): Promise<void> {
-    const { error } = await supabase
-        .from('amazon_keywords')
-        .update(update)
-        .eq('id', id)
-
-    if (error) throw new Error(`updateKeyword failed: ${error.message}`)
+    await db
+        .update(amazonKeywords)
+        .set(update as Partial<typeof amazonKeywords.$inferInsert>)
+        .where(eq(amazonKeywords.id, id))
 }
 
 /**
@@ -72,19 +77,16 @@ export async function updateKeyword(
  * Returns null when this keyword has never been searched.
  */
 export async function getKeyword(
-    supabase: SupabaseInstance,
+    db: PgDb,
     keyword: string,
     marketplace: string,
 ): Promise<AmazonKeyword | null> {
-    const { data, error } = await supabase
-        .from('amazon_keywords')
-        .select('*')
-        .eq('keyword', keyword)
-        .eq('marketplace', marketplace)
-        .maybeSingle()
-
-    if (error) throw new Error(`getKeyword failed: ${error.message}`)
-    return data as AmazonKeyword | null
+    const rows = await db
+        .select()
+        .from(amazonKeywords)
+        .where(and(eq(amazonKeywords.keyword, keyword), eq(amazonKeywords.marketplace, marketplace)))
+        .limit(1)
+    return (rows[0] ?? null) as AmazonKeyword | null
 }
 
 /**
@@ -92,13 +94,19 @@ export async function getKeyword(
  * Looks up the job’s payload (keyword + marketplace) then delegates to getKeyword.
  * Returns null when the job has no keyword payload or no keyword row exists yet.
  */
+/**
+ * scrape_jobs stays on Supabase — pass `supabase` for that lookup.
+ * amazon_keywords lives on Fly.io — `db` is used for the keyword fetch.
+ */
 export async function getKeywordForJob(
+    db: PgDb,
     supabase: SupabaseInstance,
     jobId: string,
 ): Promise<AmazonKeyword | null> {
     const job = await getScrapeJob(supabase, jobId)
-    if (!job?.payload?.keyword || !job.payload.marketplace) return null
-    return getKeyword(supabase, job.payload.keyword as string, job.payload.marketplace as string)
+    const payload = job?.payload as { keyword?: string; marketplace?: string } | undefined
+    if (!payload?.keyword || !payload?.marketplace) return null
+    return getKeyword(db, payload.keyword, payload.marketplace)
 }
 
 // ---------------------------------------------------------------------------
@@ -109,14 +117,13 @@ export async function getKeywordForJob(
  * Link an ASIN to a keyword search. Idempotent — conflicts are silently ignored.
  */
 export async function upsertKeywordProduct(
-    supabase: SupabaseInstance,
+    db: PgDb,
     insert: AmazonKeywordProductInsert,
 ): Promise<void> {
-    const { error } = await supabase
-        .from('amazon_keyword_products')
-        .upsert(insert, { onConflict: 'keyword_id,asin', ignoreDuplicates: true })
-
-    if (error) throw new Error(`upsertKeywordProduct failed: ${error.message}`)
+    await db
+        .insert(amazonKeywordProducts)
+        .values(insert as typeof amazonKeywordProducts.$inferInsert)
+        .onConflictDoNothing()
 }
 
 /**
@@ -124,27 +131,24 @@ export async function upsertKeywordProduct(
  * ordered by BSR (product_financials.rank ascending — lower = better).
  */
 export async function getProductsForKeyword(
-    supabase: SupabaseInstance,
+    db: PgDb,
     keywordId: string,
 ): Promise<ProductFinancial[]> {
     // Step 1: get all ASINs for this keyword
-    const { data: links, error: linksError } = await supabase
-        .from('amazon_keyword_products')
-        .select('asin')
-        .eq('keyword_id', keywordId)
+    const links = await db
+        .select({ asin: amazonKeywordProducts.asin })
+        .from(amazonKeywordProducts)
+        .where(eq(amazonKeywordProducts.keyword_id, keywordId))
 
-    if (linksError) throw new Error(`getProductsForKeyword (links) failed: ${linksError.message}`)
-    if (!links || links.length === 0) return []
+    if (links.length === 0) return []
 
-    const asins = (links as { asin: string }[]).map((r) => r.asin)
+    const asins = links.map((r) => r.asin)
 
-    // Step 2: fetch product_financials, sorted by BSR
-    const { data: products, error: productsError } = await supabase
-        .from('product_financials')
-        .select('*')
-        .in('asin', asins)
-        .order('rank', { ascending: true, nullsFirst: false })
-
-    if (productsError) throw new Error(`getProductsForKeyword (financials) failed: ${productsError.message}`)
-    return (products ?? []) as ProductFinancial[]
+    // Step 2: fetch product_financials view, sorted by BSR (nulls last)
+    const rows = await db
+        .select()
+        .from(productFinancialsView)
+        .where(inArray(productFinancialsView.asin!, asins))
+        .orderBy(sql`${productFinancialsView.rank} asc nulls last`)
+    return rows as ProductFinancial[]
 }

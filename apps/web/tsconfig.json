@@ -1,6 +1,7 @@
 {
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
+        "baseUrl": ".",
         "jsx": "preserve",
         "module": "ESNext",
         "moduleResolution": "bundler",
@@ -27,6 +28,12 @@
             ],
             "@puckora/ui": [
                 "../../packages/ui/src"
+            ],
+            "@puckora/vectors": [
+                "../../packages/vectors/src/index.ts"
+            ],
+            "@puckora/vectors/*": [
+                "../../packages/vectors/src/*"
             ]
         }
     },

@@ -20,10 +20,8 @@ import { getCatalogItemParsed, getFeesEstimatesBatch, SP_API_MARKETPLACE_ID } fr
 import { enrichAsin } from '@puckora/sp-api'
 import { upsertAmazonProduct } from '@/services/products'
 import type { AmazonProductInsert } from '@puckora/types'
+import type { PgDb } from '@puckora/db'
 import type { ScrapedListing } from '@puckora/scraper-core'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -53,12 +51,12 @@ export interface EnrichAsinResult {
  * Processes ASINs sequentially to respect SP-API rate limits (handled inside
  * getCatalogItemParsed via acquireRateToken). Failed ASINs are logged and skipped.
  *
- * @param supabase    - Admin Supabase client (bypasses RLS)
+ * @param db          - Fly.io Drizzle PgDb instance
  * @param listings    - Scraped listings from the extension / agent
  * @param marketplace - Puckora marketplace code, defaults to 'US'
  */
 export async function enrichAsinBatch(
-    supabase: SupabaseInstance,
+    db: PgDb,
     listings: ScrapedListing[],
     marketplace = 'US',
 ): Promise<EnrichAsinResult[]> {
@@ -125,7 +123,7 @@ export async function enrichAsinBatch(
                 fee,
             )
 
-            await upsertAmazonProduct(supabase, product as AmazonProductInsert)
+            await upsertAmazonProduct(db, product as AmazonProductInsert)
 
             if (!results.find((r) => r.asin === listing.asin)) {
                 results.push({ asin: listing.asin, status: catalog ? 'enriched' : 'not_found' })

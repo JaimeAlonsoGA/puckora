@@ -85,13 +85,23 @@ export async function getFeesEstimatesBatch(
 
     const result = new Map<string, ParsedFeeEstimate>()
     const BATCH = 20
+    const validItems = items.filter(({ asin, price }) => {
+        const isValid = Number.isFinite(price) && price > 0
+        if (!isValid) {
+            console.warn(`SP-API fee estimate skipped for ${asin}: invalid price ${String(price)}`)
+            result.set(asin, { fba_fee: null, referral_fee: null })
+        }
 
-    for (let i = 0; i < items.length; i += BATCH) {
-        const batch = items.slice(i, i + BATCH)
+        return isValid
+    })
 
-        // Batch endpoint rate limit is 0.5 req/s → min 2s between calls
+    for (let i = 0; i < validItems.length; i += BATCH) {
+        const batch = validItems.slice(i, i + BATCH)
+
+        // Batch endpoint rate limit is 0.5 req/s. Use a slightly more conservative
+        // cadence than the published floor to reduce live throttling.
         await acquireRateToken('getFeesEstimatesBatch')
-        await sleep(Math.max(cfg.retryOn429Ms > 0 ? 0 : 0, 2_000))
+        await sleep(cfg.feesBatchIntervalMs)
 
         const body = batch.map(({ asin, price }) => ({
             FeesEstimateRequest: {
@@ -110,7 +120,7 @@ export async function getFeesEstimatesBatch(
         const raw = await spApiCall<RawFeesEstimatesResponse>(url, {
             method: 'POST',
             body: JSON.stringify(body),
-        })
+        }, 0, 'getFeesEstimatesBatch')
 
         if (!Array.isArray(raw)) continue
 
@@ -147,7 +157,7 @@ export async function getFeesEstimatesBatch(
         }
 
         const batchNum = Math.floor(i / BATCH) + 1
-        const total = Math.ceil(items.length / BATCH)
+        const total = Math.ceil(validItems.length / BATCH)
         console.debug(`SP-API fee batch ${batchNum}/${total} — ${batch.length} ASINs`)
     }
 
@@ -183,5 +193,7 @@ export async function getFeesEstimate(request: FeeEstimateRequest): Promise<GetF
     return spApiCall<GetFeesEstimateResponse>(
         `${regionEndpoint}/products/fees/v0/feesEstimate/asin/${encodeURIComponent(request.asin)}`,
         { method: 'POST', body: JSON.stringify(body) },
+        0,
+        'getFeesEstimate',
     )
 }

@@ -21,6 +21,12 @@ const SOURCE = path.join(ROOT, '.env')
 // All other keys are either server-only or completely excluded from that app.
 const BROWSER_PUBLIC_KEYS = ['SUPABASE_URL', 'SUPABASE_ANON_KEY']
 
+// DATABASE_URL is server-only (never exposed to browser / extension)
+// It points to Fly.io Postgres and is used by apps/web and apps/scraper only.
+// DATABASE_PROXY_URL is an optional local-dev override for a Fly proxy tunnel.
+// Vector variables are also server-only. They are passed through unchanged to
+// apps/web and apps/scraper so laptop/mac-mini setups can share one root .env.
+
 // ── Target definitions ────────────────────────────────────────────────────────
 const TARGETS = [
     {
@@ -30,12 +36,14 @@ const TARGETS = [
         renames: Object.fromEntries(BROWSER_PUBLIC_KEYS.map((k) => [k, `NEXT_PUBLIC_${k}`])),
         // Keys that the web app doesn't need at all
         exclude: ['WEB_APP_ORIGIN', 'SUPABASE_PASSWORD'],
+        // DATABASE_URL / DATABASE_PROXY_URL pass through as-is (server-only, used by integrations/flyio/client.ts)
     },
     {
         app: 'apps/scraper',
         file: '.env',
         renames: {},
         // Variables that are only needed browser-side or extension-side
+        // DATABASE_URL / DATABASE_PROXY_URL pass through as-is (used by shared/db.ts → @puckora/db createDb)
         exclude: ['WEB_APP_ORIGIN'],
     },
     {
@@ -46,7 +54,20 @@ const TARGETS = [
             [...BROWSER_PUBLIC_KEYS, 'WEB_APP_ORIGIN'].map((k) => [k, `VITE_${k}`])
         ),
         // Server-only secrets must never be bundled into the extension
+        // DATABASE_URL and DATABASE_PROXY_URL are excluded — extension never connects to Postgres directly
         exclude: [
+            'DATABASE_URL',
+            'DATABASE_PROXY_URL',
+            'VECTOR_DATABASE_URL',
+            'VECTOR_EMBEDDING_PROVIDER',
+            'VECTOR_EMBEDDING_MODEL',
+            'VECTOR_EMBEDDING_DIMENSIONS',
+            'VECTOR_OLLAMA_BASE_URL',
+            'VECTOR_SYNC_BATCH_SIZE',
+            'VECTOR_SYNC_POLL_MS',
+            'VECTOR_SYNC_STATE_FILE',
+            'VECTOR_MIN_SCORE',
+            'VECTOR_QUERY_LIMIT',
             'SUPABASE_SERVICE_ROLE_KEY',
             'SUPABASE_PASSWORD',
             'SP_CLIENT_ID',

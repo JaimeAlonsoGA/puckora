@@ -1,13 +1,8 @@
 /**
- * gs_products DB operations.
- *
- * Works against the gs_products table from migration 0004_globalsources.sql.
- *
- * upsertGsProducts()      — batched upsert, onConflict: 'id'. Call after
- *                           resolving supplier_id via upsertGsSupplier().
- * markGsProductFailed()   — mark a URL as failed for later retry.
- * getFailedGsProductUrls() — fetch product URLs that failed for retry.
+ * gs_products DB operations — Drizzle/Fly.io version.
  */
+import { sql, eq } from 'drizzle-orm'
+import { gsProducts } from '@puckora/db'
 import { log } from '../../../shared/logger'
 import { IS_DEBUG } from '../../../shared/db'
 import type { GlobalSourcesProductDetail } from '@puckora/scraper-core'
@@ -128,36 +123,82 @@ export async function upsertGsProducts(
         }
 
         const t0 = Date.now()
-        const { error } = await db
-            .from('gs_products')
-            .upsert(batch, { onConflict: 'id' })
-
-        if (error) {
-            log.db.error('gs_products', 'upsert', error, batchLabel)
+        try {
+            await db
+                .insert(gsProducts)
+                .values(batch as typeof gsProducts.$inferInsert[])
+                .onConflictDoUpdate({
+                    target: gsProducts.id,
+                    set: {
+                        url: sql`excluded.url`,
+                        supplier_id: sql`excluded.supplier_id`,
+                        source_category_id: sql`excluded.source_category_id`,
+                        name: sql`excluded.name`,
+                        description: sql`excluded.description`,
+                        brand_name: sql`excluded.brand_name`,
+                        model_number: sql`excluded.model_number`,
+                        price_low: sql`excluded.price_low`,
+                        price_high: sql`excluded.price_high`,
+                        price_unit: sql`excluded.price_unit`,
+                        price_tiers: sql`excluded.price_tiers`,
+                        moq_quantity: sql`excluded.moq_quantity`,
+                        moq_unit: sql`excluded.moq_unit`,
+                        item_length_cm: sql`excluded.item_length_cm`,
+                        item_width_cm: sql`excluded.item_width_cm`,
+                        item_height_cm: sql`excluded.item_height_cm`,
+                        item_weight_kg: sql`excluded.item_weight_kg`,
+                        carton_length_cm: sql`excluded.carton_length_cm`,
+                        carton_width_cm: sql`excluded.carton_width_cm`,
+                        carton_height_cm: sql`excluded.carton_height_cm`,
+                        carton_weight_kg: sql`excluded.carton_weight_kg`,
+                        units_per_carton: sql`excluded.units_per_carton`,
+                        fob_port: sql`excluded.fob_port`,
+                        lead_time_days_min: sql`excluded.lead_time_days_min`,
+                        lead_time_days_max: sql`excluded.lead_time_days_max`,
+                        hts_code: sql`excluded.hts_code`,
+                        logistics_type: sql`excluded.logistics_type`,
+                        image_primary: sql`excluded.image_primary`,
+                        images: sql`excluded.images`,
+                        certifications: sql`excluded.certifications`,
+                        export_markets: sql`excluded.export_markets`,
+                        payment_methods: sql`excluded.payment_methods`,
+                        people_also_search: sql`excluded.people_also_search`,
+                        category_breadcrumb: sql`excluded.category_breadcrumb`,
+                        key_specifications: sql`excluded.key_specifications`,
+                        product_info_text: sql`excluded.product_info_text`,
+                        scrape_status: sql`excluded.scrape_status`,
+                        scraped_at: sql`excluded.scraped_at`,
+                        updated_at: sql`now()`,
+                    },
+                })
+            log.db.uploadDone('gs_products', batch.length, Date.now() - t0)
+        } catch (err) {
+            log.db.error('gs_products', 'upsert', err as Error, batchLabel)
             const sample = batch.slice(0, 5).map(r => `${r.id}(sup=${r.supplier_id ?? 'null'})`).join(', ')
             log.error(`  sample rows: ${sample} …`)
-        } else {
-            log.db.uploadDone('gs_products', batch.length, Date.now() - t0)
         }
     }
 }
 
 export async function markGsProductFailed(db: DB, url: string, id: string): Promise<void> {
-    await db.from('gs_products').upsert(
-        { id, url, name: url, scrape_status: 'failed', scraped_at: new Date().toISOString() },
-        { onConflict: 'id' }
-    )
+    await db
+        .insert(gsProducts)
+        .values({ id, url, name: url, scrape_status: 'failed', scraped_at: new Date().toISOString() })
+        .onConflictDoUpdate({
+            target: gsProducts.id,
+            set: {
+                scrape_status: sql`excluded.scrape_status`,
+                scraped_at: sql`excluded.scraped_at`,
+                updated_at: sql`now()`,
+            },
+        })
 }
 
 export async function getFailedGsProductUrls(db: DB): Promise<string[]> {
-    const { data, error } = await db
-        .from('gs_products')
-        .select('url')
-        .eq('scrape_status', 'failed')
+    const rows = await db
+        .select({ url: gsProducts.url })
+        .from(gsProducts)
+        .where(eq(gsProducts.scrape_status, 'failed'))
 
-    if (error) {
-        log.error(`getFailedGsProductUrls: ${error.message}`)
-        return []
-    }
-    return (data as { url: string }[]).map(r => r.url)
+    return rows.map(r => r.url)
 }

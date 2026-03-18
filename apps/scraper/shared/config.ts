@@ -17,6 +17,9 @@ export function requireEnv(key: string): string {
 }
 
 export const BASE_CONFIG = {
+    // Fly.io Postgres — product catalog, categories, keywords (Drizzle via shared/db.ts)
+    database_url: requireEnv('DATABASE_URL'),
+    // Supabase — auth + scrape_jobs only (Realtime, user session)
     supabase_url: requireEnv('SUPABASE_URL'),
     supabase_key: requireEnv('SUPABASE_SERVICE_ROLE_KEY'),
     proxy_url: process.env['PROXY_URL'] ?? '',

@@ -7,7 +7,6 @@
  */
 
 import { queryOptions } from '@tanstack/react-query'
-import { getTopLevelCategories } from '@/services/categories'
 import type { AmazonCategory } from '@puckora/types'
 import { categoryKeys } from './_keys'
 
@@ -20,7 +19,9 @@ export const topCategoriesQueryOptions = (marketplace: string) =>
     queryOptions({
         queryKey: categoryKeys.topLevel(marketplace),
         queryFn: async (): Promise<AmazonCategory[]> => {
-            return getTopLevelCategories(marketplace)
+            const res = await fetch(`/api/categories?marketplace=${encodeURIComponent(marketplace)}`)
+            if (!res.ok) throw new Error('Failed to fetch categories')
+            return res.json() as Promise<AmazonCategory[]>
         },
         staleTime: 24 * 60 * 60 * 1000, // 24h
     })

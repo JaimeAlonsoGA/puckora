@@ -1,18 +1,18 @@
 /**
  * shared/db.ts
  *
- * Single typed Supabase client factory for the entire scraper suite.
- * All scrapers share the same Supabase project/credentials.
+ * Drizzle client factory for all scrapers.
+ * Connects to Fly.io Postgres via DATABASE_URL.
  */
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@puckora/types'
-import { BASE_CONFIG } from './config'
+import { createDb as _createDb, type PgDb } from '@puckora/db'
 
-export type DB = SupabaseClient<Database>
+export type DB = PgDb
 
 export const IS_DEBUG =
     process.argv.includes('--upload-test') || process.argv.includes('--test')
 
 export function createDb(): DB {
-    return createClient<Database>(BASE_CONFIG.supabase_url, BASE_CONFIG.supabase_key)
+    const url = process.env['DATABASE_URL']
+    if (!url) throw new Error('DATABASE_URL is not set — required for DB writes')
+    return _createDb(url)
 }

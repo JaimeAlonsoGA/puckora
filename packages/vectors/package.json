@@ -1,0 +1,29 @@
+{
+    "name": "@puckora/vectors",
+    "version": "0.0.1",
+    "private": true,
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "sync": "tsx scripts/sync.ts",
+        "watch": "tsx scripts/sync.ts --watch",
+        "query": "tsx scripts/query.ts",
+        "status": "tsx scripts/status.ts",
+        "rebuild": "tsx scripts/rebuild.ts",
+        "batch": "tsx scripts/batch.ts",
+        "backfill": "tsx scripts/backfill.ts"
+    },
+    "dependencies": {
+        "dotenv": "^16.6.1",
+        "pg": "^8.13.3"
+    },
+    "devDependencies": {
+        "@types/pg": "^8.11.10",
+        "tsx": "^4.21.0",
+        "typescript": "^5.8.2"
+    }
+}

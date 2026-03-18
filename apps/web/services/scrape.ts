@@ -10,7 +10,7 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SupabaseInstance = any
 
-import type { ScrapeJob, ScrapeJobInsert, ScrapeJobUpdate } from '@/types/scrape'
+import type { ScrapeJob, ScrapeJobInsert, ScrapeJobUpdate } from '@puckora/types'
 import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
 
 // ---------------------------------------------------------------------------

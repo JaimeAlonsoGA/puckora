@@ -30,6 +30,7 @@ import { SCRAPE_JOB_STATUS, SCRAPE_PRODUCT_STATUS } from '@puckora/scraper-core'
 import { upsertAmazonProduct } from '@/services/products'
 import { updateScrapeJob } from '@/services/scrape'
 import { getKeywordForJob, upsertKeywordProduct } from '@/services/keywords'
+import { createFlyioDb } from '@/integrations/flyio/client'
 import type { AmazonProductInsert } from '@puckora/types'
 import type { ScrapedListing } from '@puckora/scraper-core'
 
@@ -132,13 +133,14 @@ export async function POST(req: NextRequest) {
 
     const result = parsed.data
     const adminClient = createAdminClient()
+    const db = createFlyioDb()
 
     // 4. Upsert each listing into amazon_products ----------------------------
     // Use the admin client so we don't hit RLS on amazon_products.
     const upsertErrors: string[] = []
     for (const listing of result.listings) {
         try {
-            await upsertAmazonProduct(adminClient, normaliseListing(listing))
+            await upsertAmazonProduct(db, normaliseListing(listing))
         } catch (err) {
             upsertErrors.push(
                 `${listing.asin}: ${err instanceof Error ? err.message : 'upsert failed'}`,
@@ -171,11 +173,11 @@ export async function POST(req: NextRequest) {
     // keyword via amazon_keyword_products. Conflicts are silently ignored.
     if (!result.blocked && result.listings.length > 0) {
         try {
-            const keywordRow = await getKeywordForJob(adminClient, result.job_id)
+            const keywordRow = await getKeywordForJob(db, adminClient, result.job_id)
             if (keywordRow) {
                 for (const listing of result.listings) {
                     try {
-                        await upsertKeywordProduct(adminClient, {
+                        await upsertKeywordProduct(db, {
                             keyword_id: keywordRow.id,
                             asin: listing.asin,
                         })
@@ -197,7 +199,7 @@ export async function POST(req: NextRequest) {
         after(async () => {
             try {
                 const { enrichAsinBatch } = await import('@/integrations/data-pipeline/enrich')
-                await enrichAsinBatch(adminClient, listings)
+                await enrichAsinBatch(db, listings)
             } catch (err) {
                 console.error('[scrape/enrich] SP-API enrichment failed:', err)
             }

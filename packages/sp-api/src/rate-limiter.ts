@@ -23,6 +23,7 @@ interface BucketConfig {
 interface Bucket {
     tokens: number
     lastRefill: number  // ms since epoch
+    blockedUntil: number
 }
 
 const OPERATION_LIMITS: Record<string, BucketConfig> = {
@@ -38,20 +39,28 @@ const OPERATION_LIMITS: Record<string, BucketConfig> = {
 
 const buckets = new Map<string, Bucket>()
 
+function getBucketCapacity(config: BucketConfig): number {
+    return Math.max(1, config.burst)
+}
+
 function getBucketConfig(operation: string): BucketConfig {
     return OPERATION_LIMITS[operation] ?? OPERATION_LIMITS['default']!
 }
 
 function refillBucket(bucket: Bucket, config: BucketConfig, now: number): void {
     const elapsed = (now - bucket.lastRefill) / 1000  // seconds
-    bucket.tokens = Math.min(config.burst, bucket.tokens + elapsed * config.restoreRate)
+    bucket.tokens = Math.min(getBucketCapacity(config), bucket.tokens + elapsed * config.restoreRate)
     bucket.lastRefill = now
 }
 
 function getOrCreateBucket(operation: string): Bucket {
     if (!buckets.has(operation)) {
         const config = getBucketConfig(operation)
-        buckets.set(operation, { tokens: config.burst, lastRefill: Date.now() })
+        buckets.set(operation, {
+            tokens: getBucketCapacity(config),
+            lastRefill: Date.now(),
+            blockedUntil: 0,
+        })
     }
     return buckets.get(operation)!
 }
@@ -71,6 +80,12 @@ export async function acquireRateToken(operation: string): Promise<void> {
     let attempts = 0
     while (true) {
         const now = Date.now()
+
+        if (bucket.blockedUntil > now) {
+            await sleep(bucket.blockedUntil - now)
+            continue
+        }
+
         refillBucket(bucket, config, now)
 
         if (bucket.tokens >= 1) {
@@ -94,6 +109,18 @@ export async function acquireRateToken(operation: string): Promise<void> {
         attempts++
         await sleep(totalWait)
     }
+}
+
+/**
+ * Apply a server-advertised cooldown for an operation after a 429/Retry-After.
+ * This prevents the next request from immediately resuming at the nominal rate
+ * and retriggering throttling.
+ */
+export function noteRateLimit(operation: string, waitMs: number): void {
+    const bucket = getOrCreateBucket(operation)
+    const until = Date.now() + Math.max(0, waitMs)
+    bucket.blockedUntil = Math.max(bucket.blockedUntil, until)
+    bucket.lastRefill = until
 }
 
 /** Returns a snapshot of the current token counts (useful for debugging). */

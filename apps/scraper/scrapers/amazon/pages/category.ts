@@ -29,6 +29,34 @@ async function slowScroll(page: Page): Promise<void> {
   await sleep(1000)
 }
 
+/** Returns true if the current page shows no Best Sellers (scoped frame — html freed on return). */
+async function isPageEmpty(page: Page): Promise<boolean> {
+  const html = await page.content()
+  return isEmptyCategory(html)
+}
+
+/** Returns true if the current page is a block/CAPTCHA page (scoped frame — html freed on return). */
+async function isPageBlocked(page: Page): Promise<boolean> {
+  const html = await page.content()
+  return isBlocked(html)
+}
+
+interface ParsedPage { products: ScrapedProduct[]; badges: number }
+
+/**
+ * Wait for products, slow-scroll, then parse.
+ * html is scoped to THIS frame — V8 frees it as soon as this function returns.
+ * This is the OOM fix: scrapeCategory never holds any html string across an await.
+ */
+async function scrollAndParse(page: Page, selectorTimeout = 15_000): Promise<ParsedPage | 'empty' | 'blocked'> {
+  await page.waitForSelector('[data-asin]', { timeout: selectorTimeout }).catch(() => { })
+  await slowScroll(page)
+  const html = await page.content()
+  if (isEmptyCategory(html)) return 'empty'
+  if (isBlocked(html)) return 'blocked'
+  return { products: parseProducts(html) as ScrapedProduct[], badges: countBadges(html) }
+}
+
 export async function scrapeCategory(
   browser: Browser,
   category: CategoryNode,
@@ -43,25 +71,21 @@ export async function scrapeCategory(
     // ── Page 1 ────────────────────────────────────────────────────────────────
     await page.goto(category.bestsellers_url, { waitUntil: 'domcontentloaded', timeout: 30_000 })
 
-    const earlyHtml1 = await page.content()
-    if (isEmptyCategory(earlyHtml1)) {
+    if (await isPageEmpty(page)) {
       await page.close()
       log.warn(`${category.id} — no Best Sellers available in this category, skipping`)
       return []
     }
 
-    await page.waitForSelector('[data-asin]', { timeout: 15_000 }).catch(() => { })
-    await slowScroll(page)
+    const p1 = await scrollAndParse(page, 15_000)
 
-    const html1 = await page.content()
-
-    if (isEmptyCategory(html1)) {
+    if (p1 === 'empty') {
       await page.close()
       log.warn(`${category.id} — no Best Sellers available in this category, skipping`)
       return []
     }
 
-    if (isBlocked(html1)) {
+    if (p1 === 'blocked') {
       await page.close()
       resetSharedContext()
       if (attempt < AMAZON_CONFIG.retry_max) {
@@ -73,27 +97,22 @@ export async function scrapeCategory(
       return null
     }
 
-    const products = parseProducts(html1) as ScrapedProduct[]
-    const badgesP1 = countBadges(html1)
-      ; (products as any)._totalBadges = badgesP1
+    const products = p1.products
+    let totalBadges = p1.badges
+    ;(products as any)._totalBadges = totalBadges
 
     // ── Page 2 (up to 100 products total) ─────────────────────────────────────
     const url2 = category.bestsellers_url.replace('?pg=1', '?pg=2')
     if (url2 !== category.bestsellers_url) {
       await page.goto(url2, { waitUntil: 'domcontentloaded', timeout: 30_000 })
 
-      const earlyHtml2 = await page.content()
-      if (!isBlocked(earlyHtml2)) {
-        await page.waitForSelector('[data-asin]', { timeout: 10_000 }).catch(() => { })
-        await slowScroll(page)
-
-        const html2 = await page.content()
-        if (!isBlocked(html2)) {
-          const p2 = parseProducts(html2) as ScrapedProduct[]
-          const badgesP2 = countBadges(html2)
-          const fresh = p2.filter(p => !products.find(e => e.asin === p.asin))
+      if (!await isPageBlocked(page)) {
+        const p2 = await scrollAndParse(page, 10_000)
+        if (p2 !== 'blocked' && p2 !== 'empty') {
+          const fresh = p2.products.filter(prod => !products.find(e => e.asin === prod.asin))
           products.push(...fresh)
-            ; (products as any)._totalBadges = badgesP1 + badgesP2
+          totalBadges += p2.badges
+          ;(products as any)._totalBadges = totalBadges
         }
       }
     }

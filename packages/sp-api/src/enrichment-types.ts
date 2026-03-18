@@ -31,5 +31,6 @@ export type ProductRow = Omit<AmazonProductInsert,
  * A product–category rank edge ready for upsert into `product_category_ranks`.
  */
 export type CategoryRankRow = Omit<ProductCategoryRankInsert, 'rank_type'> & {
+    category_name?: string
     rank_type: 'best_seller' | 'organic'
 }

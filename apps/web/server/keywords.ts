@@ -7,7 +7,7 @@
 import 'server-only'
 
 import { cache } from 'react'
-import { createServerClient } from '@/integrations/supabase/server'
+import { createFlyioDb } from '@/integrations/flyio/client'
 import { getKeyword, getProductsForKeyword } from '@/services/keywords'
 import type { ProductFinancial } from '@puckora/types'
 
@@ -21,8 +21,8 @@ export const getCachedKeywordResults = cache(async (
     keyword: string,
     marketplace: string,
 ): Promise<ProductFinancial[]> => {
-    const supabase = await createServerClient()
-    const keywordRow = await getKeyword(supabase, keyword, marketplace)
+    const db = createFlyioDb()
+    const keywordRow = await getKeyword(db, keyword, marketplace)
     if (!keywordRow) return []
-    return getProductsForKeyword(supabase, keywordRow.id)
+    return getProductsForKeyword(db, keywordRow.id)
 })

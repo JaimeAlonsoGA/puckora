@@ -7,7 +7,7 @@
 import 'server-only'
 
 import { cache } from 'react'
-import { createServerClient } from '@/integrations/supabase/server'
+import { createFlyioDb } from '@/integrations/flyio/client'
 import {
     getAmazonProductByAsin,
     getProductsNeedingEnrichment,
@@ -17,8 +17,8 @@ import {
  * Fetch a product by ASIN. Deduplicated per request.
  */
 export const cachedGetProductByAsin = cache(async (asin: string) => {
-    const supabase = await createServerClient()
-    return getAmazonProductByAsin(supabase, asin)
+    const db = createFlyioDb()
+    return getAmazonProductByAsin(db, asin)
 })
 
 /**
@@ -26,6 +26,6 @@ export const cachedGetProductByAsin = cache(async (asin: string) => {
  * Not deduplicated (always fresh).
  */
 export async function getStaleProducts(limit = 50) {
-    const supabase = await createServerClient()
-    return getProductsNeedingEnrichment(supabase, limit)
+    const db = createFlyioDb()
+    return getProductsNeedingEnrichment(db, limit)
 }

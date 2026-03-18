@@ -10,8 +10,8 @@
 
 import { redirect } from 'next/navigation'
 import { after } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@/integrations/supabase/server'
+import { createFlyioDb } from '@/integrations/flyio/client'
 import { updateUser } from '@/services/settings'
 import { createScrapeJob } from '@/services/scrape'
 import { upsertKeyword } from '@/services/keywords'
@@ -92,7 +92,8 @@ export async function createScrapeJobAction(data: AmazonSearchInput): Promise<Ac
 
         // Upsert keyword row (unique on keyword+marketplace) so the SP-API
         // background task has a canonical ID to write products under.
-        const keywordRow = await upsertKeyword(supabase, {
+        const db = createFlyioDb()
+        const keywordRow = await upsertKeyword(db, {
             keyword: parsed.data.keyword,
             marketplace: parsed.data.marketplace,
         })
@@ -104,12 +105,9 @@ export async function createScrapeJobAction(data: AmazonSearchInput): Promise<Ac
         const { keyword, marketplace } = parsed.data
         after(async () => {
             try {
-                const adminClient = createClient(
-                    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-                )
                 const { runKeywordSearch } = await import('@/integrations/data-pipeline/keyword-search')
-                await runKeywordSearch(adminClient, keywordId, keyword, marketplace)
+                const flyDb = createFlyioDb()
+                await runKeywordSearch(flyDb, keywordId, keyword, marketplace)
             } catch (err) {
                 console.error('[createScrapeJobAction] SP-API keyword search failed:', err)
             }

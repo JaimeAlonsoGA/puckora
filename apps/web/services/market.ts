@@ -1,14 +1,13 @@
 /**
- * Supabase service layer — Amazon categories.
+ * Drizzle service layer — Amazon categories (Fly.io Postgres).
  *
  * Only amazon_categories exists in the current DB schema.
  * Other market data tables (trending_products, market_opportunities,
  * fba_fees_cache) are not yet implemented — add here when migrations land.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
-
+import { eq, and, asc, ilike, sql } from 'drizzle-orm'
+import { type PgDb, amazonCategories } from '@puckora/db'
 import type {
     AmazonCategory,
     AmazonCategoryInsert,
@@ -20,76 +19,93 @@ import type {
 // ---------------------------------------------------------------------------
 
 export async function getCategoryById(
-    supabase: SupabaseInstance,
+    db: PgDb,
     id: string,
 ): Promise<AmazonCategory | null> {
-    const { data, error } = await supabase
-        .from('amazon_categories')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle()
-
-    if (error) throw new Error(`getCategoryById failed: ${error.message}`)
-    return data as AmazonCategory | null
+    const rows = await db
+        .select()
+        .from(amazonCategories)
+        .where(eq(amazonCategories.id, id))
+        .limit(1)
+    return (rows[0] ?? null) as AmazonCategory | null
 }
 
 export async function getCategoriesByMarketplace(
-    supabase: SupabaseInstance,
+    db: PgDb,
     marketplace: string,
     onlyLeaf = false,
 ): Promise<AmazonCategory[]> {
-    let query = supabase
-        .from('amazon_categories')
-        .select('*')
-        .eq('marketplace', marketplace)
-        .order('full_path', { ascending: true })
+    const condition = onlyLeaf
+        ? and(eq(amazonCategories.marketplace, marketplace), eq(amazonCategories.is_leaf, true))
+        : eq(amazonCategories.marketplace, marketplace)
 
-    if (onlyLeaf) query = query.eq('is_leaf', true)
-
-    const { data, error } = await query
-    if (error) throw new Error(`getCategoriesByMarketplace failed: ${error.message}`)
-    return data as AmazonCategory[]
+    const rows = await db
+        .select()
+        .from(amazonCategories)
+        .where(condition)
+        .orderBy(asc(amazonCategories.full_path))
+    return rows as AmazonCategory[]
 }
 
+/**
+ * Full-text search on category name or full_path.
+ * Replaces the old Supabase RPC `search_categories` (which used pg_trgm).
+ * This uses ILIKE for broad compatibility; a GIN-based setup can improve perf.
+ */
 export async function searchCategories(
-    supabase: SupabaseInstance,
+    db: PgDb,
     query: string,
     marketplace: string,
     limit = 20,
 ): Promise<AmazonCategory[]> {
-    const { data, error } = await supabase.rpc('search_categories', {
-        p_query: query,
-        p_marketplace: marketplace,
-        p_limit: limit,
-    })
-
-    if (error) throw new Error(`searchCategories failed: ${error.message}`)
-    return data as AmazonCategory[]
+    const pattern = `%${query}%`
+    const rows = await db
+        .select()
+        .from(amazonCategories)
+        .where(
+            and(
+                eq(amazonCategories.marketplace, marketplace),
+                ilike(amazonCategories.name, pattern),
+            ),
+        )
+        .orderBy(asc(amazonCategories.full_path))
+        .limit(limit)
+    return rows as AmazonCategory[]
 }
 
 export async function upsertCategory(
-    supabase: SupabaseInstance,
+    db: PgDb,
     category: AmazonCategoryInsert,
 ): Promise<AmazonCategory> {
-    const { data, error } = await supabase
-        .from('amazon_categories')
-        .upsert(category, { onConflict: 'id' })
-        .select('*')
-        .single()
-
-    if (error) throw new Error(`upsertCategory failed: ${error.message}`)
-    return data as AmazonCategory
+    const rows = await db
+        .insert(amazonCategories)
+        .values(category as typeof amazonCategories.$inferInsert)
+        .onConflictDoUpdate({
+            target: amazonCategories.id,
+            set: {
+                name: sql`excluded.name`,
+                full_path: sql`excluded.full_path`,
+                depth: sql`excluded.depth`,
+                breadcrumb: sql`excluded.breadcrumb`,
+                is_leaf: sql`excluded.is_leaf`,
+                marketplace: sql`excluded.marketplace`,
+                parent_id: sql`excluded.parent_id`,
+                bestsellers_url: sql`excluded.bestsellers_url`,
+                scrape_status: sql`excluded.scrape_status`,
+                last_scraped_at: sql`excluded.last_scraped_at`,
+            },
+        })
+        .returning()
+    return rows[0] as AmazonCategory
 }
 
 export async function updateCategoryStatus(
-    supabase: SupabaseInstance,
+    db: PgDb,
     id: string,
     update: Pick<AmazonCategoryUpdate, 'scrape_status' | 'last_scraped_at'>,
 ): Promise<void> {
-    const { error } = await supabase
-        .from('amazon_categories')
-        .update(update)
-        .eq('id', id)
-
-    if (error) throw new Error(`updateCategoryStatus failed: ${error.message}`)
+    await db
+        .update(amazonCategories)
+        .set(update as Partial<typeof amazonCategories.$inferInsert>)
+        .where(eq(amazonCategories.id, id))
 }

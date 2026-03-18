@@ -82,6 +82,12 @@ All inter-context message types come from `EXTENSION_MSG` in `types/messages.ts`
 
 Background is the single source of truth for session state: persists to `chrome.storage`, fans out to tabs. Content scripts never write to `chrome.storage` directly.
 
+## Backend boundaries
+
+- The extension never connects directly to Fly.io Postgres or the local/tailnet vector Postgres
+- Structured catalog data and semantic search must come through the web app or extension background/web messaging layers
+- `DATABASE_URL`, `DATABASE_PROXY_URL`, and vector env vars remain server-only and must not be bundled into the extension
+
 ## Auth & session
 
 - **Native login**: `useAuthStore.signIn(email, password)` calls Supabase directly, saves session to `chrome.storage`. No web app tab required.

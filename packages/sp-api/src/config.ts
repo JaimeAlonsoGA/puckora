@@ -20,6 +20,11 @@
 
 const DEFAULT_MARKETPLACE_ID = 'ATVPDKIKX0DER'  // US
 
+function readEnvOrDefault(key: string, fallback: string): string {
+    const value = process.env[key]?.trim()
+    return value ? value : fallback
+}
+
 export interface SpApiConfig {
     clientId: string
     clientSecret: string
@@ -30,6 +35,7 @@ export interface SpApiConfig {
     retryMax: number
     retryOn429Ms: number
     retryOn503Ms: number
+    feesBatchIntervalMs: number
 }
 
 export function getSpApiConfig(): SpApiConfig {
@@ -44,10 +50,11 @@ export function getSpApiConfig(): SpApiConfig {
         clientId,
         clientSecret,
         refreshToken: process.env.SP_REFRESH_TOKEN,
-        marketplaceId: process.env.SP_MARKETPLACE_ID ?? DEFAULT_MARKETPLACE_ID,
+        marketplaceId: readEnvOrDefault('SP_MARKETPLACE_ID', DEFAULT_MARKETPLACE_ID),
         catalogIntervalMs: Number(process.env.SP_CATALOG_INTERVAL_MS ?? '700'),
         retryMax: Number(process.env.SP_RETRY_MAX ?? '3'),
         retryOn429Ms: Number(process.env.SP_RETRY_ON_429_MS ?? '60000'),
         retryOn503Ms: Number(process.env.SP_RETRY_ON_503_MS ?? '120000'),
+        feesBatchIntervalMs: Number(process.env.SP_FEES_BATCH_INTERVAL_MS ?? '2500'),
     }
 }

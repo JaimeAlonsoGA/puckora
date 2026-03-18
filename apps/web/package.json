@@ -12,11 +12,13 @@
     "dependencies": {
         "@hookform/resolvers": "^5.0.0",
         "@puckora/apify": "*",
+        "@puckora/db": "*",
         "@puckora/scraper-core": "*",
         "@puckora/sp-api": "*",
         "@puckora/types": "*",
         "@puckora/ui": "*",
         "@puckora/utils": "*",
+        "@puckora/vectors": "*",
         "@supabase/ssr": "^0.6.0",
         "@supabase/supabase-js": "^2.49.0",
         "@tabler/icons-react": "^3.30.0",

@@ -4,6 +4,13 @@ applyTo: "apps/web/**"
 
 # Web app file rules
 
+## Data systems
+
+- Supabase Postgres = auth, users, `scrape_jobs`, realtime features
+- Fly.io Postgres = catalog/product/category/keyword data plus `product_financials`
+- Local or tailnet `pgvector` Postgres = semantic-search index managed by `packages/vectors`
+- Web code may read vectors via `@puckora/vectors`, but vector sync/backfill/status operations stay package-owned and out of route/page code
+
 ## Component files
 - Server Components: no `'use client'`, no hooks, no browser APIs
 - Client Components: `'use client'` at top, extract to `_components/` subdirectory
@@ -100,6 +107,7 @@ Every component belongs to one of two density levels:
 - `getCachedUser()` (`server/users.ts`) returns full `public.users` row — use when `display_name` or profile data is needed
 - `getAuthUser()` (`server/auth.ts`) returns Supabase auth only (`id`, `email`) — never use for profile fields
 - `getOptionalUser()` (`server/auth.ts`) returns `null` if unauthenticated, never redirects
+- Fly-backed catalog reads belong in the Fly integration / service layer, not in Supabase DAL code
 
 ## Actions (`app/**/actions.ts`)
 - `'use server'` at top

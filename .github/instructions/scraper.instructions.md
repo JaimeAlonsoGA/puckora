@@ -24,6 +24,7 @@ applyTo: "apps/scraper/**"
 - Every scraper config spreads `BASE_CONFIG` from `shared/config.ts`
 - All time fields use `_ms` suffix: `delay_min_ms`, `delay_max_ms`, `retry_delay_ms`
 - Never read `process.env` outside config files
+- Fly local-dev access should prefer `DATABASE_PROXY_URL` when a local proxy tunnel is available
 
 ## CLI args
 
@@ -115,5 +116,14 @@ export async function scrapeFoo(browser, url, attempt = 0) {
 
 - DOM parsing / type utils → `@puckora/scraper-core` (no Node.js deps)
 - `sleep`, `jitter`, `pooled`, `dedupeBy` → `@puckora/utils`
+- SP-API catalog + fees normalization → `@puckora/sp-api`
+- Fly catalog DB schema/client → `@puckora/db`
 - `launchBrowser`, `pickUserAgent`, `pickViewport` → `shared/browser.ts` (re-exports from `@puckora/scraper-core`)
 - Never import from `shared/` inside `packages/`
+
+## Catalog and vectors boundary
+
+- Scrapers write canonical catalog/category/keyword/rank data to Fly.io Postgres
+- Scrapers do **not** own vector sync/backfill/query scripts; vector operations live in `packages/vectors`
+- If you need to trigger vector work, use root `vectors:*` scripts or `packages/vectors/scripts/*`
+- Local vector state is derived from Fly data; never treat the vector DB as the source of truth

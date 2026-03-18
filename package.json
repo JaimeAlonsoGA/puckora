@@ -11,7 +11,15 @@
         "typecheck": "turbo run typecheck",
         "lint": "turbo run lint",
         "gen:types": "bash scripts/gen-types.sh",
-        "env:sync": "node scripts/env-sync.js"
+        "env:sync": "node scripts/env-sync.js",
+        "db:proxy": "bash scripts/fly-db-proxy.sh",
+        "vectors:sync": "npm --prefix packages/vectors run sync",
+        "vectors:watch": "npm --prefix packages/vectors run watch",
+        "vectors:query": "npm --prefix packages/vectors run query",
+        "vectors:status": "npm --prefix packages/vectors run status",
+        "vectors:rebuild": "npm --prefix packages/vectors run rebuild",
+        "vectors:batch": "npm --prefix packages/vectors run batch",
+        "vectors:backfill": "npm --prefix packages/vectors run backfill"
     },
     "devDependencies": {
         "turbo": "^2.5.0",

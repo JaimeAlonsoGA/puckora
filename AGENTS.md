@@ -1,7 +1,7 @@
 # puckora — Agent Reference
 
-> Model: Claude Sonnet 4.6 · Stack: Next.js 16 · React 19 · TS 5.8 · Tailwind v4 · Supabase SSR · TanStack Query v5 · next-intl v4 · react-hook-form + Zod v3
-> Monorepo (npm workspaces + Turbo): `apps/web` (main product), `apps/scraper` (Node), `apps/extension` (Chrome). `@/` → `apps/web/` root.
+> Model: GPT-5.4 · Stack: Next.js 16 · React 19 · TS 5.8 · Tailwind v4 · Supabase SSR · TanStack Query v5 · next-intl v4 · react-hook-form + Zod v3
+> Monorepo (npm workspaces + Turbo): `apps/web` (main product), `apps/scraper` (Node), `apps/extension` (Chrome), `packages/db`, `packages/sp-api`, `packages/vectors`, `packages/scraper-core`, `packages/ui`, `packages/types`, `packages/utils`. `@/` → `apps/web/` root.
 >
 > **Three mottos: Use design patterns · NO redundancy · Scalability**
 > Every architectural decision is evaluated against these. SSOT, separation of concerns, hierarchical composition — not optional, not "nice to have".
@@ -15,6 +15,21 @@
 - Composition patterns (React 19 no-forwardRef etc.): `.github/skills/vercel-composition-patterns/AGENTS.md`
 - Next.js App Router: https://nextjs.org/docs
 - Supabase SSR: https://supabase.com/docs/guides/auth/server-side/nextjs
+
+## Data systems
+
+Puckora currently uses three distinct storage roles:
+
+- **Supabase Postgres** — auth, `users`, `scrape_jobs`, realtime-facing app data
+- **Fly.io Postgres** — canonical catalog data and SQL views such as `product_financials`
+- **Local / tailnet Postgres + `pgvector`** — derived semantic-search index for `packages/vectors`
+
+Rules:
+
+- Fly is the source of truth for structured catalog data; vectors are a derived index only
+- Supabase is not the catalog warehouse; Fly is not the auth/realtime backend
+- Vector operations are package-owned in `packages/vectors`; do not recreate vector CLIs under `apps/scraper`
+- Local Fly access should prefer `DATABASE_PROXY_URL` when a proxy tunnel is available
 
 ---
 
@@ -60,10 +75,13 @@
 | App-local type                   | `types/{domain}.ts`                        | Used when `@puckora/types` doesn't yet have it          |
 | Reusable UI primitive            | `components/building-blocks/`              | Token-based, no hardcoded colors/spacing                |
 | Shared non-primitive component   | `components/shared/`                       | May use building-blocks, no page logic                  |
+| Vector runtime / CLIs            | `packages/vectors/src/`, `packages/vectors/scripts/` | Package-owned; not scraper-owned             |
+| Catalog schema / Drizzle         | `packages/db/src/`                         | Fly.io schema + client helpers                          |
+| SP-API normalization             | `packages/sp-api/src/`                     | Shared enrichment + fee/catalog clients                 |
 
 **Import rules**
 - Internal web app: `@/`
-- Monorepo packages: `@puckora/types`, `@puckora/utils`, `@puckora/ui`
+- Monorepo packages: `@puckora/types`, `@puckora/utils`, `@puckora/ui`, `@puckora/db`, `@puckora/sp-api`, `@puckora/vectors`
 - Never cross-import between `server/` and client code. `import 'server-only'` enforces this at runtime.
 
 ---

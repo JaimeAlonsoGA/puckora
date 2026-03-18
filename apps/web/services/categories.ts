@@ -1,29 +1,25 @@
 /**
- * Supabase service layer — Amazon categories.
+ * Drizzle service layer — Amazon categories (Fly.io Postgres).
  *
  * Raw DB access. Called only from server/ RSC wrappers or API routes.
  */
 
+import { eq, asc, and } from 'drizzle-orm'
+import { type PgDb, amazonCategories } from '@puckora/db'
 import type { AmazonCategory } from '@puckora/types'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
 
 /**
  * Returns the top-level (depth=1) Amazon categories for the given marketplace.
  * Ordered alphabetically by name.
  */
 export async function getTopLevelCategories(
-    supabase: SupabaseInstance,
+    db: PgDb,
     marketplace = 'US',
 ): Promise<AmazonCategory[]> {
-    const { data, error } = await supabase
-        .from('amazon_categories')
-        .select('*')
-        .eq('marketplace', marketplace)
-        .eq('depth', 1)
-        .order('name')
-
-    if (error) throw new Error(`getTopLevelCategories failed: ${error.message}`)
-    return (data ?? []) as AmazonCategory[]
+    const rows = await db
+        .select()
+        .from(amazonCategories)
+        .where(and(eq(amazonCategories.marketplace, marketplace), eq(amazonCategories.depth, 1)))
+        .orderBy(asc(amazonCategories.name))
+    return rows as AmazonCategory[]
 }

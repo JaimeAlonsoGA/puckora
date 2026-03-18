@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SuggestionsRequestSchema, SuggestionsResponseSchema } from '@puckora/research-graph'
 import type { SuggestionsRequest, SuggestionsApiResponse, SuggestedNode } from '@puckora/research-graph'
+import type { AmazonVectorSearchRow } from '@puckora/vectors'
+import { searchAmazonProductsByAsin, searchAmazonProductsByQuery } from '@puckora/vectors'
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
     let body: unknown
@@ -35,52 +37,63 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(validated.data)
 }
 
-// ── Business logic ────────────────────────────────────────────────────────────
-//
-// TODO: Replace stub with real pgvector queries against product_financials:
-//
-//   SELECT title, asin, category_path, 1 - (embedding <=> $query_embedding) AS score
-//   FROM amazon_products
-//   WHERE 1 - (embedding <=> $query_embedding) > 0.65
-//   ORDER BY score DESC
-//   LIMIT 4;
-//
-// Map results to SuggestedNode shape and return.
-
 async function handleSuggestions(request: SuggestionsRequest): Promise<SuggestionsApiResponse> {
-    return { suggestions: buildStubSuggestions(request.nodeType, request.nodeMeta) }
+    try {
+        const results = await resolveSuggestions(request)
+        return { suggestions: results.map(mapSearchRowToSuggestion) }
+    } catch (error) {
+        console.error('[ResearchGraph API] Vector suggestions unavailable:', error)
+        return { suggestions: [] }
+    }
 }
 
 type SuggestionShape = Omit<SuggestedNode, 'id' | 'parentId'>
 
-function buildStubSuggestions(
-    nodeType: SuggestionsRequest['nodeType'],
-    meta: SuggestionsRequest['nodeMeta'],
-): SuggestionShape[] {
-    switch (nodeType) {
+async function resolveSuggestions(request: SuggestionsRequest): Promise<AmazonVectorSearchRow[]> {
+    const currentQuery = request.nodeMeta.query?.trim()
+    const currentAsin = request.nodeMeta.asin?.trim()
+    const historyQuery = [...request.history].reverse().find((item) => item.meta.query)?.meta.query?.trim()
+    const historyAsin = [...request.history].reverse().find((item) => item.meta.asin)?.meta.asin?.trim()
+
+    switch (request.nodeType) {
         case 'keyword':
-            return [
-                { type: 'supplier', label: 'Check suppliers', reason: 'Suppliers on GlobalSources matching this keyword', score: 0.88, meta: { query: meta.query } },
-                { type: 'keyword', label: `"${meta.query ?? ''} accessories"`, reason: 'Vector-similar search (84% similarity)', score: 0.84, meta: { query: `${meta.query ?? ''} accessories` } },
-                { type: 'category', label: 'Related categories', reason: 'Adjacent category with margin overlap', score: 0.72, meta: {} },
-            ]
+            if (currentQuery) return searchAmazonProductsByQuery(currentQuery, 4)
+            return historyQuery ? searchAmazonProductsByQuery(historyQuery, 4) : []
         case 'product':
-            return [
-                { type: 'supplier', label: 'Find suppliers', reason: 'Manufacturers for this product type on GlobalSources', score: 0.91, meta: {} },
-                { type: 'product', label: 'Similar products', reason: 'Vector-similar products (90% similarity)', score: 0.90, meta: {} },
-                { type: 'vector', label: 'Pucki: run fee calc', reason: 'Based on dimensions and price, fee calc recommended', score: 0.80, meta: { asin: meta.asin } },
-            ]
+            if (currentAsin) return searchAmazonProductsByAsin(currentAsin, 4)
+            return historyQuery ? searchAmazonProductsByQuery(historyQuery, 4) : []
         case 'category':
-            return [
-                { type: 'keyword', label: 'Top search in category', reason: 'Most searched keyword in this category', score: 0.85, meta: {} },
-                { type: 'category', label: 'Adjacent category', reason: 'High margin overlap with current category', score: 0.75, meta: {} },
-            ]
         case 'supplier':
-            return [
-                { type: 'supplier', label: 'Similar supplier', reason: 'Similar MOQ, certifications, and product range', score: 0.82, meta: {} },
-                { type: 'product', label: 'Back to product', reason: 'Return to the product you were investigating', score: 0.78, meta: { asin: meta.asin } },
-            ]
+        case 'vector':
+        case 'session':
+            if (historyQuery) return searchAmazonProductsByQuery(historyQuery, 4)
+            if (historyAsin) return searchAmazonProductsByAsin(historyAsin, 4)
+            return []
         default:
             return []
     }
+}
+
+function mapSearchRowToSuggestion(row: AmazonVectorSearchRow): SuggestionShape {
+    const label = truncate(row.title ?? row.asin, 60)
+    const category = row.category_path ? ` in ${truncate(row.category_path, 90)}` : ''
+    const similarity = `${Math.round(row.score * 100)}% similarity`
+
+    return {
+        type: 'product',
+        label,
+        reason: truncate(`Semantic match${category} • ${similarity}`, 200),
+        score: clampScore(row.score),
+        meta: { asin: row.asin },
+    }
+}
+
+function truncate(value: string, maxLength: number): string {
+    if (value.length <= maxLength) return value
+    return `${value.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`
+}
+
+function clampScore(value: number): number {
+    if (!Number.isFinite(value)) return 0
+    return Math.max(0, Math.min(1, value))
 }
