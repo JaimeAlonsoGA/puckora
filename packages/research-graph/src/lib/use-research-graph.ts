@@ -159,13 +159,6 @@ export function useResearchGraph(
         })
         if (id) {
             void fetchSuggestions(id)
-            if (typeof window !== 'undefined') {
-                window.dispatchEvent(
-                    new CustomEvent('puckora:navigate', {
-                        detail: { type: suggestion.type, meta: suggestion.meta },
-                    })
-                )
-            }
         }
         return id
     }, [store, fetchSuggestions])

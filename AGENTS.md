@@ -66,23 +66,23 @@ Rules:
 
 `@/` resolves to `apps/web/`. Never create a `lib/` folder — each concern has a dedicated home.
 
-| What you're creating             | Where it lives                             | Rules                                                   |
-| -------------------------------- | ------------------------------------------ | ------------------------------------------------------- |
-| Route / page                     | `app/(app)/{module}/page.tsx`              | Server Component, no `'use client'`                     |
-| Interactive UI for a page        | `app/(app)/{module}/_components/*.tsx`     | `'use client'`, receives server data as props           |
-| Server data fetch                | `server/{domain}.ts`                       | `import 'server-only'`, `React.cache()` on every export |
-| DB CRUD                          | `services/{domain}.ts`                     | Called by `server/` and API routes only                 |
-| Query keys + options + mutations | `queries/{domain}.ts` + `queries/_keys.ts` | `'use client'`, re-export from `queries/index.ts`       |
-| Zod schema                       | `schemas/{domain}.ts`                      | No React imports                                        |
-| Reusable client hook             | `hooks/use-{name}.ts`                      | Thin wrapper over `useQuery(domainQueryOptions(...))`   |
-| Vendor API client                | `integrations/{vendor}/client.ts`          | Isolated — no app business logic                        |
-| App-wide constant (no deps)      | `constants/{name}.ts`                      | No imports from `server/`, `services/`, `queries/`      |
-| App-local type                   | `types/{domain}.ts`                        | Used when `@puckora/types` doesn't yet have it          |
-| Reusable UI primitive            | `components/building-blocks/`              | Token-based, no hardcoded colors/spacing                |
-| Shared non-primitive component   | `components/shared/`                       | May use building-blocks, no page logic                  |
-| Vector runtime / CLIs            | `packages/vectors/src/`, `packages/vectors/scripts/` | Package-owned; not scraper-owned             |
-| Catalog schema / Drizzle         | `packages/db/src/`                         | Fly.io schema + client helpers                          |
-| SP-API normalization             | `packages/sp-api/src/`                     | Shared enrichment + fee/catalog clients                 |
+| What you're creating             | Where it lives                                       | Rules                                                   |
+| -------------------------------- | ---------------------------------------------------- | ------------------------------------------------------- |
+| Route / page                     | `app/(app)/{module}/page.tsx`                        | Server Component, no `'use client'`                     |
+| Interactive UI for a page        | `app/(app)/{module}/_components/*.tsx`               | `'use client'`, receives server data as props           |
+| Server data fetch                | `server/{domain}.ts`                                 | `import 'server-only'`, `React.cache()` on every export |
+| DB CRUD                          | `services/{domain}.ts`                               | Called by `server/` and API routes only                 |
+| Query keys + options + mutations | `queries/{domain}.ts` + `queries/_keys.ts`           | `'use client'`, re-export from `queries/index.ts`       |
+| Zod schema                       | `schemas/{domain}.ts`                                | No React imports                                        |
+| Reusable client hook             | `hooks/use-{name}.ts`                                | Thin wrapper over `useQuery(domainQueryOptions(...))`   |
+| Vendor API client                | `integrations/{vendor}/client.ts`                    | Isolated — no app business logic                        |
+| App-wide constant (no deps)      | `constants/{name}.ts`                                | No imports from `server/`, `services/`, `queries/`      |
+| App-local type                   | `types/{domain}.ts`                                  | Used when `@puckora/types` doesn't yet have it          |
+| Reusable UI primitive            | `components/building-blocks/`                        | Token-based, no hardcoded colors/spacing                |
+| Shared non-primitive component   | `components/shared/`                                 | May use building-blocks, no page logic                  |
+| Vector runtime / CLIs            | `packages/vectors/src/`, `packages/vectors/scripts/` | Package-owned; not scraper-owned                        |
+| Catalog schema / Drizzle         | `packages/db/src/`                                   | Fly.io schema + client helpers                          |
+| SP-API normalization             | `packages/sp-api/src/`                               | Shared enrichment + fee/catalog clients                 |
 
 **Import rules**
 - Internal web app: `@/`
@@ -140,20 +140,17 @@ A "shell" (`{module}-shell.tsx`) is the single `'use client'` boundary that wire
 **Canonical pattern (search-shell):**
 ```tsx
 'use client'
-export function SearchShell({ userId: _userId, initialJobId, initialJob }: SearchShellProps) {
-    const { isInstalled, isChecking } = useExtension()
+export function SearchShell({ initialJobId, initialJob }: SearchShellProps) {
     useScrapeRealtime(initialJobId, initialJob)          // cache seed + Realtime
     const { data: job } = useQuery(scrapeJobQueryOptions(initialJobId))
 
-    if (isChecking) return <ExtensionChecking />         // loading state
-    if (!isInstalled) return <ExtensionGate />           // gate state
     if (initialJobId) return <JobProgress job={job ?? initialJob} /> // active job
     return <SearchForm />                                // idle state
 }
 ```
 
 **Sub-component rules:**
-- One concern per file: `extension-gate.tsx`, `job-progress.tsx`, `search-form.tsx`
+- One concern per file: `job-progress.tsx`, `search-form.tsx`, `extension-widget.tsx`
 - Each sub-component owns its own `useTranslations('namespace')`
 - Each sub-component owns its own form state if it has a form
 - Sub-components receive only the props they actually render — no pass-through
@@ -312,19 +309,19 @@ export async function doSomething(data: z.infer<typeof Schema>): Promise<{ error
 | `Alert`    | `variant` (success/warning/error/info) · `title?`                                                         |
 | `TextLink` | `href` · `variant` · `underline` (always/hover/never) · `external`                                        |
 | `Icon`     | `size` (xs/sm/md/lg/xl)                                                                                   |
-| Typography | `Display` `Heading` `Subheading` `Body` `Caption` `Label` `Mono` — all accept `as` prop                  |
+| Typography | `Display` `Heading` `Subheading` `Body` `Caption` `Label` `Mono` — all accept `as` prop                   |
 
 **Composite building blocks — own their complete spatial contract:**
 
-| Component        | Spatial contract (never repeat in consumer)                              | Key props                                              |
-| ---------------- | ------------------------------------------------------------------------ | ------------------------------------------------------ |
-| `DataCard`       | `border-hairline rounded-lg px-3.5 py-3 bg-background flex flex-col`    | `title?` (renders section label), `className?`         |
-| `KpiCard`        | `bg-card rounded-md px-3 py-2.5 flex flex-col` + label/value/sub layout | `label` `value` `sub?` `accent?` `valueClassName?`     |
-| `StatItem`       | `flex flex-col gap-px` + label(Caption)/value(Mono sm)/sub(Caption xs)  | `label` `value` `sub?` `accent?` `valueClassName?`     |
-| `CardHeader`     | `mb-5 flex flex-col gap-1` + Subheading + Body sm                       | `title` `description?` `className?`                    |
-| `ListToolbar`    | `flex shrink-0 flex-wrap items-center gap-2 border-b-hairline bg-background px-4 py-2` | `className?` + all div attrs     |
-| `TableHeader`    | `grid shrink-0 gap-1.5 border-b-hairline-default bg-background px-4 py-1.75` | `gridClassName?` for CSS grid template          |
-| `TableHeaderCell`| `flex cursor-pointer select-none items-center gap-0.5 text-sm font-medium text-faint whitespace-nowrap` | `className?` + all div attrs |
+| Component         | Spatial contract (never repeat in consumer)                                                             | Key props                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `DataCard`        | `border-hairline rounded-lg px-3.5 py-3 bg-background flex flex-col`                                    | `title?` (renders section label), `className?`     |
+| `KpiCard`         | `bg-card rounded-md px-3 py-2.5 flex flex-col` + label/value/sub layout                                 | `label` `value` `sub?` `accent?` `valueClassName?` |
+| `StatItem`        | `flex flex-col gap-px` + label(Caption)/value(Mono sm)/sub(Caption xs)                                  | `label` `value` `sub?` `accent?` `valueClassName?` |
+| `CardHeader`      | `mb-5 flex flex-col gap-1` + Subheading + Body sm                                                       | `title` `description?` `className?`                |
+| `ListToolbar`     | `flex shrink-0 flex-wrap items-center gap-2 border-b-hairline bg-background px-4 py-2`                  | `className?` + all div attrs                       |
+| `TableHeader`     | `grid shrink-0 gap-1.5 border-b-hairline-default bg-background px-4 py-1.75`                            | `gridClassName?` for CSS grid template             |
+| `TableHeaderCell` | `flex cursor-pointer select-none items-center gap-0.5 text-sm font-medium text-faint whitespace-nowrap` | `className?` + all div attrs                       |
 
 **Sizing discipline — the closed rule:**
 Building blocks own all their spacing. Consumers pass content and variant only — never size/spacing classes unless it's a deliberate contextual exception. Inline `px-*`, `py-*`, `gap-*`, `mb-*` on a raw `<div>` indicates a missing building block.
@@ -352,11 +349,11 @@ All form controls (`FormInput`, `FormSelect`, `FormNumberInput`) share one heigh
 
 Every component belongs to one of two density levels. Mixing levels within a single module is forbidden.
 
-| Context | Where | Primary text floor | Secondary/meta floor |
-| --- | --- | --- | --- |
-| **Default UI** | Pages, settings, forms, nav | `text-sm` (14px) | `text-sm` |
-| **Compact / data-dense** | Product tables, cockpit rows, overview cards | `text-sm` (14px) | `text-xs` (12px) |
-| **SVG labels only** | Chart ticks, node labels, inline SVG text | `text-3xs` (10px) | `text-3xs` |
+| Context                  | Where                                        | Primary text floor | Secondary/meta floor |
+| ------------------------ | -------------------------------------------- | ------------------ | -------------------- |
+| **Default UI**           | Pages, settings, forms, nav                  | `text-sm` (14px)   | `text-sm`            |
+| **Compact / data-dense** | Product tables, cockpit rows, overview cards | `text-sm` (14px)   | `text-xs` (12px)     |
+| **SVG labels only**      | Chart ticks, node labels, inline SVG text    | `text-3xs` (10px)  | `text-3xs`           |
 
 Rules:
 - `text-sm` (14px) is the universal minimum for any readable text — in both Default and Compact contexts.

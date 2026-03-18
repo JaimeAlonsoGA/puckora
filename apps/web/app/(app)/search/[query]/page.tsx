@@ -1,10 +1,13 @@
+import { Suspense } from 'react'
 import { getCachedUser } from '@/server/users'
 import { getCachedKeywordResults } from '@/server/keywords'
+import { getCachedScrapeJob } from '@/server/scrape'
 import { SearchView } from './_components/search-view'
+import { SearchResultsSkeleton } from '@/app/(app)/search/_components/search-skeletons'
 
 interface SearchQueryPageProps {
     params: Promise<{ query: string }>
-    searchParams: Promise<{ view?: string }>
+    searchParams: Promise<{ view?: string; job?: string }>
 }
 
 /**
@@ -15,17 +18,43 @@ interface SearchQueryPageProps {
  * The loading.tsx skeleton renders instantly while this data is fetched.
  */
 export default async function SearchQueryPage({ params, searchParams }: SearchQueryPageProps) {
-    const [{ query }, { view }, user] = await Promise.all([params, searchParams, getCachedUser()])
+    const [{ query }, { view, job }] = await Promise.all([params, searchParams])
     const decodedQuery = decodeURIComponent(query)
 
-    const products = await getCachedKeywordResults(decodedQuery, user.marketplace)
+    return (
+        <Suspense fallback={<SearchResultsSkeleton view={view === 'products' ? 'products' : 'overview'} />}>
+            <SearchQueryContent
+                query={decodedQuery}
+                jobId={job ?? null}
+                view={view === 'products' ? 'products' : 'overview'}
+            />
+        </Suspense>
+    )
+}
+
+async function SearchQueryContent({
+    query,
+    jobId,
+    view,
+}: {
+    query: string
+    jobId: string | null
+    view: 'overview' | 'products'
+}) {
+    const user = await getCachedUser()
+    const [products, initialJob] = await Promise.all([
+        getCachedKeywordResults(query, user.marketplace),
+        jobId ? getCachedScrapeJob(jobId) : Promise.resolve(null),
+    ])
 
     return (
         <SearchView
-            query={decodedQuery}
-            initialView={view === 'products' ? 'products' : 'overview'}
+            query={query}
+            initialView={view}
             products={products}
             marketplace={user.marketplace}
+            jobId={jobId}
+            initialJob={initialJob}
         />
     )
 }

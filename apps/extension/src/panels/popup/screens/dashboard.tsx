@@ -1,12 +1,10 @@
 /**
  * Dashboard — shown when the user is authenticated.
  *
- * Displays user email, active job count, and a link to the web app.
+ * Displays user session state, overlay scope, and a link to the web app.
  */
-import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Stack, Surface, Heading, Body, Badge, Caption, Button, Divider } from '@puckora/ui'
-import { activeScrapeJobsQueryOptions } from '@/queries'
 import { useAuthStore } from '@/stores/auth.store'
 import { WEB_APP_ORIGIN } from '@/constants/api'
 
@@ -14,10 +12,6 @@ export function Dashboard() {
     const { t } = useTranslation()
     const session = useAuthStore((s) => s.session)
     const clearSession = useAuthStore((s) => s.clearSession)
-
-    const { data: jobs = [], isLoading } = useQuery(activeScrapeJobsQueryOptions())
-    const runningJobs = jobs.filter((j) => j.status === 'running')
-    const pendingJobs = jobs.filter((j) => j.status === 'pending')
 
     return (
         <Surface
@@ -41,25 +35,22 @@ export function Dashboard() {
                     <Body className="font-medium">{session?.user_email ?? '—'}</Body>
                 </Stack>
 
-                {/* Job status */}
+                {/* Overlay scope */}
                 <Stack gap="2">
                     <Caption className="font-medium uppercase tracking-wide">
-                        {t('dashboard.scrapeJobs')}
+                        {t('dashboard.overlaySurfaces')}
                     </Caption>
                     <Surface variant="card" className="p-3">
-                        <Stack direction="row" gap="4" justify="around">
-                            <Stack gap="1" align="center">
-                                <Body size="lg" className="font-semibold">
-                                    {isLoading ? '—' : runningJobs.length}
-                                </Body>
-                                <Caption>{t('dashboard.running')}</Caption>
+                        <Stack gap="3">
+                            <Stack direction="row" gap="2" align="center" justify="between">
+                                <Body className="font-medium">{t('dashboard.overlayAmazon')}</Body>
+                                <Badge variant="info" size="sm">{t('dashboard.ready')}</Badge>
                             </Stack>
-                            <Stack gap="1" align="center">
-                                <Body size="lg" className="font-semibold">
-                                    {isLoading ? '—' : pendingJobs.length}
-                                </Body>
-                                <Caption>{t('dashboard.pending')}</Caption>
+                            <Stack direction="row" gap="2" align="center" justify="between">
+                                <Body className="font-medium">{t('dashboard.overlaySuppliers')}</Body>
+                                <Badge variant="default" size="sm">{t('dashboard.companion')}</Badge>
                             </Stack>
+                            <Caption>{t('dashboard.overlaySummary')}</Caption>
                         </Stack>
                     </Surface>
                 </Stack>

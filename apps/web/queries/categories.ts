@@ -8,6 +8,8 @@
 
 import { queryOptions } from '@tanstack/react-query'
 import type { AmazonCategory } from '@puckora/types'
+import { QUERY_ERROR_MESSAGES } from '@/constants/api'
+import { fetchJson } from './fetch'
 import { categoryKeys } from './_keys'
 
 // ---------------------------------------------------------------------------
@@ -19,9 +21,11 @@ export const topCategoriesQueryOptions = (marketplace: string) =>
     queryOptions({
         queryKey: categoryKeys.topLevel(marketplace),
         queryFn: async (): Promise<AmazonCategory[]> => {
-            const res = await fetch(`/api/categories?marketplace=${encodeURIComponent(marketplace)}`)
-            if (!res.ok) throw new Error('Failed to fetch categories')
-            return res.json() as Promise<AmazonCategory[]>
+            return fetchJson<AmazonCategory[]>(
+                `/api/categories?marketplace=${encodeURIComponent(marketplace)}`,
+                undefined,
+                QUERY_ERROR_MESSAGES.CATEGORIES_FETCH_FAILED,
+            )
         },
         staleTime: 24 * 60 * 60 * 1000, // 24h
     })

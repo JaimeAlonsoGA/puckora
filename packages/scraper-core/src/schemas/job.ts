@@ -1,12 +1,12 @@
 /**
  * Scrape job schemas — the contract between the web app (job creator),
- * the extension/agent (job executor), and the enrichment API (job consumer).
+ * automation executors, and the enrichment API (job consumer).
  *
  * Enum VALUES come from @puckora/types, which is generated from the DB schema
  * via `npm run gen:types`. The DB migration (0003_scrape_enums.sql) is the
  * single source of truth — never hardcode enum strings here.
  *
- * Adding a new scrape target (e.g. Alibaba):
+ * Adding a new scrape target (e.g. Global Sources):
  *  1. Add the new value to the DB enum in a new migration
  *  2. Run `npm run gen:types` to regenerate @puckora/types
  *  3. Add the new literal to ScrapeJobPayloadSchema
@@ -67,8 +67,8 @@ export const AmazonProductPayloadSchema = z.object({
     marketplace: z.string().default('US'),
 })
 
-export const AlibabaSearchPayloadSchema = z.object({
-    type: z.literal(SCRAPE_JOB_TYPE.ALIBABA_SEARCH),
+export const GlobalSourcesSearchPayloadSchema = z.object({
+    type: z.literal(SCRAPE_JOB_TYPE.GLOBALSOURCES_SEARCH),
     keyword: z.string().min(1),
     max_pages: z.number().int().min(1).max(5).default(1),
 })
@@ -76,7 +76,7 @@ export const AlibabaSearchPayloadSchema = z.object({
 export const ScrapeJobPayloadSchema = z.discriminatedUnion('type', [
     AmazonSearchPayloadSchema,
     AmazonProductPayloadSchema,
-    AlibabaSearchPayloadSchema,
+    GlobalSourcesSearchPayloadSchema,
 ])
 
 export type ScrapeJobPayload = z.infer<typeof ScrapeJobPayloadSchema>

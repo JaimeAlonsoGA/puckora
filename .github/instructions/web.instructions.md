@@ -138,7 +138,7 @@ Every component belongs to one of two density levels:
 
 ## Extension detection (`hooks/use-extension.ts`)
 - Polls `window.__puckora_ext` every 150ms for up to 2s — never a single delayed timeout
-- Returns `{ isInstalled, isChecking }` — gate UI on `isChecking` to avoid flashing the "install" prompt
+- Returns `{ isInstalled, isChecking }` — use it for optional companion UI only; never block core web workflows on extension detection
 
 ## i18n
 - Every user-visible string lives in `i18n/messages/{en,es}/{namespace}.json` — never inline

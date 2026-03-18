@@ -16,6 +16,17 @@ import { AddNodeInputSchema } from '../schemas'
 import { SESSION } from '../constants'
 import { generateId } from '../utils'
 
+function hasSameMeta(
+    left: AddNodeInput['meta'] | ResearchNode['meta'] | undefined,
+    right: AddNodeInput['meta'] | ResearchNode['meta'] | undefined,
+): boolean {
+    return (left?.query ?? null) === (right?.query ?? null)
+        && (left?.asin ?? null) === (right?.asin ?? null)
+        && (left?.categoryId ?? null) === (right?.categoryId ?? null)
+        && (left?.supplierId ?? null) === (right?.supplierId ?? null)
+        && (left?.url ?? null) === (right?.url ?? null)
+}
+
 export const createResearchGraphSlice: StateCreator<
     ResearchGraphSlice,
     [],
@@ -60,6 +71,24 @@ export const createResearchGraphSlice: StateCreator<
         if (!currentSession) {
             console.warn('[ResearchGraph] addNode called before startSession')
             return ''
+        }
+
+        const existingNode = currentSession.nodes.find((node) => (
+            node.type === parsed.data.type
+            && node.parentId === parsed.data.parentId
+            && node.label === parsed.data.label
+            && hasSameMeta(node.meta, parsed.data.meta)
+        ))
+
+        if (existingNode) {
+            set((state) => ({
+                researchSession: state.researchSession
+                    ? { ...state.researchSession, currentId: existingNode.id }
+                    : null,
+                suggestions: [],
+            }))
+
+            return existingNode.id
         }
 
         const id = generateId()

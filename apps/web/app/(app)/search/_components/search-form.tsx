@@ -12,7 +12,7 @@ import { AmazonSearchInputSchema } from '@/schemas/scrape'
  * SearchForm
  *
  * Dumb form component — owns no routing logic.
- * Submits via createScrapeJobAction which redirects to /search?job=<id>.
+ * Submits via createScrapeJobAction which redirects to /search/[query]?job=<id>.
  */
 export function SearchForm() {
     const t = useTranslations('search')

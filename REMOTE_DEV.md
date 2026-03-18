@@ -159,6 +159,65 @@ npm run remote:up
 
 This repo uses a userspace Tailscale daemon with a custom socket and state directory. The SSH issue was caused by the daemon missing a persistent state directory for SSH host keys.
 
+## Linux wrappers for Mac process tracking
+
+If you are on the Linux workstation, do **not** run `npm run remote:status` locally and expect Mac process information.
+That script is Mac-only and checks Mac-local binaries and paths.
+
+Instead, run the Mac commands over Tailscale SSH:
+
+Quick status snapshot from Linux:
+
+```bash
+tailscale ssh codex@juno.tail938d67.ts.net 'export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin; export NVM_DIR=/Users/codex/.nvm; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"; cd /Users/codex/code/Puckora && npm run remote:status'
+```
+
+Attach to the Mac tmux session from Linux for live process monitoring:
+
+```bash
+tailscale ssh codex@juno.tail938d67.ts.net '/opt/homebrew/bin/tmux attach -t puckora-executor'
+```
+
+List the tmux windows without attaching:
+
+```bash
+tailscale ssh codex@juno.tail938d67.ts.net '/opt/homebrew/bin/tmux list-windows -t puckora-executor'
+```
+
+Peek at the scraper output without attaching:
+
+```bash
+tailscale ssh codex@juno.tail938d67.ts.net '/opt/homebrew/bin/tmux capture-pane -pt puckora-executor:scraper | tail -n 40'
+```
+
+Peek at the vectors output without attaching:
+
+```bash
+tailscale ssh codex@juno.tail938d67.ts.net '/opt/homebrew/bin/tmux capture-pane -pt puckora-executor:vectors | tail -n 40'
+```
+
+These are the recommended commands for tracking the long-running scraper and vector jobs from Linux.
+
+If you do this often, add a few shell aliases on the Linux machine:
+
+```bash
+alias mac-status="tailscale ssh codex@juno.tail938d67.ts.net 'export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin; export NVM_DIR=/Users/codex/.nvm; [ -s \"\$NVM_DIR/nvm.sh\" ] && . \"\$NVM_DIR/nvm.sh\"; cd /Users/codex/code/Puckora && npm run remote:status'"
+alias mac-attach="tailscale ssh codex@juno.tail938d67.ts.net '/opt/homebrew/bin/tmux attach -t puckora-executor'"
+alias mac-windows="tailscale ssh codex@juno.tail938d67.ts.net '/opt/homebrew/bin/tmux list-windows -t puckora-executor'"
+alias mac-scraper="tailscale ssh codex@juno.tail938d67.ts.net '/opt/homebrew/bin/tmux capture-pane -pt puckora-executor:scraper | tail -n 40'"
+alias mac-vectors="tailscale ssh codex@juno.tail938d67.ts.net '/opt/homebrew/bin/tmux capture-pane -pt puckora-executor:vectors | tail -n 40'"
+```
+
+After adding them to `.bashrc` or `.zshrc`, reload your shell and use:
+
+```bash
+mac-status
+mac-attach
+mac-windows
+mac-scraper
+mac-vectors
+```
+
 ## tmux workflow on the Mac
 
 This repo now includes a helper for terminal-oriented remote operation:

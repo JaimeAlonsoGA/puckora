@@ -5,8 +5,8 @@
  *
  * Consumers:
  *  - apps/scraper    — batch best-sellers crawler (server-side Playwright)
- *  - apps/extension  — user-facing Chrome extension (content scripts use DOM APIs,
- *                      service worker uses schemas for job orchestration)
+ *  - apps/extension  — user-facing browser extension (content scripts use DOM APIs,
+ *                      popup/sidebar use shared contracts and parsed shapes)
  *  - apps/web        — job orchestration, enrichment API, UI
  */
 
@@ -22,7 +22,7 @@ export {
     // Payload schemas
     AmazonSearchPayloadSchema,
     AmazonProductPayloadSchema,
-    AlibabaSearchPayloadSchema,
+    GlobalSourcesSearchPayloadSchema,
     ScrapeJobPayloadSchema,
     // Result schemas
     ScrapedListingSchema,

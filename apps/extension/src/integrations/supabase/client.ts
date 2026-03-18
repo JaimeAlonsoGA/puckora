@@ -1,10 +1,9 @@
 /**
  * Supabase client for the extension.
  *
- * Auth is inherited from the web app — the user logs in on app.puckora.com and
- * the session is synced to the extension via chrome.runtime.onMessageExternal.
+ * Auth can come from native popup sign-in or a web-app session sync.
  * Session is persisted in chrome.storage.local so it survives service worker
- * restarts.
+ * restarts and is available to popup/sidebar surfaces.
  *
  * Never import @supabase/ssr here — this is not a Next.js context.
  */

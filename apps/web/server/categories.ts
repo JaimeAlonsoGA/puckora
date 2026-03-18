@@ -18,9 +18,10 @@ import { unstable_cache } from 'next/cache'
 import { createFlyioDb } from '@/integrations/flyio/client'
 import { getTopLevelCategories } from '@/services/categories'
 import type { AmazonCategory } from '@puckora/types'
+import { DEFAULT_WEB_MARKETPLACE, type WebMarketplaceId } from '@/constants/amazon-marketplace'
 
 const _fetchTopCategories = unstable_cache(
-    async (marketplace: string): Promise<AmazonCategory[]> => {
+    async (marketplace: WebMarketplaceId): Promise<AmazonCategory[]> => {
         return getTopLevelCategories(createFlyioDb(), marketplace)
     },
     ['amazon-top-categories'],
@@ -32,5 +33,5 @@ const _fetchTopCategories = unstable_cache(
  * Hard-cached forever (categories never change). Safe to call freely.
  */
 export const getCachedTopCategories = cache(
-    (marketplace = 'US') => _fetchTopCategories(marketplace),
+    (marketplace: WebMarketplaceId = DEFAULT_WEB_MARKETPLACE) => _fetchTopCategories(marketplace),
 )

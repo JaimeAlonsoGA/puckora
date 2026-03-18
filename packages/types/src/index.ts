@@ -23,9 +23,6 @@ export type User = Tables<"users">
 export type UserInsert = TablesInsert<"users">
 export type UserUpdate = TablesUpdate<"users">
 
-// Views
-export type ScrapeProgress = Views<"scrape_progress">
-
 // Enum types
 export type ScrapeExecutor = Enums<"scrape_executor">
 export type ScrapeJobStatus = Enums<"scrape_job_status">
@@ -48,7 +45,7 @@ export const ScrapeJobStatusEnum = {
 export const ScrapeJobTypeEnum = {
     AMAZON_SEARCH: "amazon_search",
     AMAZON_PRODUCT: "amazon_product",
-    ALIBABA_SEARCH: "alibaba_search"
+    GLOBALSOURCES_SEARCH: "globalsources_search"
 } as const
 
 export const EnumNames = {

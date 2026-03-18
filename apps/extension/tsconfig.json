@@ -6,6 +6,7 @@
             "DOM",
             "DOM.Iterable"
         ],
+        "baseUrl": ".",
         "jsx": "react-jsx",
         "rootDir": "src",
         "outDir": "dist",

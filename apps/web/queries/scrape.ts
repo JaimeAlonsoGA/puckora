@@ -9,6 +9,7 @@
  */
 
 import { queryOptions, useQueryClient } from '@tanstack/react-query'
+import { QUERY_ERROR_MESSAGES } from '@/constants/api'
 import { createClient } from '@/integrations/supabase/client'
 import { scrapeKeys } from './_keys'
 import type { ScrapeJob } from '@puckora/types'
@@ -35,7 +36,7 @@ export const scrapeJobQueryOptions = (jobId: string | null) =>
                 .select('*')
                 .eq('id', jobId)
                 .maybeSingle()
-            if (error) throw new Error(`scrapeJobQueryOptions: ${error.message}`)
+            if (error) throw new Error(`${QUERY_ERROR_MESSAGES.SCRAPE_JOB_FETCH_FAILED}: ${error.message}`)
             return data as ScrapeJob | null
         },
         enabled: !!jobId,

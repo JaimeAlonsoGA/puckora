@@ -1,8 +1,8 @@
 /**
  * POST /api/scrape/enrich
  *
- * Endpoint called by the Chrome extension (and potentially the Apify agent)
- * after it finishes scraping a page.
+ * Endpoint called by browser overlays or external agents after they finish
+ * scraping a page.
  *
  * Request:
  *   Authorization: Bearer <supabase_access_token>
@@ -27,6 +27,7 @@ import { after } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { ScrapeResultSchema } from '@puckora/scraper-core'
 import { SCRAPE_JOB_STATUS, SCRAPE_PRODUCT_STATUS } from '@puckora/scraper-core'
+import { API_ERROR_MESSAGES, API_STATUS } from '@/constants/api'
 import { upsertAmazonProduct } from '@/services/products'
 import { updateScrapeJob } from '@/services/scrape'
 import { getKeywordForJob, upsertKeywordProduct } from '@/services/keywords'
@@ -101,7 +102,7 @@ export async function POST(req: NextRequest) {
         : null
 
     if (!accessToken) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        return NextResponse.json({ error: API_ERROR_MESSAGES.UNAUTHORIZED }, { status: API_STATUS.UNAUTHORIZED })
     }
 
     // 2. Validate JWT — confirms the token belongs to a real user ------------
@@ -112,7 +113,7 @@ export async function POST(req: NextRequest) {
     } = await userClient.auth.getUser()
 
     if (authError || !user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        return NextResponse.json({ error: API_ERROR_MESSAGES.UNAUTHORIZED }, { status: API_STATUS.UNAUTHORIZED })
     }
 
     // 3. Parse + validate body -----------------------------------------------
@@ -120,14 +121,14 @@ export async function POST(req: NextRequest) {
     try {
         body = await req.json()
     } catch {
-        return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+        return NextResponse.json({ error: API_ERROR_MESSAGES.INVALID_JSON_BODY }, { status: API_STATUS.BAD_REQUEST })
     }
 
     const parsed = ScrapeResultSchema.safeParse(body)
     if (!parsed.success) {
         return NextResponse.json(
-            { error: 'Validation failed', details: parsed.error.flatten() },
-            { status: 400 },
+            { error: API_ERROR_MESSAGES.VALIDATION_FAILED, details: parsed.error.flatten() },
+            { status: API_STATUS.BAD_REQUEST },
         )
     }
 
@@ -143,7 +144,7 @@ export async function POST(req: NextRequest) {
             await upsertAmazonProduct(db, normaliseListing(listing))
         } catch (err) {
             upsertErrors.push(
-                `${listing.asin}: ${err instanceof Error ? err.message : 'upsert failed'}`,
+                `${listing.asin}: ${err instanceof Error ? err.message : API_ERROR_MESSAGES.UPSERT_FAILED}`,
             )
         }
     }
@@ -154,7 +155,7 @@ export async function POST(req: NextRequest) {
         await updateScrapeJob(adminClient, result.job_id, {
             status: result.blocked ? SCRAPE_JOB_STATUS.FAILED : SCRAPE_JOB_STATUS.DONE,
             error: result.blocked
-                ? 'Scraper was blocked on this page'
+                ? API_ERROR_MESSAGES.SCRAPER_BLOCKED
                 : upsertErrors.length > 0
                     ? `${upsertErrors.length} upsert error(s): ${upsertErrors.slice(0, 3).join('; ')}`
                     : null,
@@ -199,7 +200,9 @@ export async function POST(req: NextRequest) {
         after(async () => {
             try {
                 const { enrichAsinBatch } = await import('@/integrations/data-pipeline/enrich')
+                const { syncAmazonProductVectorsDownstream } = await import('@/integrations/data-pipeline/vector-sync')
                 await enrichAsinBatch(db, listings)
+                await syncAmazonProductVectorsDownstream()
             } catch (err) {
                 console.error('[scrape/enrich] SP-API enrichment failed:', err)
             }

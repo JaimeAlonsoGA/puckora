@@ -1,16 +1,19 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
-import { Button, Display, Body, Stack } from '@puckora/ui'
+import { Alert, Button, Display, Body, Stack } from '@puckora/ui'
 import { cn } from '@puckora/utils'
 import type { AmazonCategory } from '@puckora/types'
 import { Tab, TabEnum } from '@/types/search'
+import { MODULE_IDS } from '@/constants/app-state'
 import { TABS } from '@/constants/search'
 import { createScrapeJobAction } from '@/app/(app)/actions'
+import { useAppStore } from '@/lib/store'
 import { KeywordPanel } from './panels/keyword-panel'
 import { CategoryPanel } from './panels/category-panel'
 import { ConstraintsPanel } from './panels/constraints-panel'
+import { SearchExtensionWidget } from './extension-widget'
 
 
 // ---------------------------------------------------------------------------
@@ -25,8 +28,15 @@ interface SearchEntryProps {
 
 export function SearchEntry({ displayName, categories, marketplace }: SearchEntryProps) {
     const [activeTab, setActiveTab] = useState<Tab>(TabEnum.KEYWORD)
+    const [serverError, setServerError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
     const t = useTranslations('search')
+    const { resetSession, setPuckiContext } = useAppStore()
+
+    useEffect(() => {
+        resetSession()
+        setPuckiContext({ currentAsin: undefined, currentQuery: undefined, currentModule: MODULE_IDS.SEARCH })
+    }, [resetSession, setPuckiContext])
 
     const [greeting] = useState(() => {
         const hour = new Date().getHours()
@@ -34,8 +44,12 @@ export function SearchEntry({ displayName, categories, marketplace }: SearchEntr
     })
 
     function handleSearch(q: string) {
+        setServerError(null)
         startTransition(async () => {
-            await createScrapeJobAction({ keyword: q, marketplace })
+            const result = await createScrapeJobAction({ keyword: q, marketplace })
+            if (result?.error) {
+                setServerError(result.error)
+            }
         })
     }
 
@@ -68,11 +82,17 @@ export function SearchEntry({ displayName, categories, marketplace }: SearchEntr
                     ))}
                 </div>
 
+                {serverError && <Alert variant="error">{serverError}</Alert>}
+
                 {/* Tab body */}
                 <div className="w-full">
                     {activeTab === TabEnum.KEYWORD && <KeywordPanel onSearch={handleSearch} isPending={isPending} />}
                     {activeTab === TabEnum.CATEGORY && <CategoryPanel categories={categories} onSearch={handleSearch} />}
                     {activeTab === TabEnum.CONSTRAINTS && <ConstraintsPanel onApply={(c) => handleSearch(JSON.stringify(c))} />}
+                </div>
+
+                <div className="mt-5">
+                    <SearchExtensionWidget />
                 </div>
             </div>
         </Stack>

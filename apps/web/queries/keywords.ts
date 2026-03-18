@@ -10,15 +10,19 @@
 import { queryOptions } from '@tanstack/react-query'
 import { keywordKeys } from './_keys'
 import type { ProductFinancial } from '@puckora/types'
+import { QUERY_ERROR_MESSAGES } from '@/constants/api'
+import { fetchJson } from './fetch'
 
 export const keywordResultsQueryOptions = (keyword: string, marketplace: string) =>
     queryOptions<ProductFinancial[]>({
         queryKey: keywordKeys.results(keyword, marketplace),
         queryFn: async () => {
             const params = new URLSearchParams({ keyword, marketplace })
-            const res = await fetch(`/api/search/keyword-results?${params}`)
-            if (!res.ok) throw new Error('Failed to fetch keyword results')
-            return res.json() as Promise<ProductFinancial[]>
+            return fetchJson<ProductFinancial[]>(
+                `/api/search/keyword-results?${params}`,
+                undefined,
+                QUERY_ERROR_MESSAGES.KEYWORD_RESULTS_FETCH_FAILED,
+            )
         },
         staleTime: 5 * 60_000,
     })

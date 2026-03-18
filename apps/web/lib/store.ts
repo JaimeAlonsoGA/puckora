@@ -4,26 +4,39 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { createResearchGraphSlice } from '@puckora/research-graph'
 import type { ResearchGraphSlice } from '@puckora/research-graph'
+import {
+    DEFAULT_ACTIVE_MODULE,
+    PUCKORA_STORE_NAME,
+    type ModuleId,
+} from '@/constants/app-state'
+import {
+    MarkedProductSchema,
+    PersistedAppStoreSchema,
+    PuckiContextSchema,
+    type StoreMarkedProduct,
+    type StorePuckiContext,
+} from '@/schemas/store'
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export type ModuleId = 'search' | 'suppliers' | 'notebook' | 'tools' | 'pucki'
+export type MarkedProduct = StoreMarkedProduct
 
-export type MarkState = 'interested' | 'competitor' | 'investigate'
+export type PuckiContext = StorePuckiContext
 
-export interface MarkedProduct {
-    asin: string
-    name: string
-    markState: MarkState
-    note?: string
-}
+type PersistedAppStoreShape = Pick<AppStore, 'activeModule' | 'markedProducts' | 'puckiContext'>
 
-export interface PuckiContext {
-    currentQuery?: string
-    currentAsin?: string
-    currentModule?: string
+function parsePersistedAppStore(persisted: unknown): Partial<PersistedAppStoreShape> {
+    const persistedState =
+        persisted && typeof persisted === 'object' && 'state' in persisted
+            ? (persisted as { state?: unknown }).state
+            : persisted
+
+    const parsed = PersistedAppStoreSchema.safeParse(persistedState)
+    if (!parsed.success) return {}
+
+    return parsed.data
 }
 
 // ---------------------------------------------------------------------------
@@ -47,23 +60,38 @@ export const useAppStore = create<AppStore>()(
         (set, get, api) => ({
             ...createResearchGraphSlice(set, get, api),
 
-            activeModule: 'search',
-            setActiveModule: (m) => set({ activeModule: m }),
+            activeModule: DEFAULT_ACTIVE_MODULE,
+            setActiveModule: (moduleId) => set({ activeModule: moduleId }),
 
             markedProducts: {},
-            markProduct: (p) => set((s) => ({
-                markedProducts: { ...s.markedProducts, [p.asin]: p },
-            })),
-            unmarkProduct: (asin) => set((s) => {
-                const { [asin]: _, ...rest } = s.markedProducts
-                return { markedProducts: rest }
+            markProduct: (product) => set((state) => {
+                const parsedProduct = MarkedProductSchema.parse(product)
+                return {
+                    markedProducts: { ...state.markedProducts, [parsedProduct.asin]: parsedProduct },
+                }
+            }),
+            unmarkProduct: (asin) => set((state) => {
+                const nextMarkedProducts = { ...state.markedProducts }
+                delete nextMarkedProducts[asin]
+                return { markedProducts: nextMarkedProducts }
             }),
 
             puckiContext: {},
-            setPuckiContext: (ctx) => set((s) => ({
-                puckiContext: { ...s.puckiContext, ...ctx },
+            setPuckiContext: (context) => set((state) => ({
+                puckiContext: PuckiContextSchema.parse({ ...state.puckiContext, ...context }),
             })),
         }),
-        { name: 'puckora-store' },
+        {
+            name: PUCKORA_STORE_NAME,
+            partialize: (state): PersistedAppStoreShape => ({
+                activeModule: state.activeModule,
+                markedProducts: state.markedProducts,
+                puckiContext: state.puckiContext,
+            }),
+            merge: (persisted, current) => ({
+                ...current,
+                ...parsePersistedAppStore(persisted),
+            }),
+        },
     ),
 )

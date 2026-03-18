@@ -19,15 +19,7 @@ type WebAppResponse =
     | { type: typeof EXTENSION_MSG.PONG; authenticated: boolean }
     | { type: typeof EXTENSION_MSG.OK }
 
-interface RealtimeCallbacks {
-    startRealtimeSubscription: () => Promise<void>
-    stopRealtimeSubscription: () => void
-}
-
-export function setupMessageHandler({
-    startRealtimeSubscription,
-    stopRealtimeSubscription,
-}: RealtimeCallbacks): void {
+export function setupMessageHandler(): void {
     chrome.runtime.onMessageExternal.addListener(
         (
             message: WebAppMessage,
@@ -54,7 +46,6 @@ export function setupMessageHandler({
                                 [STORAGE_KEY_LOCALE]: message.session.language,
                             })
                         }
-                        startRealtimeSubscription()
                         sendResponse({ type: EXTENSION_MSG.OK })
                     })
                     return true
@@ -62,7 +53,6 @@ export function setupMessageHandler({
 
                 case EXTENSION_MSG.CLEAR_SESSION: {
                     clearSession().then(() => {
-                        stopRealtimeSubscription()
                         sendResponse({ type: EXTENSION_MSG.OK })
                     })
                     return true

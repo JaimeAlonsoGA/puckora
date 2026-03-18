@@ -1,13 +1,19 @@
 'use client'
 
 import Link from 'next/link'
+import type { Route } from 'next'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Search, Package, AlignLeft, LayoutGrid, Plus, MessageCircle } from 'lucide-react'
 import { cn } from '@puckora/utils'
 import { Badge, Caption } from '@puckora/ui'
 import { useAppStore } from '@/lib/store'
-import type { ModuleId, MarkState } from '@/lib/store'
+import {
+    MARK_STATE_BADGE_VARIANTS,
+    MARK_STATE_DOT_CLASS_NAMES,
+    MODULE_IDS,
+    type ModuleId,
+} from '@/constants/app-state'
 import { ResearchGraphPanel } from './research-graph-panel'
 import { AppRoute } from '@/constants/routes'
 
@@ -17,52 +23,36 @@ import { AppRoute } from '@/constants/routes'
 
 const MODULES: { id: ModuleId; href: string; labelKey: string; icon: React.ReactNode }[] = [
     {
-        id: 'search',
+        id: MODULE_IDS.SEARCH,
         href: AppRoute.search,
         labelKey: 'search',
         icon: <Search size={14} aria-hidden="true" />,
     },
     {
-        id: 'suppliers',
-        href: '/suppliers',
+        id: MODULE_IDS.SUPPLIERS,
+        href: AppRoute.suppliers,
         labelKey: 'suppliers',
         icon: <Package size={14} aria-hidden="true" />,
     },
     {
-        id: 'notebook',
-        href: '/notebook',
+        id: MODULE_IDS.NOTEBOOK,
+        href: AppRoute.notebook,
         labelKey: 'notebook',
         icon: <AlignLeft size={14} aria-hidden="true" />,
     },
     {
-        id: 'tools',
-        href: '/tools',
+        id: MODULE_IDS.TOOLS,
+        href: AppRoute.tools,
         labelKey: 'tools',
         icon: <LayoutGrid size={14} aria-hidden="true" />,
     },
     {
-        id: 'pucki',
-        href: '/pucki',
+        id: MODULE_IDS.PUCKI,
+        href: AppRoute.pucki,
         labelKey: 'pucki',
         icon: <MessageCircle size={14} aria-hidden="true" />,
     },
 ]
-
-// ---------------------------------------------------------------------------
-// Marked products list
-// ---------------------------------------------------------------------------
-
-const MARK_DOT_CLASS: Record<MarkState, string> = {
-    interested: 'bg-primary',
-    competitor: 'bg-warning-fg',
-    investigate: 'bg-faint',
-}
-
-const MARK_BADGE_VARIANT: Record<MarkState, 'success' | 'warning' | 'default'> = {
-    interested: 'success',
-    competitor: 'warning',
-    investigate: 'default',
-}
 
 function MarkedList() {
     const t = useTranslations('nav')
@@ -89,11 +79,11 @@ function MarkedList() {
                             key={p.asin}
                             className="flex cursor-pointer items-center gap-1.25 rounded px-2 py-1 transition-colors hover:bg-card"
                         >
-                            <div className={cn('size-1.5 shrink-0 rounded-full', MARK_DOT_CLASS[p.markState])} />
+                            <div className={cn('size-1.5 shrink-0 rounded-full', MARK_STATE_DOT_CLASS_NAMES[p.markState])} />
                             <Caption as="span" className="flex-1 truncate text-sm text-foreground">
                                 {p.name.split(' ').slice(0, 4).join(' ')}
                             </Caption>
-                            <Badge variant={MARK_BADGE_VARIANT[p.markState]} size="sm">
+                            <Badge variant={MARK_STATE_BADGE_VARIANTS[p.markState]} size="sm">
                                 {p.markState}
                             </Badge>
                         </div>
@@ -124,7 +114,7 @@ export function Sidebar() {
                     return (
                         <Link
                             key={mod.id}
-                            href={mod.href as any}
+                            href={mod.href as Route}
                             className={cn(
                                 'flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm transition-colors no-underline',
                                 isActive
@@ -144,8 +134,8 @@ export function Sidebar() {
             {/* Marked products */}
             <MarkedList />
 
-            {/* Context panel — fills remaining space */}
-            <div className="flex flex-1 flex-col overflow-hidden border-b-hairline">
+            {/* Context panel */}
+            <div className="flex h-24 shrink-0 flex-col overflow-hidden border-b-hairline">
                 <div className="px-3 pb-1.5 pt-2.5">
                     <Caption as="span" className="font-medium tracking-[.03em]">{t('searchContext')}</Caption>
                 </div>
@@ -157,7 +147,7 @@ export function Sidebar() {
             </div>
 
             {/* Research graph */}
-            <div className="flex shrink-0 flex-col" style={{ height: 'var(--shell-graph-height)' }}>
+            <div className="flex min-h-0 flex-1 flex-col pb-3">
                 <div className="px-3 pb-0.5 pt-2">
                     <Caption as="span" className="font-medium">{t('researchGraph')}</Caption>
                 </div>

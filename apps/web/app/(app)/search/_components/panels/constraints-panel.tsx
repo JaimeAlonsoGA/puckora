@@ -17,6 +17,7 @@ import {
 export function ConstraintsPanel({ onApply }: { onApply: (c: Constraints) => void }) {
     const [selected, setSelected] = useState<Constraints>(DEFAULT_CONSTRAINTS)
     const t = useTranslations('search')
+    type SearchTranslationKey = Parameters<typeof t>[0]
 
     function toggle(key: keyof Constraints, value: string) {
         setSelected((prev) => ({ ...prev, [key]: prev[key] === value ? undefined : value }))
@@ -31,7 +32,7 @@ export function ConstraintsPanel({ onApply }: { onApply: (c: Constraints) => voi
                         key={group.key}
                         className="rounded-md border border-border-subtle bg-background px-3 py-3"
                     >
-                        <Caption as="p" className="mb-2 font-medium text-foreground">{t(group.labelKey as any)}</Caption>
+                        <Caption as="p" className="mb-2 font-medium text-foreground">{t(group.labelKey as SearchTranslationKey)}</Caption>
                         <Stack direction="row" gap="1-5">
                             {group.options.map((opt) => {
                                 const isSel = selected[group.key] === opt.value
@@ -48,7 +49,7 @@ export function ConstraintsPanel({ onApply }: { onApply: (c: Constraints) => voi
                                                 : 'border-border-subtle bg-transparent text-muted-foreground',
                                         )}
                                     >
-                                        {t(opt.labelKey as any)}
+                                        {t(opt.labelKey as SearchTranslationKey)}
                                     </Button>
                                 )
                             })}

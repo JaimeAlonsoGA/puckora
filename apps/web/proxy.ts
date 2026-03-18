@@ -4,6 +4,18 @@ import { AppRoute } from '@/constants/routes'
 import { CookieName } from '@/constants/cookies'
 import { DEFAULT_LANGUAGE, SUPPORTED_LOCALES } from '@puckora/types'
 
+type CookieOptions = {
+    domain?: string
+    expires?: Date | number
+    httpOnly?: boolean
+    maxAge?: number
+    path?: string
+    priority?: 'low' | 'medium' | 'high'
+    sameSite?: true | false | 'lax' | 'strict' | 'none'
+    secure?: boolean
+    partitioned?: boolean
+}
+
 const PUBLIC_ROUTES: string[] = [AppRoute.login, AppRoute.signup, '/api/webhooks']
 
 export async function proxy(request: NextRequest) {
@@ -17,13 +29,13 @@ export async function proxy(request: NextRequest) {
                 getAll() {
                     return request.cookies.getAll()
                 },
-                setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+                setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
                     cookiesToSet.forEach(({ name, value }) =>
                         request.cookies.set(name, value),
                     )
                     response = NextResponse.next({ request })
                     cookiesToSet.forEach(({ name, value, options }) =>
-                        response.cookies.set(name, value, options as any),
+                        response.cookies.set(name, value, options),
                     )
                 },
             },

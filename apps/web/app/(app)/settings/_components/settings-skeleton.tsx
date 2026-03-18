@@ -1,14 +1,20 @@
-export function SettingsSkeleton() {
+import { SkeletonPageHeader, SkeletonPanel } from '@/components/shared/skeleton'
+
+interface SettingsSkeletonProps {
+    includeHeader?: boolean
+}
+
+export function SettingsSkeleton({ includeHeader = false }: SettingsSkeletonProps) {
     return (
-        <div className="mt-[var(--space-8)] flex flex-col gap-[var(--space-8)]">
-            {/* Profile section */}
-            <div className="h-44 animate-pulse rounded-[var(--radius-lg)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)]" />
-            {/* Marketplace section */}
-            <div className="h-32 animate-pulse rounded-[var(--radius-lg)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)]" />
-            {/* Language section */}
-            <div className="h-32 animate-pulse rounded-[var(--radius-lg)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)]" />
-            {/* Plan section */}
-            <div className="h-36 animate-pulse rounded-[var(--radius-lg)] border border-[color:var(--border-subtle)] bg-[color:var(--surface-card)]" />
+        <div className="flex flex-col gap-8">
+            {includeHeader ? <SkeletonPageHeader eyebrowClassName="hidden" /> : null}
+
+            <div className="flex flex-col gap-8">
+                <SkeletonPanel className="h-44" />
+                <SkeletonPanel className="h-32" />
+                <SkeletonPanel className="h-32" />
+                <SkeletonPanel className="h-36" />
+            </div>
         </div>
     )
 }

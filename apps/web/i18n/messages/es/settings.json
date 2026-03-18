@@ -44,7 +44,7 @@
             "notInstalledHint": "La extensión aún no está instalada. Instálala para habilitar el scraping de Amazon desde tu navegador.",
             "featureScraping": "Extrae resultados de búsqueda de Amazon en tiempo real",
             "featureAnalysis": "Analiza páginas de producto con un clic",
-            "featureSuppliers": "Encuentra proveedores en Alibaba para cualquier producto",
+            "featureSuppliers": "Encuentra proveedores en Global Sources para cualquier producto",
             "rowInstalled": "Extensión instalada",
             "rowSynced": "Cuenta sincronizada",
             "rowUnsynced": "Cuenta no sincronizada",

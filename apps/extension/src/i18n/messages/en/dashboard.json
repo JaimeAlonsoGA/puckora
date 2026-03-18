@@ -2,9 +2,12 @@
     "title": "Puckora",
     "active": "Active",
     "loggedInAs": "Logged in as",
-    "scrapeJobs": "Scrape Jobs",
-    "running": "Running",
-    "pending": "Pending",
+    "overlaySurfaces": "Overlay surfaces",
+    "overlayAmazon": "Amazon overlay",
+    "overlaySuppliers": "Supplier comparison surface",
+    "overlaySummary": "Use the popup for auth and the sidebar overlay on supported marketplace pages.",
+    "ready": "Ready",
+    "companion": "Companion",
     "openApp": "Open app",
     "logout": "Log out"
 }

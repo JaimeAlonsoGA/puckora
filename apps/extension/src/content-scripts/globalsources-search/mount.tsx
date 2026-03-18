@@ -1,5 +1,5 @@
 /**
- * Alibaba search overlay — mounts the Puckora sidebar into a shadow root.
+ * Global Sources overlay — mounts the Puckora sidebar into a shadow root.
  */
 import { createRoot } from 'react-dom/client'
 import { Providers } from '@/providers'

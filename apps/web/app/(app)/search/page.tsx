@@ -25,7 +25,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
     if (jobId) {
         const job = await getCachedScrapeJob(jobId)
-        return <SearchShell userId={user.id} initialJobId={jobId} initialJob={job} />
+        return <SearchShell initialJobId={jobId} initialJob={job} />
     }
 
     const displayName = user.display_name || (user.email ?? '').split('@')[0] || 'seller'

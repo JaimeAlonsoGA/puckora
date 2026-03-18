@@ -77,7 +77,12 @@ interface JobProgressProps {
 export function JobProgress({ job }: JobProgressProps) {
     const t = useTranslations('search')
     const router = useRouter()
-    const listings = (job?.result?.valueOf ?? []) as ScrapedListing[]
+    const rawResult = job?.result as unknown
+    const listings = Array.isArray(rawResult)
+        ? rawResult as ScrapedListing[]
+        : Array.isArray((rawResult as { listings?: unknown[] } | null | undefined)?.listings)
+            ? ((rawResult as { listings?: unknown[] }).listings as ScrapedListing[])
+            : []
 
     // Auto-navigate to results page when the scrape job finishes.
     // The /search/[query] page uses loading.tsx skeletons so navigation

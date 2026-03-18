@@ -80,7 +80,9 @@ Same rules as the web app:
 
 All inter-context message types come from `EXTENSION_MSG` in `types/messages.ts`. Never use raw string literals. New message type → add to `EXTENSION_MSG` const + matching interface in `types/messages.ts`.
 
-Background is the single source of truth for session state: persists to `chrome.storage`, fans out to tabs. Content scripts never write to `chrome.storage` directly.
+Background is the single source of truth for session state: persists to `chrome.storage`, fans out auth changes, and supports overlay messaging. Content scripts never write to `chrome.storage` directly.
+
+The extension is overlay-first. Do not introduce scrape-job executors or background-tab scraping flows here.
 
 ## Backend boundaries
 

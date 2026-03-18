@@ -10,18 +10,28 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { API_ERROR_MESSAGES, API_STATUS } from '@/constants/api'
 import { createServerClient } from '@/integrations/supabase/server'
 import { createFlyioDb } from '@/integrations/flyio/client'
+import { KeywordResultsSearchParamsSchema } from '@/schemas/api'
 import { getKeyword, getProductsForKeyword } from '@/services/keywords'
 
 export async function GET(req: NextRequest) {
-    const { searchParams } = req.nextUrl
-    const keyword = searchParams.get('keyword')
-    const marketplace = searchParams.get('marketplace') ?? 'US'
+    const parsedParams = KeywordResultsSearchParamsSchema.safeParse({
+        keyword: req.nextUrl.searchParams.get('keyword') ?? undefined,
+        marketplace: req.nextUrl.searchParams.get('marketplace') ?? undefined,
+    })
 
-    if (!keyword) {
-        return NextResponse.json({ error: 'keyword is required' }, { status: 400 })
+    if (!parsedParams.success) {
+        const issue = parsedParams.error.issues[0]
+        const message = issue?.path[0] === 'marketplace'
+            ? API_ERROR_MESSAGES.INVALID_MARKETPLACE
+            : API_ERROR_MESSAGES.KEYWORD_REQUIRED
+
+        return NextResponse.json({ error: message }, { status: API_STATUS.BAD_REQUEST })
     }
+
+    const { keyword, marketplace } = parsedParams.data
 
     const supabase = await createServerClient()
     const {
@@ -30,7 +40,7 @@ export async function GET(req: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        return NextResponse.json({ error: API_ERROR_MESSAGES.UNAUTHORIZED }, { status: API_STATUS.UNAUTHORIZED })
     }
 
     try {
@@ -41,7 +51,7 @@ export async function GET(req: NextRequest) {
         const products = await getProductsForKeyword(db, keywordRow.id)
         return NextResponse.json(products)
     } catch (err) {
-        const message = err instanceof Error ? err.message : 'Internal error'
-        return NextResponse.json({ error: message }, { status: 500 })
+        const message = err instanceof Error ? err.message : API_ERROR_MESSAGES.INTERNAL_ERROR
+        return NextResponse.json({ error: message }, { status: API_STATUS.INTERNAL_SERVER_ERROR })
     }
 }

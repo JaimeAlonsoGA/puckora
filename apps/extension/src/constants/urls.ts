@@ -36,8 +36,8 @@ export function buildAmazonProductUrl(asin: string, marketplace = 'US'): string 
     return `https://www.amazon.${domain}/dp/${asin}`
 }
 
-export function buildAlibabaSearchUrl(keyword: string): string {
-    return `https://www.alibaba.com/trade/search?SearchText=${encodeURIComponent(keyword)}&f=y`
+export function buildGlobalSourcesUrl(): string {
+    return 'https://www.globalsources.com/'
 }
 
 /** Returns true if the URL is an Amazon search page. */
@@ -50,7 +50,7 @@ export function isAmazonProductUrl(url: string): boolean {
     return /amazon\.[a-z.]+\/dp\//.test(url)
 }
 
-/** Returns true if the URL is an Alibaba search page. */
-export function isAlibabaSearchUrl(url: string): boolean {
-    return /alibaba\.com\/(trade\/search|products\/)/.test(url)
+/** Returns true if the URL is a Global Sources page. */
+export function isGlobalSourcesUrl(url: string): boolean {
+    return /globalsources\.com\//.test(url)
 }

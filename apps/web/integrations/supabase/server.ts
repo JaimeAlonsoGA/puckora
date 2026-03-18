@@ -4,6 +4,18 @@ import { createServerClient as createClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { Database } from '@puckora/types'
 
+type CookieOptions = {
+    domain?: string
+    expires?: Date | number
+    httpOnly?: boolean
+    maxAge?: number
+    path?: string
+    priority?: 'low' | 'medium' | 'high'
+    sameSite?: true | false | 'lax' | 'strict' | 'none'
+    secure?: boolean
+    partitioned?: boolean
+}
+
 export async function createServerClient() {
     const cookieStore = await cookies()
 
@@ -15,10 +27,10 @@ export async function createServerClient() {
                 getAll() {
                     return cookieStore.getAll()
                 },
-                setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+                setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
                     try {
                         cookiesToSet.forEach(({ name, value, options }) =>
-                            cookieStore.set(name, value, options as any),
+                            cookieStore.set(name, value, options),
                         )
                     } catch {
                         // The `setAll` method was called from a Server Component.

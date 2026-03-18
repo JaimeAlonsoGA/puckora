@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { Sun, Moon, Settings, LogOut } from 'lucide-react'
@@ -17,10 +17,7 @@ export function TopbarActions({ email }: TopbarActionsProps) {
     const router = useRouter()
     const supabase = useMemo(() => createClient(), [])
     const { resolvedTheme, setTheme } = useTheme()
-    const [mounted, setMounted] = useState(false)
     const tNav = useTranslations('nav')
-
-    useEffect(() => setMounted(true), [])
     const tCommon = useTranslations('common')
 
     async function signOut() {
@@ -36,9 +33,8 @@ export function TopbarActions({ email }: TopbarActionsProps) {
                 className="flex size-6.5 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer"
                 aria-label="Toggle theme"
             >
-                {mounted && (resolvedTheme === 'dark'
-                    ? <Sun size={13} aria-hidden="true" />
-                    : <Moon size={13} aria-hidden="true" />)}
+                <Sun size={13} aria-hidden="true" className="hidden dark:block" />
+                <Moon size={13} aria-hidden="true" className="block dark:hidden" />
             </button>
 
             {/* Avatar — click to open user menu */}

@@ -56,7 +56,7 @@
     --shell-sidebar-width: 210px;
     --shell-topbar-height: 44px;
     --shell-pucki-height: 38px;
-    --shell-graph-height: 128px;
+    --shell-graph-height: 224px;
     --shell-marked-height: 160px;
 
     /* ── Backward-compat overrides for old semantic tokens ──────────────────

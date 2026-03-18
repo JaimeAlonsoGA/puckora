@@ -2,6 +2,8 @@
 
 import { queryOptions, useQueryClient } from '@tanstack/react-query'
 import type { User } from '@puckora/types'
+import { QUERY_ERROR_MESSAGES } from '@/constants/api'
+import { fetchJson } from './fetch'
 import { userKeys } from './_keys'
 
 // ---------------------------------------------------------------------------
@@ -13,9 +15,7 @@ export const userQueryOptions = () =>
     queryOptions({
         queryKey: userKeys.me(),
         queryFn: async (): Promise<User> => {
-            const res = await fetch('/api/settings')
-            if (!res.ok) throw new Error('Failed to fetch user')
-            return res.json() as Promise<User>
+            return fetchJson<User>('/api/settings', undefined, QUERY_ERROR_MESSAGES.USER_FETCH_FAILED)
         },
         staleTime: 30_000,
     })

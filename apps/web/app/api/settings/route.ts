@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { API_ERROR_MESSAGES, API_STATUS } from '@/constants/api'
 import { createServerClient } from '@/integrations/supabase/server'
 import { getUser, updateUser } from '@/services/settings'
 import { SettingsUpdateSchema } from '@puckora/types/schemas'
@@ -13,14 +14,14 @@ export async function GET() {
         } = await supabase.auth.getUser()
 
         if (authError || !user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+            return NextResponse.json({ error: API_ERROR_MESSAGES.UNAUTHORIZED }, { status: API_STATUS.UNAUTHORIZED })
         }
 
         const profile = await getUser(supabase, user.id)
         return NextResponse.json(profile)
     } catch (err) {
-        const message = err instanceof Error ? err.message : 'Internal server error'
-        return NextResponse.json({ error: message }, { status: 500 })
+        const message = err instanceof Error ? err.message : API_ERROR_MESSAGES.INTERNAL_SERVER_ERROR
+        return NextResponse.json({ error: message }, { status: API_STATUS.INTERNAL_SERVER_ERROR })
     }
 }
 
@@ -33,7 +34,7 @@ export async function PATCH(req: NextRequest) {
         } = await supabase.auth.getUser()
 
         if (authError || !user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+            return NextResponse.json({ error: API_ERROR_MESSAGES.UNAUTHORIZED }, { status: API_STATUS.UNAUTHORIZED })
         }
 
         const body = await req.json()
@@ -41,8 +42,8 @@ export async function PATCH(req: NextRequest) {
 
         if (!parsed.success) {
             return NextResponse.json(
-                { error: 'Validation failed', details: parsed.error.flatten() },
-                { status: 400 },
+                { error: API_ERROR_MESSAGES.VALIDATION_FAILED, details: parsed.error.flatten() },
+                { status: API_STATUS.BAD_REQUEST },
             )
         }
 
@@ -61,7 +62,7 @@ export async function PATCH(req: NextRequest) {
 
         return response
     } catch (err) {
-        const message = err instanceof Error ? err.message : 'Internal server error'
-        return NextResponse.json({ error: message }, { status: 500 })
+        const message = err instanceof Error ? err.message : API_ERROR_MESSAGES.INTERNAL_SERVER_ERROR
+        return NextResponse.json({ error: message }, { status: API_STATUS.INTERNAL_SERVER_ERROR })
     }
 }

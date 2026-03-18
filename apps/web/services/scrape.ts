@@ -12,6 +12,7 @@ type SupabaseInstance = any
 
 import type { ScrapeJob, ScrapeJobInsert, ScrapeJobUpdate } from '@puckora/types'
 import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
+import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
 
 // ---------------------------------------------------------------------------
 // Create
@@ -31,7 +32,7 @@ export async function createScrapeJob(
         .select('*')
         .single()
 
-    if (error) throw new Error(`createScrapeJob failed: ${error.message}`)
+    if (error) throw new Error(`${SERVICE_ERROR_PREFIXES.CREATE_SCRAPE_JOB_FAILED}: ${error.message}`)
     return data as ScrapeJob
 }
 
@@ -53,7 +54,7 @@ export async function getScrapeJob(
         .eq('id', jobId)
         .maybeSingle()
 
-    if (error) throw new Error(`getScrapeJob failed: ${error.message}`)
+    if (error) throw new Error(`${SERVICE_ERROR_PREFIXES.GET_SCRAPE_JOB_FAILED}: ${error.message}`)
     return data as ScrapeJob | null
 }
 
@@ -74,7 +75,7 @@ export async function listPendingScrapeJobs(
         .order('created_at', { ascending: true })
         .limit(limit)
 
-    if (error) throw new Error(`listPendingScrapeJobs failed: ${error.message}`)
+    if (error) throw new Error(`${SERVICE_ERROR_PREFIXES.LIST_PENDING_SCRAPE_JOBS_FAILED}: ${error.message}`)
     return (data ?? []) as ScrapeJob[]
 }
 
@@ -98,6 +99,6 @@ export async function updateScrapeJob(
         .select('*')
         .single()
 
-    if (error) throw new Error(`updateScrapeJob failed: ${error.message}`)
+    if (error) throw new Error(`${SERVICE_ERROR_PREFIXES.UPDATE_SCRAPE_JOB_FAILED}: ${error.message}`)
     return data as ScrapeJob
 }

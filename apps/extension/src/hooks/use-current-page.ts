@@ -9,7 +9,7 @@ import type { PageContext } from '@/types/extension'
 import {
     isAmazonSearchUrl,
     isAmazonProductUrl,
-    isAlibabaSearchUrl,
+    isGlobalSourcesUrl,
     AMAZON_DOMAIN_MAP,
 } from '@/constants/urls'
 
@@ -35,10 +35,14 @@ function detectPageContext(href: string): PageContext {
         return { type: 'amazon-product', asin, marketplace }
     }
 
-    if (isAlibabaSearchUrl(href)) {
+    if (isGlobalSourcesUrl(href)) {
         const url = new URL(href)
-        const keyword = url.searchParams.get('SearchText') ?? ''
-        return { type: 'alibaba-search', keyword }
+        const keyword =
+            url.searchParams.get('query') ??
+            url.searchParams.get('keyword') ??
+            url.searchParams.get('SearchText') ??
+            ''
+        return { type: 'globalsources-search', keyword }
     }
 
     return { type: 'other' }

@@ -8,8 +8,9 @@
 // Empty state is intentionally omitted — handle this in the consuming wrapper.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { ResearchGraphProps, NavigateEvent, FollowSuggestionEvent, ResearchGraphSlice } from '../types'
+import { computeLayout } from '../lib/layout'
 import { renderGraph } from '../lib/renderer'
 
 interface ResearchGraphComponentProps extends ResearchGraphProps {
@@ -28,6 +29,10 @@ export function ResearchGraph({
     const tooltipRef = useRef<HTMLDivElement>(null)
 
     const { researchSession, suggestions } = slice
+    const layout = useMemo(
+        () => (researchSession ? computeLayout(researchSession.nodes, suggestions) : null),
+        [researchSession, suggestions],
+    )
 
     useEffect(() => {
         const svg = svgRef.current
@@ -54,14 +59,24 @@ export function ResearchGraph({
     if (!researchSession) return null
 
     return (
-        <div className={`relative overflow-hidden ${className}`} style={{ height }}>
-            <svg
-                ref={svgRef}
-                className="w-full h-full"
-                preserveAspectRatio="xMidYMin meet"
-                aria-label="Research trail graph"
-                role="img"
-            />
+        <div className={`relative overflow-auto ${className}`} style={{ height }}>
+            <div
+                className="relative min-h-full min-w-full"
+                style={{
+                    width: layout ? `${layout.viewWidth}px` : '100%',
+                    height: layout ? `${layout.viewHeight}px` : '100%',
+                }}
+            >
+                <svg
+                    ref={svgRef}
+                    className="block"
+                    width={layout?.viewWidth ?? undefined}
+                    height={layout?.viewHeight ?? undefined}
+                    preserveAspectRatio="xMinYMin meet"
+                    aria-label="Research trail graph"
+                    role="img"
+                />
+            </div>
             <div
                 ref={tooltipRef}
                 aria-hidden="true"

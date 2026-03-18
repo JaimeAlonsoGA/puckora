@@ -28,7 +28,6 @@ import type {
     SearchCatalogItemsParams,
     SearchCatalogItemsResponse,
     SpApiErrorResponse,
-    SP_API_MARKETPLACE_ID as SpApiMarketplaceIdMap,
 } from './types'
 import { SP_API_MARKETPLACE_ID, SP_API_REGION_ENDPOINT } from './types'
 export class SpApiError extends Error {

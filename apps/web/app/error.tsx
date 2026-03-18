@@ -4,12 +4,13 @@ import { useTranslations } from 'next-intl'
 import { Heading, Body, Button } from '@puckora/ui'
 
 export default function ErrorPage({
-    error,
+    error: _error,
     reset,
 }: {
     error: Error & { digest?: string }
     reset: () => void
 }) {
+    void _error
     const t = useTranslations('errors.generic')
 
     return (

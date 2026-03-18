@@ -2,9 +2,12 @@
     "title": "Puckora",
     "active": "Activo",
     "loggedInAs": "Conectado como",
-    "scrapeJobs": "Trabajos de scraping",
-    "running": "En ejecución",
-    "pending": "Pendiente",
+    "overlaySurfaces": "Superficies del overlay",
+    "overlayAmazon": "Overlay de Amazon",
+    "overlaySuppliers": "Superficie de comparación de proveedores",
+    "overlaySummary": "Usa el popup para la sesión y el sidebar overlay en las páginas compatibles.",
+    "ready": "Listo",
+    "companion": "Complementario",
     "openApp": "Abrir app",
     "logout": "Cerrar sesión"
 }

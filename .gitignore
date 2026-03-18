@@ -54,6 +54,7 @@ coverage/
 
 # cache
 .cache/
+temp/
 
 # runtime state
 runs/

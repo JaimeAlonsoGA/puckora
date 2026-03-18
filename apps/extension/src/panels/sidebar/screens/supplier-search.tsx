@@ -1,16 +1,13 @@
 /**
- * SupplierSearch — cross-platform keyword search, Amazon ↔ Alibaba.
+ * SupplierSearch — supplier comparison companion surface.
  *
- * The user types a keyword and we trigger simultaneous scrape jobs on
- * both platforms, then display results side by side.
- *
- * TODO: Wire up to TanStack Query mutations once the backend supports
- *       on-demand Alibaba scrape jobs.
+ * Opens marketplace searches side by side so the user can compare Amazon
+ * demand with supplier-marketplace offers during overlay research.
  */
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Stack, Body, Caption, Button, Alert } from '@puckora/ui'
-import { buildAlibabaSearchUrl, buildAmazonSearchUrl } from '@/constants/urls'
+import { buildAmazonSearchUrl, buildGlobalSourcesUrl } from '@/constants/urls'
 
 export function SupplierSearch() {
     const [keyword, setKeyword] = useState('')
@@ -72,11 +69,9 @@ export function SupplierSearch() {
                             variant="secondary"
                             size="sm"
                             style={{ flex: 1 }}
-                            onClick={() =>
-                                window.open(buildAlibabaSearchUrl(keyword), '_blank')
-                            }
+                            onClick={() => window.open(buildGlobalSourcesUrl(), '_blank')}
                         >
-                            🏭 {t('suppliers.openAlibaba')}
+                            {t('suppliers.openGlobalSources')}
                         </Button>
                     </Stack>
 

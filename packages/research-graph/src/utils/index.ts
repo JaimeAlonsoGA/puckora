@@ -26,7 +26,7 @@ export function laneToX(lane: number): number {
 }
 
 export function rowToY(row: number): number {
-    return row * LAYOUT.ROW_H
+    return LAYOUT.TOP_PAD + row * LAYOUT.ROW_H
 }
 
 export const buildNodeLabel = {

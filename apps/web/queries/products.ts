@@ -2,6 +2,8 @@
 
 import { queryOptions } from '@tanstack/react-query'
 import type { AmazonProduct } from '@puckora/types'
+import { QUERY_ERROR_MESSAGES } from '@/constants/api'
+import { fetchJson } from './fetch'
 import { productKeys } from './_keys'
 
 // ---------------------------------------------------------------------------
@@ -14,9 +16,11 @@ export const productQueryOptions = (asin: string | null) =>
         queryKey: productKeys.detail(asin ?? ''),
         queryFn: async (): Promise<AmazonProduct | null> => {
             if (!asin) return null
-            const res = await fetch(`/api/products/${asin}`)
-            if (!res.ok) throw new Error(`Failed to fetch product: ${res.status}`)
-            return res.json() as Promise<AmazonProduct>
+            return fetchJson<AmazonProduct>(
+                `/api/products/${asin}`,
+                undefined,
+                QUERY_ERROR_MESSAGES.PRODUCT_FETCH_FAILED,
+            )
         },
         enabled: !!asin,
         staleTime: 60_000,

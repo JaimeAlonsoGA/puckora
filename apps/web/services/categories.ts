@@ -7,6 +7,7 @@
 import { eq, asc, and } from 'drizzle-orm'
 import { type PgDb, amazonCategories } from '@puckora/db'
 import type { AmazonCategory } from '@puckora/types'
+import { DEFAULT_WEB_MARKETPLACE, type WebMarketplaceId } from '@/constants/amazon-marketplace'
 
 /**
  * Returns the top-level (depth=1) Amazon categories for the given marketplace.
@@ -14,7 +15,7 @@ import type { AmazonCategory } from '@puckora/types'
  */
 export async function getTopLevelCategories(
     db: PgDb,
-    marketplace = 'US',
+    marketplace: WebMarketplaceId = DEFAULT_WEB_MARKETPLACE,
 ): Promise<AmazonCategory[]> {
     const rows = await db
         .select()

@@ -10,10 +10,11 @@
 
 import { redirect } from 'next/navigation'
 import { after } from 'next/server'
+import { createAdminClient } from '@/integrations/supabase/admin'
 import { createServerClient } from '@/integrations/supabase/server'
 import { createFlyioDb } from '@/integrations/flyio/client'
 import { updateUser } from '@/services/settings'
-import { createScrapeJob } from '@/services/scrape'
+import { createScrapeJob, updateScrapeJob } from '@/services/scrape'
 import { upsertKeyword } from '@/services/keywords'
 import { CookieName } from '@/constants/cookies'
 import { cookies } from 'next/headers'
@@ -22,7 +23,7 @@ import { SettingsUpdateSchema, type SettingsUpdateInput } from '@puckora/types/s
 import { AmazonSearchInputSchema, type AmazonSearchInput } from '@/schemas/scrape'
 import { getAuthUser } from '@/server/auth'
 import { AppRoute } from '@/constants/routes'
-import { SCRAPE_JOB_TYPE, SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
+import { SCRAPE_JOB_TYPE, SCRAPE_JOB_STATUS, SCRAPE_EXECUTOR } from '@puckora/scraper-core'
 
 // ---------------------------------------------------------------------------
 // Profile update
@@ -60,11 +61,11 @@ export async function updateProfileAction(data: SettingsUpdateInput): Promise<Ac
 // ---------------------------------------------------------------------------
 
 /**
- * Create an amazon_search scrape job and redirect to /search?job=<id>.
+ * Create an amazon_search scrape job and redirect to /search/[query]?job=<id>.
  *
- * The redirect re-renders the search page as a Server Component that reads
- * the job ID from searchParams and passes it to the SearchShell client island.
- * From there the shell subscribes to Realtime and polls until done.
+ * The redirect lands directly on the search results route. That page reads the
+ * job ID from searchParams, renders a stable shell immediately, and then fills
+ * in sections as listing data and enrichment data arrive.
  *
  * Never redirects on error — returns { error } so the form stays visible.
  */
@@ -82,6 +83,7 @@ export async function createScrapeJobAction(data: AmazonSearchInput): Promise<Ac
             user_id: user.id,
             type: SCRAPE_JOB_TYPE.AMAZON_SEARCH,
             status: SCRAPE_JOB_STATUS.PENDING,
+            target_executor: SCRAPE_EXECUTOR.AGENT,
             payload: {
                 type: SCRAPE_JOB_TYPE.AMAZON_SEARCH,
                 keyword: parsed.data.keyword,
@@ -103,19 +105,37 @@ export async function createScrapeJobAction(data: AmazonSearchInput): Promise<Ac
         // outside the request context (no cookies / user session available).
         const keywordId = keywordRow.id
         const { keyword, marketplace } = parsed.data
+        const jobId = job.id
         after(async () => {
+            const adminClient = createAdminClient()
             try {
                 const { runKeywordSearch } = await import('@/integrations/data-pipeline/keyword-search')
+                const { syncAmazonProductVectorsDownstream } = await import('@/integrations/data-pipeline/vector-sync')
                 const flyDb = createFlyioDb()
-                await runKeywordSearch(flyDb, keywordId, keyword, marketplace)
+                await runKeywordSearch(flyDb, adminClient, {
+                    jobId,
+                    keywordId,
+                    keyword,
+                    marketplace,
+                })
+                await syncAmazonProductVectorsDownstream()
             } catch (err) {
                 console.error('[createScrapeJobAction] SP-API keyword search failed:', err)
+
+                try {
+                    await updateScrapeJob(adminClient, jobId, {
+                        status: SCRAPE_JOB_STATUS.FAILED,
+                        executor: SCRAPE_EXECUTOR.AGENT,
+                        error: err instanceof Error ? err.message : 'SP-API keyword search failed',
+                        completed_at: new Date().toISOString(),
+                    })
+                } catch (jobErr) {
+                    console.error('[createScrapeJobAction] failed to mark scrape job as failed:', jobErr)
+                }
             }
         })
 
-        // Redirect drives a server render of the search page with the job ID
-        // embedded in the URL — clean, bookmarkable, SSR-friendly.
-        redirect(`${AppRoute.search}?job=${job.id}`)
+        redirect(`${AppRoute.search}/${encodeURIComponent(parsed.data.keyword)}?job=${job.id}`)
     } catch (err) {
         // redirect() throws a special Next.js error — do NOT catch it
         if ((err as { digest?: string })?.digest?.startsWith('NEXT_REDIRECT')) throw err

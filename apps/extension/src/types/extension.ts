@@ -12,7 +12,7 @@ import type { AppLanguage } from '@puckora/types'
 export type PageContext =
     | { type: 'amazon-search'; keyword: string; marketplace: string }
     | { type: 'amazon-product'; asin: string; marketplace: string }
-    | { type: 'alibaba-search'; keyword: string }
+    | { type: 'globalsources-search'; keyword: string }
     | { type: 'other' }
 
 // ─── SIDEBAR ──────────────────────────────────────────────────────────────────

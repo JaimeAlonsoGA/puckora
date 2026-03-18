@@ -1,10 +1,10 @@
 {
     "title": "Cross-platform search",
-    "description": "Search Amazon and Alibaba simultaneously to compare sourcing costs.",
+    "description": "Open Amazon demand and Global Sources supplier research side by side.",
     "placeholder": "e.g. bamboo cutting board",
     "search": "Search",
-    "openingSearch": "Opening Amazon and Alibaba searches for \"{{keyword}}\" in new tabs.",
+    "openingSearch": "Opening Amazon search and Global Sources for \"{{keyword}}\" in new tabs.",
     "openAmazon": "Open Amazon",
-    "openAlibaba": "Open Alibaba",
-    "note": "Puckora will automatically parse results and surface them here when the extension scraper completes (requires a Puckora Pro account)."
+    "openGlobalSources": "Open Global Sources",
+    "note": "Use the overlay directly on Amazon and Global Sources pages while the web app remains the source of truth for search results and enrichment."
 }

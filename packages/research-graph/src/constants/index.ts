@@ -5,6 +5,7 @@
 import type { GraphNodeType } from '../types'
 
 export const LAYOUT = {
+    TOP_PAD: 18,
     ROW_H: 32,
     LANE_W: 14,
     ORIGIN_X: 10,

@@ -1,10 +1,10 @@
 {
     "title": "Búsqueda multiplataforma",
-    "description": "Busca simultáneamente en Amazon y Alibaba para comparar costes de aprovisionamiento.",
+    "description": "Abre la demanda de Amazon y la investigación de proveedores en Global Sources lado a lado.",
     "placeholder": "ej. tabla de cortar de bambú",
     "search": "Buscar",
-    "openingSearch": "Abriendo búsquedas de Amazon y Alibaba para \"{{keyword}}\" en nuevas pestañas.",
+    "openingSearch": "Abriendo la búsqueda de Amazon y Global Sources para \"{{keyword}}\" en nuevas pestañas.",
     "openAmazon": "Abrir Amazon",
-    "openAlibaba": "Abrir Alibaba",
-    "note": "Puckora analizará automáticamente los resultados y los mostrará aquí cuando el scraper de la extensión finalice (requiere cuenta Puckora Pro)."
+    "openGlobalSources": "Abrir Global Sources",
+    "note": "Usa el overlay directamente en Amazon y Global Sources mientras la app web sigue siendo la fuente de verdad para resultados y enriquecimiento."
 }

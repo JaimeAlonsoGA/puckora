@@ -1,7 +1,13 @@
 import type { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
+import { MARKETPLACES } from '../../packages/types/src/meta.types'
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
+
+const AMAZON_SITE_REMOTE_PATTERNS = MARKETPLACES.map(({ domain }) => ({
+    protocol: 'https' as const,
+    hostname: domain,
+}))
 
 const nextConfig: NextConfig = {
     typedRoutes: true,
@@ -12,7 +18,7 @@ const nextConfig: NextConfig = {
     },
     images: {
         remotePatterns: [
-            // 1688 / Alibaba CDN
+            // Supplier marketplace images
             { protocol: 'https', hostname: 'cbu01.alicdn.com' },
             { protocol: 'https', hostname: 'img.alicdn.com' },
             { protocol: 'https', hostname: 'sc04.alicdn.com' },
@@ -21,6 +27,8 @@ const nextConfig: NextConfig = {
             { protocol: 'https', hostname: 'images-na.ssl-images-amazon.com' },
             { protocol: 'https', hostname: 'images-eu.ssl-images-amazon.com' },
             { protocol: 'https', hostname: 'images-fe.ssl-images-amazon.com' },
+            ...AMAZON_SITE_REMOTE_PATTERNS,
+            { protocol: 'https', hostname: 'www.globalsources.com' },
         ],
     },
 }

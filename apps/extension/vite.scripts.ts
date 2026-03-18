@@ -29,9 +29,9 @@ export default defineConfig({
                     __dirname,
                     'src/content-scripts/amazon-product/index.ts',
                 ),
-                'content-alibaba-search': resolve(
+                'content-globalsources-search': resolve(
                     __dirname,
-                    'src/content-scripts/alibaba-search/index.ts',
+                    'src/content-scripts/globalsources-search/index.ts',
                 ),
                 'content-web-app-bridge': resolve(
                     __dirname,

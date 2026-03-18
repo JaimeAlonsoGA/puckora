@@ -7,6 +7,7 @@
  */
 
 import type { User as AppUser, UserUpdate as AppUserUpdate } from '@puckora/types'
+import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SupabaseInstance = any
@@ -21,7 +22,7 @@ export async function getUser(
         .eq('id', userId)
         .single()
 
-    if (error) throw new Error(`Failed to fetch user: ${error.message}`)
+    if (error) throw new Error(`${SERVICE_ERROR_PREFIXES.GET_USER_FAILED}: ${error.message}`)
     return data as AppUser
 }
 
@@ -37,6 +38,6 @@ export async function updateUser(
         .select('*')
         .single()
 
-    if (error) throw new Error(`Failed to update user: ${error.message}`)
+    if (error) throw new Error(`${SERVICE_ERROR_PREFIXES.UPDATE_USER_FAILED}: ${error.message}`)
     return data as AppUser
 }

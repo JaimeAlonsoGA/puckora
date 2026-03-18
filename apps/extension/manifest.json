@@ -31,8 +31,7 @@
         "https://www.amazon.pl/*",
         "https://www.amazon.com.tr/*",
         "https://www.amazon.com.br/*",
-        "https://www.alibaba.com/*",
-        "https://www.1688.com/*"
+        "https://www.globalsources.com/*"
     ],
     "background": {
         "service_worker": "background.js",
@@ -75,11 +74,10 @@
         },
         {
             "matches": [
-                "https://www.alibaba.com/trade/search*",
-                "https://www.alibaba.com/products/*"
+                "https://www.globalsources.com/*"
             ],
             "js": [
-                "content-alibaba-search.js"
+                "content-globalsources-search.js"
             ],
             "type": "module",
             "run_at": "document_idle"
@@ -124,7 +122,7 @@
                 "https://www.amazon.it/*",
                 "https://www.amazon.es/*",
                 "https://www.amazon.ca/*",
-                "https://www.alibaba.com/*"
+                "https://www.globalsources.com/*"
             ]
         }
     ]
