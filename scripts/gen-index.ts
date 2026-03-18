@@ -5,6 +5,10 @@ const INPUT_FILE_PATH = resolve('packages/types/src/database.types.ts')
 const OUTPUT_FILE_PATH = resolve('packages/types/src/index.ts')
 const IMPORT_PATH = './database.types'
 
+const SUPABASE_TABLES = new Set(['scrape_jobs', 'users'])
+const SUPABASE_VIEWS = new Set(['scrape_progress'])
+const SUPABASE_ENUMS = new Set(['scrape_executor', 'scrape_job_status', 'scrape_job_type'])
+
 function singularize(name: string): string {
     // Words that should never be singularized
     const noSingularize = new Set([
@@ -59,9 +63,9 @@ function generateTypes(): void {
     }
 
     const tablesBlock = tablesBlockMatch[1]
-    const tableNames = [...tablesBlock.matchAll(/^\s*([a-zA-Z0-9_]+)\s*:\s*{\s*Row:/gm)].map(
-        (m) => m[1],
-    )
+    const tableNames = [...tablesBlock.matchAll(/^\s*([a-zA-Z0-9_]+)\s*:\s*{\s*Row:/gm)]
+        .map((m) => m[1])
+        .filter((name) => SUPABASE_TABLES.has(name))
 
     // Extract view names
     const viewsBlockMatch = content.match(
@@ -71,7 +75,9 @@ function generateTypes(): void {
     if (viewsBlockMatch) {
         const viewsBlock = viewsBlockMatch[1]
         viewNames.push(
-            ...[...viewsBlock.matchAll(/^\s*([a-zA-Z0-9_]+)\s*:\s*{\s*Row:/gm)].map((m) => m[1]),
+            ...[...viewsBlock.matchAll(/^\s*([a-zA-Z0-9_]+)\s*:\s*{\s*Row:/gm)]
+                .map((m) => m[1])
+                .filter((name) => SUPABASE_VIEWS.has(name)),
         )
     }
 
@@ -91,8 +97,10 @@ function generateTypes(): void {
             const name = match[1]
             const values = [...match[2].matchAll(/"([^"]*)"/g)].map((m) => m[1])
             if (values.length > 0) {
-                enumNames.push(name)
-                enumValues[name] = values
+                if (SUPABASE_ENUMS.has(name)) {
+                    enumNames.push(name)
+                    enumValues[name] = values
+                }
             }
         }
     }
@@ -109,7 +117,7 @@ function generateTypes(): void {
             )) {
                 const name = match[1]
                 const values = [...match[2].matchAll(/"([^"]*)"/g)].map((m) => m[1])
-                if (values.length > 0) {
+                if (values.length > 0 && SUPABASE_ENUMS.has(name)) {
                     enumNames.push(name)
                     enumValues[name] = values
                 }
@@ -127,6 +135,7 @@ function generateTypes(): void {
         `import type { Database } from '${IMPORT_PATH}'`,
         `export type { Database }`,
         `export type { Json } from '${IMPORT_PATH}'`,
+        `export * from './catalog.types'`,
         `export * from './meta.types'\n`,
         '// Generic type helpers',
         'type Tables<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"]',

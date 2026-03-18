@@ -4,6 +4,10 @@
 -- These tables, views, functions, and enums have been moved to Fly.io Postgres
 -- and are no longer needed in Supabase.
 --
+-- Reference SQL for the Fly-owned product_financials view now lives at:
+--   packages/db/sql/product_financials_view.sql
+-- It must not remain in supabase/migrations once this cleanup path is adopted.
+--
 -- WHEN TO RUN:
 --   Only after you have:
 --     1. Provisioned and verified the Fly.io Postgres instance

@@ -67,7 +67,7 @@ cat > "$SCRAPER/config.ts" << HEREDOC
  * Extends BASE_CONFIG with scraper-specific tunables.
  *
  * Required env vars (add to apps/scraper/.env):
- *   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PROXY_URL (optional)
+ *   DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PROXY_URL (optional)
  *   TODO: add any scraper-specific vars here
  */
 import { BASE_CONFIG } from '../../shared'
@@ -449,7 +449,7 @@ echo "  1. Implement scrapers/$NAME/config.ts        — add any scraper-specifi
 echo "  2. Implement scrapers/$NAME/browser.ts       — configure stealth/anti-bot strategy"
 echo "  3. Implement scrapers/$NAME/pages/listing.ts — add DOM extraction for listing pages"
 echo "  4. Add more pages/ extractors as needed (product.ts, etc.)"
-echo "  5. Implement scrapers/$NAME/db/products.ts   — match your Supabase schema"
+echo "  5. Implement scrapers/$NAME/db/products.ts   — match your Fly catalog schema in packages/db/src/schema/"
 echo "  6. Wire everything in scrapers/$NAME/index.ts"
 echo "  7. Add to package.json:"
 echo "       \"scrape:$NAME\":        \"tsx scrapers/$NAME/index.ts\","

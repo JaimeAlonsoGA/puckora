@@ -24,6 +24,11 @@ Puckora currently uses three distinct storage roles:
 - **Fly.io Postgres** — canonical catalog data and SQL views such as `product_financials`
 - **Local / tailnet Postgres + `pgvector`** — derived semantic-search index for `packages/vectors`
 
+Type boundary note:
+- `@puckora/types` is a shared TypeScript facade used across the repo; some exported catalog-shaped names still exist there for compatibility.
+- That does not change database ownership. Fly.io remains the source of truth for `amazon_*`, `gs_*`, `product_category_ranks`, and `product_financials`.
+- When in doubt, trust `packages/db/src/schema/` for Fly-owned entities and Supabase schema/types only for `users`, `scrape_jobs`, and auth-adjacent shapes.
+
 Rules:
 
 - Fly is the source of truth for structured catalog data; vectors are a derived index only

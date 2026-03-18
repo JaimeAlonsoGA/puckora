@@ -51,7 +51,7 @@ This creates all required files pre-wired to the shared layer. Then:
 1. Fill in `scrapers/<name>/config.ts` — add env vars
 2. Fill in `scrapers/<name>/browser.ts` — configure anti-bot strategy
 3. Add page extractors in `scrapers/<name>/pages/`
-4. Fill in `scrapers/<name>/db/` — match your Supabase schema
+4. Fill in `scrapers/<name>/db/` — match your Fly catalog schema in `packages/db/src/schema/`
 5. Wire the two-phase pipeline in `scrapers/<name>/index.ts`
 6. Add `scrape:<name>` scripts to `package.json`
 
@@ -84,9 +84,9 @@ Import anything from the barrel: `import { createDb, log, sleep, jitter } from '
 
 | Export                           | File            | Description                              |
 | -------------------------------- | --------------- | ---------------------------------------- |
-| `BASE_CONFIG`                    | `config.ts`     | Supabase URL/key, proxy URL              |
+| `BASE_CONFIG`                    | `config.ts`     | Fly DB URL, Supabase job/auth env, proxy URL |
 | `requireEnv(key)`                | `config.ts`     | Throws if env var missing                |
-| `createDb()`                     | `db.ts`         | Returns typed `SupabaseClient<Database>` |
+| `createDb()`                     | `db.ts`         | Returns typed Fly.io Postgres Drizzle DB |
 | `IS_DEBUG`                       | `db.ts`         | `true` when `NODE_ENV=development`       |
 | `type DB`                        | `db.ts`         | Alias for the typed client               |
 | `sleep(ms)`                      | `utils.ts`      | Awaitable delay                          |

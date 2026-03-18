@@ -1,9 +1,11 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Puckora — Product Financials Module
--- Run in Supabase SQL Editor after core migration
+-- Fly.io Postgres reference SQL
 --
--- Delivers:
---   1. product_financials  — the finance view
+-- Historical note:
+-- This SQL used to live under supabase/migrations, but the catalog tables and
+-- this view now belong to Fly.io Postgres. It must not be applied to Supabase
+-- after the cleanup migration removes catalog concerns from that database.
 -- ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -65,8 +67,6 @@ drop function if exists public.extract_asin_age_months(text);
 --   true when Amazon's organic rank has placed a non-swimwear product_type into
 --   a swimwear/bikini category. Frontend should filter or visually flag these rows.
 
--- Drop first so we can freely add/reorder columns without hitting
--- "cannot change name of view column" from CREATE OR REPLACE VIEW.
 drop view if exists public.product_financials;
 
 create view public.product_financials as
@@ -80,8 +80,6 @@ with base as (
     pcr.observed_at,
     ac.depth                              as category_depth,
     ac.full_path                          as category_path,
-
-    -- Raw product fields
     p.price,
     p.fba_fee,
     p.referral_fee,
@@ -96,9 +94,6 @@ with base as (
     p.pkg_width_cm,
     p.pkg_height_cm,
     p.listing_date,
-
-    -- ASIN age — computed from listing_date (populated by SP-API summaries.listingDate)
-    -- NULL for products scraped before the listing_date column was added
     case
       when p.listing_date is not null
         then greatest(
@@ -108,32 +103,21 @@ with base as (
         )::integer
       else null
     end                                       as product_age_months,
-
-    -- Net per unit — what seller keeps after Amazon's cut
-    -- null if either fee is missing (no silent estimation)
     case
       when p.fba_fee is not null and p.referral_fee is not null
         then round((p.price - p.fba_fee - p.referral_fee)::numeric, 2)
       else null
     end                                   as net_per_unit,
-
-    -- Total Amazon fees combined
     case
       when p.fba_fee is not null and p.referral_fee is not null
         then round((p.fba_fee + p.referral_fee)::numeric, 2)
       else null
     end                                   as total_amazon_fees,
-
-    -- Amazon fee % of price (useful for margin analysis)
     case
       when p.fba_fee is not null and p.referral_fee is not null and p.price > 0
         then round(((p.fba_fee + p.referral_fee) / p.price * 100)::numeric, 1)
       else null
     end                                   as amazon_fee_pct,
-
-    -- ── BSR power law coefficients by depth tier ─────────────────────────────
-    -- Calibrated 2026-03-08 against review velocity data.
-    -- depth 9+ uses A=600, B=0.80: rank#1→600, rank#5→186, rank#10→119 units/month.
     case
       when ac.depth <= 2 then 350000.0
       when ac.depth <= 4 then 120000.0
@@ -141,7 +125,6 @@ with base as (
       when ac.depth <= 8 then   4000.0
       else                        600.0
     end                                   as bsr_a,
-
     case
       when ac.depth <= 2 then 0.93
       when ac.depth <= 4 then 0.91
@@ -149,11 +132,6 @@ with base as (
       when ac.depth <= 8 then 0.84
       else                    0.80
     end                                   as bsr_b,
-
-    -- ── Data-quality: product type vs category mismatch ──────────────────────
-    -- FIX (2026-03-08): Flags ASINs where Amazon's organic rank has placed a
-    -- clearly non-swimwear product_type into a swimwear/bikini category.
-    -- These are Amazon classification artefacts, not scraper bugs.
     (
       p.product_type in (
         'SHIRT', 'APPAREL', 'TOPS', 'BLOUSE', 'SWEATER',
@@ -166,7 +144,6 @@ with base as (
         or ac.full_path ilike '%swim%'
       )
     )                                     as product_type_mismatch
-
   from public.amazon_products p
   join public.product_category_ranks pcr on pcr.asin = p.asin
   join public.amazon_categories ac       on ac.id = pcr.category_id
@@ -174,52 +151,36 @@ with base as (
     and p.price > 0
     and pcr.rank > 0
 ),
-
 estimates as (
   select
     b.*,
-
-    -- ── BSR estimate (always computable when rank exists) ────────────────────
-    round(b.bsr_a * power(b.rank::float, -b.bsr_b))::integer
-                                          as monthly_units_bsr,
-
-    -- ── Review velocity estimate (only for B0 ASINs with enough reviews) ────
-    -- Null when age unknown or review_count is null
+    round(b.bsr_a * power(b.rank::float, -b.bsr_b))::integer as monthly_units_bsr,
     case
       when b.product_age_months is not null
        and b.review_count is not null
        and b.review_count > 0
         then round(
-          b.review_count::float
-          / b.product_age_months
-          / 0.02
+          b.review_count::float / b.product_age_months / 0.02
         )::integer
       else null
-    end                                   as monthly_units_review
-
+    end as monthly_units_review
   from base b
 ),
-
 blended as (
   select
     e.*,
-
-    -- ── Dynamic weight selection ──────────────────────────────────────────────
     case
-      when e.monthly_units_review is null           then 1.00   -- no age data
-      when e.review_count < 20                      then 0.95   -- too few reviews
-      when e.rank > 5000                            then 0.45   -- long tail
-      else                                               0.65   -- default
-    end                                   as w_bsr,
-
+      when e.monthly_units_review is null then 1.00
+      when e.review_count < 20 then 0.95
+      when e.rank > 5000 then 0.45
+      else 0.65
+    end as w_bsr,
     case
-      when e.monthly_units_review is null           then 0.00
-      when e.review_count < 20                      then 0.05
-      when e.rank > 5000                            then 0.55
-      else                                               0.35
-    end                                   as w_review,
-
-    -- ── Confidence score ─────────────────────────────────────────────────────
+      when e.monthly_units_review is null then 0.00
+      when e.review_count < 20 then 0.05
+      when e.rank > 5000 then 0.55
+      else 0.35
+    end as w_review,
     case
       when e.fba_fee is not null
        and e.referral_fee is not null
@@ -227,17 +188,14 @@ blended as (
        and e.rank <= 500
         then 'high'
       when e.fba_fee is not null
-        or  e.referral_fee is not null
-        or  coalesce(e.review_count, 0) >= 20
+        or e.referral_fee is not null
+        or coalesce(e.review_count, 0) >= 20
         then 'medium'
       else 'low'
-    end                                   as confidence
-
+    end as confidence
   from estimates e
 )
-
 select
-  -- ── Identity ─────────────────────────────────────────────────────────────
   b.asin,
   b.category_id,
   b.rank,
@@ -245,8 +203,6 @@ select
   b.category_depth,
   b.category_path,
   b.observed_at,
-
-  -- ── Product snapshot ─────────────────────────────────────────────────────
   b.title,
   b.brand,
   b.product_type,
@@ -254,31 +210,15 @@ select
   b.price,
   b.rating,
   b.review_count,
-
-  -- ── Fees ─────────────────────────────────────────────────────────────────
   b.fba_fee,
   b.referral_fee,
   b.total_amazon_fees,
   b.amazon_fee_pct,
   b.net_per_unit,
-
-  -- ── Unit estimates ────────────────────────────────────────────────────────
   b.monthly_units_bsr,
   b.monthly_units_review,
-
-  -- ── Blended monthly units ─────────────────────────────────────────────────
-  round(
-    b.w_bsr    * b.monthly_units_bsr
-    + b.w_review * coalesce(b.monthly_units_review, 0)
-  )::integer                              as monthly_units,
-
-  -- ── Revenue ───────────────────────────────────────────────────────────────
-  round(
-    (b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))
-    * b.price
-  )::numeric(12,2)                        as monthly_revenue,
-
-  -- ── Net profit (null when fees unavailable — no silent estimation) ────────
+  round(b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))::integer as monthly_units,
+  round((b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0)) * b.price)::numeric(12,2) as monthly_revenue,
   case
     when b.net_per_unit is not null
       then round(
@@ -286,43 +226,25 @@ select
         * b.net_per_unit
       )::numeric(12,2)
     else null
-  end                                     as monthly_net,
-
-  -- ── Daily velocity ────────────────────────────────────────────────────────
-  round(
-    (b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))
-    / 30.0
-  , 1)                                    as daily_velocity,
-
-  -- ── Weights used (useful for debugging + frontend tooltips) ──────────────
+  end as monthly_net,
+  round((b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0)) / 30.0, 1) as daily_velocity,
   b.w_bsr,
   b.w_review,
-
-  -- ── Confidence ────────────────────────────────────────────────────────────
   b.confidence,
-
-  -- ── Data quality ─────────────────────────────────────────────────────────
   b.product_type_mismatch,
-
-  -- ── Meta ──────────────────────────────────────────────────────────────────
   b.product_age_months,
   b.listing_date,
-
-  -- Reviews acquired per month since listing (proxy for sales velocity)
-  -- Null when listing_date or review_count is unavailable
   case
     when b.product_age_months is not null
      and b.review_count is not null
      and b.review_count > 0
       then round((b.review_count::numeric / b.product_age_months), 2)
     else null
-  end                                     as review_rate_per_month,
-
+  end as review_rate_per_month,
   b.pkg_weight_kg,
   b.pkg_length_cm,
   b.pkg_width_cm,
   b.pkg_height_cm
-
 from blended b;
 
 comment on view public.product_financials is

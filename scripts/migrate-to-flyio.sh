@@ -2,7 +2,12 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # migrate-to-flyio.sh
 #
-# One-time migration: Supabase → Fly.io Postgres
+# Historical one-time migration: Supabase → Fly.io Postgres
+#
+# This script exists only for the original catalog move from Supabase to Fly.
+# It is not part of the steady-state architecture. Current catalog/category/
+# keyword/rank ownership is Fly.io Postgres; Supabase retains only auth,
+# users, scrape_jobs, and lightweight scrape_progress.
 #
 # Prerequisites:
 #   - pg_dump / pg_restore (Postgres client tools) installed
@@ -25,7 +30,8 @@ DUMP_DIR="$(mktemp -d)"
 SCHEMA_DUMP="$DUMP_DIR/schema.sql"
 DATA_DUMP="$DUMP_DIR/data.dump"
 
-# Tables to migrate (product/catalog data only — auth/app tables stay in Supabase)
+# Tables to migrate from the legacy Supabase catalog layout
+# (auth/app tables stay in Supabase)
 TABLES=(
     amazon_categories
     amazon_products

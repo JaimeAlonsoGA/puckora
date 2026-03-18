@@ -22,10 +22,12 @@
 
 import * as XLSX from 'xlsx'
 import * as dotenv from 'dotenv'
-import { createClient } from '@supabase/supabase-js'
+import { sql } from 'drizzle-orm'
+import { amazonCategories } from '@puckora/db'
 import { log } from '../../shared/logger'
 import { CATEGORY_SCRAPE_STATUS } from '@puckora/scraper-core'
 import { categorySlug, buildUrl } from '../../scrapers/amazon/db/slugs'
+import { createDb } from '../../shared/db'
 dotenv.config()
 
 const MARKETPLACE = 'US'
@@ -134,12 +136,12 @@ async function importToDb(rows: CategoryRow[], dryRun: boolean): Promise<void> {
     return
   }
 
-  if (!process.env['NEXT_PUBLIC_SUPABASE_URL'] || !process.env['SUPABASE_SERVICE_ROLE_KEY']) {
-    log.error('Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env')
+  if (!process.env['DATABASE_URL']) {
+    log.error('Set DATABASE_URL in apps/scraper/.env')
     process.exit(1)
   }
 
-  const db = createClient(process.env['NEXT_PUBLIC_SUPABASE_URL']!, process.env['SUPABASE_SERVICE_ROLE_KEY']!)
+  const db = createDb()
 
   // Must insert parents before children — sort by depth ascending
   const sorted = [...rows].sort((a, b) => a.depth - b.depth)
@@ -150,12 +152,29 @@ async function importToDb(rows: CategoryRow[], dryRun: boolean): Promise<void> {
 
   for (let i = 0; i < sorted.length; i += BATCH_SIZE) {
     const batch = sorted.slice(i, i + BATCH_SIZE)
-    const { error } = await db
-      .from('amazon_categories')
-      .upsert(batch, { onConflict: 'id', ignoreDuplicates: false })
-
-    if (error) { log.error(`Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${error.message}`); failed += batch.length }
-    else { inserted += batch.length }
+    try {
+      await db
+        .insert(amazonCategories)
+        .values(batch as typeof amazonCategories.$inferInsert[])
+        .onConflictDoUpdate({
+          target: amazonCategories.id,
+          set: {
+            name: sql`excluded.name`,
+            full_path: sql`excluded.full_path`,
+            breadcrumb: sql`excluded.breadcrumb`,
+            depth: sql`excluded.depth`,
+            parent_id: sql`excluded.parent_id`,
+            is_leaf: sql`excluded.is_leaf`,
+            marketplace: sql`excluded.marketplace`,
+            bestsellers_url: sql`excluded.bestsellers_url`,
+            scrape_status: sql`excluded.scrape_status`,
+          },
+        })
+      inserted += batch.length
+    } catch (error) {
+      log.error(`Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${(error as Error).message}`)
+      failed += batch.length
+    }
 
     process.stdout.write(`\r  Progress: ${Math.min(i + BATCH_SIZE, sorted.length)}/${sorted.length}   `)
   }

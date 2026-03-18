@@ -35,7 +35,16 @@ const TARGETS = [
         // `true` = expose to browser with NEXT_PUBLIC_ prefix
         renames: Object.fromEntries(BROWSER_PUBLIC_KEYS.map((k) => [k, `NEXT_PUBLIC_${k}`])),
         // Keys that the web app doesn't need at all
-        exclude: ['WEB_APP_ORIGIN', 'SUPABASE_PASSWORD'],
+        exclude: [
+            'WEB_APP_ORIGIN',
+            'SUPABASE_PASSWORD',
+            'VECTOR_SYNC_BATCH_SIZE',
+            'VECTOR_SYNC_POLL_MS',
+            'VECTOR_SYNC_STATE_FILE',
+            'VECTOR_OPENAI_BATCH_SIZE',
+            'VECTOR_OPENAI_BATCH_POLL_MS',
+            'VECTOR_OPENAI_BATCH_STATE_FILE',
+        ],
         // DATABASE_URL / DATABASE_PROXY_URL pass through as-is (server-only, used by integrations/flyio/client.ts)
     },
     {
@@ -66,6 +75,9 @@ const TARGETS = [
             'VECTOR_SYNC_BATCH_SIZE',
             'VECTOR_SYNC_POLL_MS',
             'VECTOR_SYNC_STATE_FILE',
+            'VECTOR_OPENAI_BATCH_SIZE',
+            'VECTOR_OPENAI_BATCH_POLL_MS',
+            'VECTOR_OPENAI_BATCH_STATE_FILE',
             'VECTOR_MIN_SCORE',
             'VECTOR_QUERY_LIMIT',
             'SUPABASE_SERVICE_ROLE_KEY',

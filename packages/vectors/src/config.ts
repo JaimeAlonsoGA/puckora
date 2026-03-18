@@ -46,7 +46,6 @@ function bootstrapVectorEnv(): void {
     if (!workspaceRoot) return
 
     loadEnvFile(path.join(workspaceRoot, '.env'))
-    loadEnvFile(path.join(workspaceRoot, 'apps/scraper/.env'))
 }
 
 function readString(keys: string[], fallback?: string): string {

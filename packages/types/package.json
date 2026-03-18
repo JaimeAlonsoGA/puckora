@@ -13,6 +13,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@puckora/db": "*",
         "zod": "^3.24.0"
     },
     "devDependencies": {

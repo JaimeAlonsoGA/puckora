@@ -130,7 +130,7 @@ export const amazonKeywordProducts = pgTable('amazon_keyword_products', {
 
 // ── product_financials view ──────────────────────────────────────────────────
 // One row per (asin, category) rank. Only products with price > 0.
-// Full SQL + calibration notes: supabase/migrations/20260317000002_product_financials_view.sql
+// Full SQL + calibration notes: packages/db/sql/product_financials_view.sql
 
 export const productFinancialsView = pgView('product_financials', {
     // Identity

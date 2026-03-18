@@ -55,6 +55,9 @@ coverage/
 # cache
 .cache/
 
+# runtime state
+runs/
+
 # scraper — runtime state, generated output & seed data
 apps/scraper/checkpoint.json
 apps/scraper/*.ndjson

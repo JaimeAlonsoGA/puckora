@@ -13,8 +13,10 @@
 import fs from 'fs'
 import path from 'path'
 import * as dotenv from 'dotenv'
-import { createClient } from '@supabase/supabase-js'
+import { sql } from 'drizzle-orm'
+import { gsCategories } from '@puckora/db'
 import { log } from '../../shared/logger'
+import { createDb } from '../../shared/db'
 dotenv.config()
 
 const BATCH_SIZE = 200
@@ -110,15 +112,12 @@ async function importToDb(rows: CategoryRow[], dryRun: boolean): Promise<void> {
         return
     }
 
-    if (!process.env['SUPABASE_URL'] || !process.env['SUPABASE_SERVICE_ROLE_KEY']) {
-        log.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in apps/scraper/.env')
+    if (!process.env['DATABASE_URL']) {
+        log.error('Set DATABASE_URL in apps/scraper/.env')
         process.exit(1)
     }
 
-    const db = createClient(
-        process.env['SUPABASE_URL']!,
-        process.env['SUPABASE_SERVICE_ROLE_KEY']!,
-    )
+    const db = createDb()
 
     let inserted = 0
     let failed = 0
@@ -127,15 +126,23 @@ async function importToDb(rows: CategoryRow[], dryRun: boolean): Promise<void> {
 
     for (let i = 0; i < rows.length; i += BATCH_SIZE) {
         const batch = rows.slice(i, i + BATCH_SIZE)
-        const { error } = await db
-            .from('gs_categories')
-            .upsert(batch, { onConflict: 'url', ignoreDuplicates: false })
-
-        if (error) {
-            log.error(`Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${error.message}`)
-            failed += batch.length
-        } else {
+        try {
+            await db
+                .insert(gsCategories)
+                .values(batch as typeof gsCategories.$inferInsert[])
+                .onConflictDoUpdate({
+                    target: gsCategories.url,
+                    set: {
+                        name: sql`excluded.name`,
+                        slug: sql`excluded.slug`,
+                        gs_category_id: sql`excluded.gs_category_id`,
+                        scrape_status: sql`excluded.scrape_status`,
+                    },
+                })
             inserted += batch.length
+        } catch (error) {
+            log.error(`Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${(error as Error).message}`)
+            failed += batch.length
         }
 
         process.stdout.write(`\r  Progress: ${Math.min(i + BATCH_SIZE, rows.length)}/${rows.length}   `)

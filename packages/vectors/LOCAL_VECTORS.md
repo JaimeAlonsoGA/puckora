@@ -24,6 +24,9 @@ Current scope:
 From the repo root:
 
 ```bash
+npm run remote:up
+npm run remote:status
+npm run remote:job -- status
 npm run vectors:sync
 npm run vectors:watch
 npm run vectors:batch
@@ -45,7 +48,38 @@ npm --prefix packages/vectors run query -- --scope amazon --kind product "portab
 npm --prefix packages/vectors run rebuild
 ```
 
-The package scripts auto-load the workspace root `.env` and the synced `apps/scraper/.env`, so running them from `packages/vectors` does not require manual `export` steps.
+The package scripts auto-load the workspace root `.env`, so running them from `packages/vectors` does not require manual `export` steps.
+
+## Remote executor mode
+
+If this Mac is acting as the always-on scraper/vector executor and you are developing from a laptop:
+
+```bash
+npm run remote:up
+```
+
+That command:
+
+- installs a persistent userspace Tailscale launch agent
+- ensures local Postgres 17 is available on `127.0.0.1:5432`
+- ensures the Fly proxy is available on `127.0.0.1:15432`
+- re-publishes the local vector Postgres to the tailnet on port `6543`
+
+Status and job control:
+
+```bash
+npm run remote:status
+npm run remote:job -- start scraper-amazon -- npm --prefix apps/scraper run scrape:amazon:resume
+npm run remote:job -- start vectors-backfill -- npm --prefix packages/vectors run backfill
+npm run remote:job -- status
+npm run remote:job -- logs scraper-amazon
+npm run remote:job -- stop scraper-amazon
+```
+
+Important:
+
+- do not run a separate `vectors:watch` while `vectors:backfill` is still active
+- `vectors:backfill` already switches to watch mode automatically once backlog is complete
 
 ## Sync behavior
 
@@ -157,9 +191,9 @@ Once Tailscale is authenticated on the Mac, expose local Postgres to the tailnet
 Helper script:
 
 ```bash
-bash apps/scraper/scripts/tailscale-local-vectors.sh up
-bash apps/scraper/scripts/tailscale-local-vectors.sh serve
-bash apps/scraper/scripts/tailscale-local-vectors.sh status
+bash scripts/tailscale-local-vectors.sh up
+bash scripts/tailscale-local-vectors.sh serve
+bash scripts/tailscale-local-vectors.sh status
 ```
 
 Example target connection string from another machine:
@@ -173,7 +207,28 @@ What to configure on the laptop:
 1. Install Tailscale and join the same tailnet.
 2. Verify the Mac tailnet address is reachable.
 3. Set `VECTOR_DATABASE_URL` on the laptop to the Mac tailnet Postgres endpoint.
-4. Start the app from the laptop.
+4. Use Tailscale SSH to connect to the Mac when you want to start, stop, or inspect scraper/vector jobs.
+5. Start the app from the laptop.
+
+SSH is the simplest control plane for remote development because it lets you:
+
+- run `npm run remote:status`
+- tail scraper/vector log files
+- start or stop tracked background jobs
+- inspect local Postgres / Fly proxy / Tailscale state directly on the Mac
+
+Useful smoke tests on the Mac:
+
+```bash
+psql 'postgresql://127.0.0.1:5432/puckora_vectors' -Atqc "select current_database(), current_user;"
+psql 'postgresql://127.0.0.1:5432/puckora_vectors' -Atqc "select count(*) from public.vector_documents;"
+```
+
+Root runtime note:
+
+- `runs/remote-jobs/` is disposable runtime state created by `npm run remote:job -- ...`
+- it contains PID files, logs, and command captures for detached jobs
+- delete it only after the related detached jobs are stopped or no longer need their logs
 
 Important:
 

@@ -10,6 +10,10 @@ LOG_FILE="${TAILSCALE_LOG_FILE:-${TAILSCALE_DIR}/tailscaled.log}"
 LOCAL_PORT="${LOCAL_VECTOR_LOCAL_PORT:-5432}"
 TAILNET_PORT="${LOCAL_VECTOR_TAILNET_PORT:-6543}"
 
+desired_hostname() {
+  scutil --get LocalHostName 2>/dev/null || hostname -s
+}
+
 usage() {
   cat <<EOF
 Usage:
@@ -35,6 +39,7 @@ ensure_daemon() {
       --tun=userspace-networking \
       --socket="${SOCKET}" \
       --state="${STATE}" \
+      --statedir="${TAILSCALE_DIR}" \
       >"${LOG_FILE}" 2>&1 &
     sleep 2
   fi
@@ -45,7 +50,10 @@ cmd="${1:-status}"
 case "${cmd}" in
   up)
     ensure_daemon
-    exec "${TAILSCALE_BIN}" --socket="${SOCKET}" up --accept-dns=false --ssh
+    if "${TAILSCALE_BIN}" --socket="${SOCKET}" status >/dev/null 2>&1; then
+      exec "${TAILSCALE_BIN}" --socket="${SOCKET}" set --accept-dns=false --ssh --hostname="$(desired_hostname)"
+    fi
+    exec "${TAILSCALE_BIN}" --socket="${SOCKET}" up --accept-dns=false --ssh --hostname="$(desired_hostname)"
     ;;
   serve)
     ensure_daemon
