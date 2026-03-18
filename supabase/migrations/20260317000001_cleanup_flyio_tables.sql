@@ -90,4 +90,5 @@ FROM public.scrape_jobs;
 
 -- Existing RLS on scrape_jobs already controls who can query this view.
 
+DROP VIEW IF EXISTS public.scrape_progress CASCADE;
 COMMIT;

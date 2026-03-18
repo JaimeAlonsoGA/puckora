@@ -3,7 +3,7 @@
 This repo now supports a split workflow:
 
 - **Mac executor** = always-on background job runner and local vector database host
-- **Laptop** = daily development machine
+- **Laptop / Linux workstation** = daily development machine
 
 ## Current Mac executor state
 
@@ -99,9 +99,9 @@ These commands manage the Mac's local Postgres, Fly proxy, Tailscale tunnel, and
 - best choice for scraper and vector jobs you want to inspect interactively over SSH
 - includes windows for `status`, `scraper`, `vectors`, and `jobs`
 
-## Laptop-safe commands
+## Client-machine commands
 
-Run these on the laptop clone:
+Run these on the laptop or Linux clone:
 
 ```bash
 git pull
@@ -110,10 +110,10 @@ npm run env:sync
 npm run dev
 ```
 
-Laptop-specific notes:
+Client-machine notes:
 
-- if the laptop runs the web app and needs Fly-backed catalog access, either run a **local** Fly proxy on the laptop with `npm run db:proxy`, or unset `DATABASE_PROXY_URL` locally so the app falls back to direct `DATABASE_URL`
-- if the laptop needs vector reads against the Mac-hosted vector DB, set:
+- if the laptop or Linux machine runs the web app and needs Fly-backed catalog access, either run a **local** Fly proxy on that machine with `npm run db:proxy`, or unset `DATABASE_PROXY_URL` locally so the app falls back to direct `DATABASE_URL`
+- if the laptop or Linux machine needs vector reads against the Mac-hosted vector DB, set:
 
 ```bash
 VECTOR_DATABASE_URL=postgresql://100.75.76.97:6543/puckora_vectors
@@ -121,7 +121,7 @@ VECTOR_DATABASE_URL=postgresql://100.75.76.97:6543/puckora_vectors
 
 Do **not** run the Mac executor scripts on the laptop expecting them to control the Mac remotely. To inspect or control the Mac, SSH into it first.
 
-The laptop can run normal local development commands. The Mac-only scripts should be run only after SSHing into the Mac, or directly on the Mac console.
+The laptop or Linux machine can run normal local development commands. The Mac-only scripts should be run only after SSHing into the Mac, or directly on the Mac console.
 
 ## SSH bridge
 
@@ -188,11 +188,11 @@ npm run remote:tmux -- run-vectors-backfill
 npm run remote:tmux -- attach
 ```
 
-## Exact laptop setup steps
+## Exact client-machine setup steps
 
-Starting from a fresh laptop session:
+Starting from a fresh laptop or Linux session:
 
-1. Install Tailscale on the laptop.
+1. Install Tailscale on the laptop or Linux machine.
 2. Sign into the same tailnet/account used by the Mac.
 3. Verify the Mac executor is reachable on the same tailnet:
 
@@ -213,7 +213,7 @@ If the interactive SSH session appears blank, use this test instead first:
 tailscale ssh codex@juno.tail938d67.ts.net 'hostname && whoami && pwd'
 ```
 
-If `juno.tail938d67.ts.net` does not resolve on the laptop, the laptop is logged into the wrong Tailscale account or a different tailnet. Fix that first before troubleshooting anything else.
+If `juno.tail938d67.ts.net` does not resolve on the laptop or Linux machine, that machine is logged into the wrong Tailscale account or a different tailnet. Fix that first before troubleshooting anything else.
 
 5. On the Mac, verify executor health when needed:
 
@@ -229,31 +229,31 @@ psql 'postgresql://127.0.0.1:5432/puckora_vectors' -Atqc "select current_databas
 psql 'postgresql://127.0.0.1:5432/puckora_vectors' -Atqc "select count(*) from public.vector_documents;"
 ```
 
-6. On the laptop, clone or update the repo:
+6. On the laptop or Linux machine, clone or update the repo:
 
 ```bash
 git pull
 npm install
 ```
 
-7. On the laptop, set the vector DB to the Mac-hosted tailnet endpoint in your root `.env` or shell:
+7. On the laptop or Linux machine, set the vector DB to the Mac-hosted tailnet endpoint in your root `.env` or shell:
 
 ```bash
 VECTOR_DATABASE_URL=postgresql://100.75.76.97:6543/puckora_vectors
 ```
 
-8. On the laptop, decide how Fly catalog access should work:
+8. On the laptop or Linux machine, decide how Fly catalog access should work:
 
 - preferred for local dev: run a laptop-local Fly proxy with `npm run db:proxy`
 - alternative: remove or override `DATABASE_PROXY_URL` locally so code uses direct `DATABASE_URL`
 
-9. Sync env files on the laptop:
+9. Sync env files on the laptop or Linux machine:
 
 ```bash
 npm run env:sync
 ```
 
-10. Run local web dev on the laptop.
+10. Run local web dev on the laptop or Linux machine.
 
 ## Current recommended job model
 
