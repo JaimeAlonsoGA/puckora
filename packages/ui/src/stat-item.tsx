@@ -12,8 +12,8 @@ import { Caption, Mono } from './typography'
  */
 type StatItemProps = React.HTMLAttributes<HTMLDivElement> & {
     label: string
-    value: string
-    sub?: string
+    value: React.ReactNode
+    sub?: React.ReactNode
     accent?: boolean
     valueClassName?: string
 }
@@ -27,20 +27,25 @@ export function StatItem({
     className,
     ...props
 }: StatItemProps) {
+    const primitiveValue = typeof value === 'string' || typeof value === 'number'
+    const primitiveSub = typeof sub === 'string' || typeof sub === 'number'
+
     return (
         <div className={cn('flex flex-col gap-px', className)} {...props}>
             <Caption as="span">{label}</Caption>
-            <Mono
-                as="span"
-                className={cn(
-                    'text-sm font-medium',
-                    accent ? 'text-primary' : 'text-foreground',
-                    valueClassName,
-                )}
-            >
-                {value}
-            </Mono>
-            {sub && <Caption as="span" className="text-xs">{sub}</Caption>}
+            {primitiveValue ? (
+                <Mono
+                    as="span"
+                    className={cn(
+                        'text-sm font-medium',
+                        accent ? 'text-primary' : 'text-foreground',
+                        valueClassName,
+                    )}
+                >
+                    {value}
+                </Mono>
+            ) : value}
+            {sub ? (primitiveSub ? <Caption as="span" className="text-xs">{sub}</Caption> : sub) : null}
         </div>
     )
 }

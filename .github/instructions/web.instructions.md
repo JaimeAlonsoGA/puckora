@@ -44,7 +44,14 @@ The design token stack has three layers. Components only ever use the **Tailwind
 
 **`--sf-*` tokens** (`packages/ui/tailwind.css`) are from the **old, deprecated design system** — never use in new code.
 
-**Radius** — `rounded-sm` (4px), `rounded-md` (8px), `rounded-lg` (12px), `rounded-full` (9999px). Prefer `rounded-md` as the default.
+**Radius — semantic shape language (sharp = data, pill = action, card = content):**
+- `Button` → `rounded-full` (pill) — all sizes
+- `Alert` → `rounded-lg` (12px) — approachable feedback
+- `Surface variant="card"` / `variant="important"` → `rounded-xl` (18px) — premium shells
+- `DataCard`, `KpiCard` → `rounded-none` — data display, zero tolerance
+- `Badge` → `rounded-sm` (4px) — inline label whisper
+- `Surface variant="base"` / `variant="secondary"` → `rounded-none` — structural
+- Scale available: `rounded-sm` (4px) · `rounded-md` (8px) · `rounded-lg` (12px) · `rounded-xl` (18px) · `rounded-full` (9999px).
 
 ## CSS globals (`styles/globals.css`)
 
@@ -99,6 +106,62 @@ Every component belongs to one of two density levels:
 - Mutation hooks own `useQueryClient` + `invalidateQueries`
 - Export `useInvalidate{Domain}()` for post-server-action cache busting
 - `useQueryClient` forbidden outside `queries/` — sole exception: `hooks/use-scrape-realtime.ts`
+- Every domain file **must** be re-exported from `queries/index.ts` — missing exports silently break all barrel consumers
+
+## Hard rules — scalability constraints
+
+### No hardcoded strings — ever
+- Route paths → `AppRoute.{name}` from `constants/routes.ts`. Never `'/login'`, `'/settings'`, etc.
+- Error messages → `API_ERROR_MESSAGES`, `QUERY_ERROR_MESSAGES`, `SERVICE_ERROR_PREFIXES` from `constants/api.ts`
+- Validation messages → `AUTH_VALIDATION_MESSAGES` / `SCRAPE_VALIDATION_MESSAGES` from `constants/validation.ts`
+- UI strings → `t('key')` from `next-intl`. No string literals in JSX or server components.
+- Magic numbers → named const in `constants/`. No raw `400`, `8`, `45` in logic.
+
+### Const-as-enum pattern (no TypeScript `enum`)
+Never use `enum`. Use `as const` objects + derived union types instead:
+```ts
+// ✅ DO — constants/app-state.ts pattern
+export const MARK_STATES = {
+    INTERESTED: 'interested',
+    COMPETITOR: 'competitor',
+} as const
+
+export const MARK_STATE_VALUES = [MARK_STATES.INTERESTED, MARK_STATES.COMPETITOR] as const
+export type MarkState = (typeof MARK_STATE_VALUES)[number]  // 'interested' | 'competitor'
+
+// ❌ NEVER
+enum MarkState { Interested = 'interested', Competitor = 'competitor' }
+```
+The VALUES array enables runtime iteration (`.map`, `.includes`, Zod `.enum()`). The type is derived — no duplication.
+
+### Derived types — never manually duplicate
+```ts
+// Type derived from const object (route paths, config keys)
+export type AppRoutePath = (typeof AppRoute)[keyof typeof AppRoute]
+
+// Type from Zod schema (single source — schema drives both runtime + type)
+export type SearchInput = z.infer<typeof SearchSchema>
+```
+If a type can be derived, derive it. Never write `type X = 'a' | 'b' | 'c'` when a VALUES array exists.
+
+### Zod schemas as validation SSOT
+- Schemas live in `schemas/{domain}.ts` — no React, no server imports
+- The same schema validates: form input (`zodResolver`), server action body, API route body
+- Never duplicate validation logic: if the schema says min 8 chars, nothing else enforces that
+- Validation error messages → come from `constants/validation.ts`, injected via `.min(8, VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH)`
+
+### Constants file rules
+- `constants/{name}.ts` — zero imports from `server/`, `services/`, `queries/`, or React
+- `as const` on all object literals that produce union types
+- Exhaustive maps use `Record<TheUnionType, Value>` — TypeScript errors if a value is missing
+- Group related constants in one file (e.g. all mark-state data in `app-state.ts`)
+
+### One source, many consumers
+This is the core scalability rule: **a value is defined once, derived everywhere.**
+- Route string defined in `AppRoute`, used in `<Link href={AppRoute.settings}>`
+- Mark state string defined in `MARK_STATES.INTERESTED`, used in Zod, UI, store, DB query
+- Error message defined in `API_ERROR_MESSAGES`, thrown in service, asserted in test
+When you find yourself writing the same string in two places, stop. Add a constant.
 
 ## Server files (`server/*.ts`)
 - `import 'server-only'` at top
@@ -113,6 +176,124 @@ Every component belongs to one of two density levels:
 - `'use server'` at top
 - Accept typed input (never raw `FormData`)
 - Return `{ error: string }` | call `redirect()` — nothing else
+- Cross-DB writes that are independent (Supabase + Fly.io) → `Promise.all([...])`, never sequential `await`
+
+## Parallel async composition
+
+**Server functions — parallelize all independent awaits.**
+A sequential `await a; await b` when `b` does not use `a`'s result is a per-request latency tax. Treat every server function like a DAG: only await in order when there is a true data dependency.
+
+```ts
+// ✅ getCachedUser: createServerClient only reads cookies — independent of getAuthUser
+const [authUser, supabase] = await Promise.all([getAuthUser(), createServerClient()])
+
+// ✅ page with two independent data needs
+const [user, catalog] = await Promise.all([getCachedUser(), getCachedCatalog()])
+```
+
+**Server Actions — parallelize cross-DB writes:**
+```ts
+// ✅ Supabase + Fly.io writes are independent
+const [job, keyword] = await Promise.all([
+    createScrapeJob(supabase, userId, input),
+    upsertKeyword(db, input.query),
+])
+```
+
+**API routes & background pipelines — `Promise.allSettled` for batch writes:**
+When processing N independent rows, never `for...await`. One failure must never abort the others:
+```ts
+await Promise.allSettled(
+    items.map(async (item) => Promise.all([upsertProductA(db, item), upsertProductB(db, item)]))
+)
+```
+- DB write loops over independent rows → always `Promise.allSettled`
+- SP-API / third-party catalog fetches → intentionally sequential (rate-limit protection)
+
+**Non-urgent client updates — `startTransition`:**
+Wrap event handlers that trigger navigation, search, or non-urgent state changes so the UI stays responsive:
+```ts
+import { startTransition } from 'react'
+// in handler:
+startTransition(() => onSearch(query))
+```
+
+## Re-render optimization
+
+React re-renders an entire subtree by default. In data-dense lists (product tables, keyword rows) this taxes the main thread on every interaction. These patterns are **mandatory for any component that renders a list of rows**.
+
+**1. `memo(RowComponent)` — wrap every list row:**
+```tsx
+const ProductRow = memo(function ProductRow({ ... }: ProductRowProps) { ... })
+```
+Without `memo`, `useCallback` on parent handlers is pointless.
+
+**2. Per-row store selector — never a parent-level collection subscription:**
+```ts
+// ✅ only this row re-renders when ITS own slice changes
+const markState = useAppStore(state => state.items[id]?.markState ?? null)
+
+// ❌ subscribes to entire collection — parent re-renders on ANY item change
+const { items } = useAppStore()
+```
+
+**3. Stable callbacks via `useCallback` + `Store.getState()`:**
+Parent handlers have **empty deps** and read store state at call time — never as reactive subscriptions:
+```ts
+const cycleMark = useCallback((id: string, name: string) => {
+    const { items, markItem, unmarkItem } = useAppStore.getState()
+    // reads current state at call time — no stale closure, no dep
+}, [])  // ← empty deps: never re-created, never busts memo
+```
+
+**4. Transient ref for local state reads in handlers:**
+When a handler needs the current value of a `useState` variable, sync it via `useLayoutEffect` — never assign to `ref.current` during render (React Compiler enforcement):
+```ts
+const notesRef = useRef(notes)
+useLayoutEffect(() => { notesRef.current = notes })  // handler reads notesRef.current
+```
+
+**5. Stable handler signatures — row passes its own id:**
+```ts
+// Row calls parent with its own id:
+onCycleMark(asin, product.title)
+// Parent def stays fully generic:
+const cycleMark = useCallback((asin: string, title: string) => { ... }, [])
+```
+
+**Re-render scope guarantees this pattern must provide:**
+
+| User action | What re-renders |
+| --- | --- |
+| Mark/unmark a product | Only that row (per-row store subscription) |
+| Expand / collapse a row | Only rows whose `isExpanded` prop changed |
+| Note input change | Only the row whose `note` prop differs |
+| Any store change | Parent component: **never** |
+
+## Error constants (SSOT)
+
+All HTTP status codes, API error messages, and service error prefixes live in `constants/api.ts`. Never define local error string constants in route handlers, services, or background pipelines — they will diverge.
+
+```ts
+import { API_ERROR_MESSAGES, API_STATUS, SERVICE_ERROR_PREFIXES } from '@/constants/api'
+
+// API routes:
+return NextResponse.json(
+    { error: API_ERROR_MESSAGES.INVALID_JSON_BODY },
+    { status: API_STATUS.BAD_REQUEST }
+)
+return NextResponse.json(
+    { error: API_ERROR_MESSAGES.VALIDATION_FAILED },
+    { status: API_STATUS.UNPROCESSABLE_ENTITY }
+)
+
+// Service files:
+throw new Error(`${SERVICE_ERROR_PREFIXES.UPDATE_AMAZON_PRODUCT_FAILED}: ${message}`)
+```
+
+- New error string → add to `constants/api.ts`, never inline
+- New HTTP status code → add to `API_STATUS` object
+- New service error prefix → add to `SERVICE_ERROR_PREFIXES`
 
 ## Theme
 - `next-themes` manages dark/light — never hardcode `"dark"` class on `<html>`

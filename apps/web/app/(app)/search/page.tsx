@@ -1,5 +1,6 @@
+import { getTranslations } from 'next-intl/server'
+import { DEFAULT_WEB_MARKETPLACE, WEB_MARKETPLACE_IDS, type WebMarketplaceId } from '@/constants/amazon-marketplace'
 import { getCachedUser } from '@/server/users'
-import { getCachedTopCategories } from '@/server/categories'
 import { getCachedScrapeJob } from '@/server/scrape'
 import { SearchEntry } from './_components/search-entry'
 import { SearchShell } from './_components/search-shell'
@@ -17,10 +18,9 @@ interface SearchPageProps {
  * Otherwise renders SearchEntry (the keyword search form).
  */
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-    const [{ job: jobId }, user, categories] = await Promise.all([
+    const [{ job: jobId }, user] = await Promise.all([
         searchParams,
         getCachedUser(),
-        getCachedTopCategories('US'),
     ])
 
     if (jobId) {
@@ -28,6 +28,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         return <SearchShell initialJobId={jobId} initialJob={job} />
     }
 
-    const displayName = user.display_name || (user.email ?? '').split('@')[0] || 'seller'
-    return <SearchEntry displayName={displayName} categories={categories} marketplace={user.marketplace} />
+    const marketplace = WEB_MARKETPLACE_IDS.includes(user.marketplace as WebMarketplaceId)
+        ? (user.marketplace as WebMarketplaceId)
+        : DEFAULT_WEB_MARKETPLACE
+    const t = await getTranslations('search')
+
+    const displayName = user.display_name || (user.email ?? '').split('@')[0] || t('entry.fallbackDisplayName')
+    return <SearchEntry displayName={displayName} marketplace={marketplace} />
 }
+

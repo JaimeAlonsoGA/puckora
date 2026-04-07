@@ -20,6 +20,7 @@ export const NodeMetaSchema = z.object({
     categoryId: z.string().optional(),
     supplierId: z.string().max(100).optional(),
     url: z.string().url().optional(),
+    pending: z.boolean().optional(),
 }).strict()
 
 export const ResearchNodeSchema = z.object({

@@ -19,3 +19,19 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+/* ─── ASIN token — atomic inline code block inside the search contentEditable ── */
+.asin-token {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: inherit;
+    border-radius: 0.375rem;
+    padding: 1px 5px;
+    background-color: var(--color-muted);
+    border: 1px solid var(--color-border);
+    color: var(--color-foreground);
+    margin-inline: 2px;
+    cursor: default;
+    user-select: all;
+    -webkit-user-select: all;
+}

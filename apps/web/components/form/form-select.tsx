@@ -1,4 +1,4 @@
-import { cn } from '@puckora/utils'
+import { cn } from '@/lib/utils'
 
 type FormSelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
     ref?: React.Ref<HTMLSelectElement>

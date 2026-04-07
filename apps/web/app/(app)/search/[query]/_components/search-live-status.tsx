@@ -5,7 +5,7 @@ import { Alert } from '@puckora/ui'
 import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
 import type { ScrapeJob } from '@puckora/types'
 import { ACTIVE_JOB_STATUSES } from './search-view-helpers'
-import type { SearchDataAvailability } from './search-view-helpers'
+import type { SearchDataAvailability } from '@/types/search'
 
 interface SearchLiveStatusProps {
     job: ScrapeJob | null
@@ -21,32 +21,32 @@ export function SearchLiveStatus({ job, availability }: SearchLiveStatusProps) {
 
     if (isRunning && !availability.hasListings) {
         return (
-            <Alert variant="info" title={t('searchLiveCollectingTitle')}>
-                {t('searchLiveCollectingBody')}
+            <Alert variant="info" title={t('liveStatus.collectingTitle')}>
+                {t('liveStatus.collectingBody')}
             </Alert>
         )
     }
 
     if (isRunning && availability.hasListings && !availability.hasFinancials) {
         return (
-            <Alert variant="info" title={t('searchLivePartialTitle')}>
-                {t('searchLivePartialBody')}
+            <Alert variant="info" title={t('liveStatus.partialTitle')}>
+                {t('liveStatus.partialBody')}
             </Alert>
         )
     }
 
     if (job.status === SCRAPE_JOB_STATUS.FAILED) {
         return (
-            <Alert variant={availability.hasListings ? 'warning' : 'error'} title={t('searchLiveFailedTitle')}>
-                {availability.hasListings ? t('searchLiveFailedBody') : t('searchLiveUnavailableBody')}
+            <Alert variant={availability.hasListings ? 'warning' : 'error'} title={t('liveStatus.failedTitle')}>
+                {availability.hasListings ? t('liveStatus.failedBody') : t('liveStatus.unavailableBody')}
             </Alert>
         )
     }
 
     if (job.error && availability.hasListings && !availability.hasFinancials) {
         return (
-            <Alert variant="warning" title={t('searchLiveUnavailableTitle')}>
-                {t('searchLiveUnavailableBody')}
+            <Alert variant="warning" title={t('liveStatus.unavailableTitle')}>
+                {t('liveStatus.unavailableBody')}
             </Alert>
         )
     }

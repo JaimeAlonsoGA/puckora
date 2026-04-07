@@ -3,7 +3,7 @@ import { getCachedUser } from '@/server/users'
 import { getCachedKeywordResults } from '@/server/keywords'
 import { getCachedScrapeJob } from '@/server/scrape'
 import { SearchView } from './_components/search-view'
-import { SearchResultsSkeleton } from '@/app/(app)/search/_components/search-skeletons'
+import { SearchResultsSkeleton } from '@/app/(app)/search/_skeletons/search-results-skeleton'
 
 interface SearchQueryPageProps {
     params: Promise<{ query: string }>

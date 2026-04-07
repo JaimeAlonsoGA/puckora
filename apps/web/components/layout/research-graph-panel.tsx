@@ -8,7 +8,7 @@ import { ResearchGraph, useResearchGraph } from '@puckora/research-graph'
 import { Caption } from '@puckora/ui'
 import { MODULE_IDS } from '@/constants/app-state'
 import { useAppStore } from '@/lib/store'
-import { AppRoute } from '@/constants/routes'
+import { AppRoute, searchQueryRoute } from '@/constants/routes'
 
 function getNodeById(session: ResearchSession, nodeId: string | null | undefined): ResearchNode | null {
     if (!nodeId) return null
@@ -27,7 +27,7 @@ function resolveNearestQuery(session: ResearchSession, nodeId: string | null | u
 }
 
 function buildSearchProductsHref(query: string): Route {
-    return `${AppRoute.search}/${encodeURIComponent(query)}?view=products` as Route
+    return `${searchQueryRoute(query)}?view=products` as Route
 }
 
 export function ResearchGraphPanel() {
@@ -35,7 +35,8 @@ export function ResearchGraphPanel() {
     const slice = useAppStore()
     const router = useRouter()
     const { followSuggestion } = useResearchGraph(useAppStore)
-    const { resetSession, setPuckiContext } = useAppStore()
+    const resetSession = useAppStore((state) => state.resetSession)
+    const setPuckiContext = useAppStore((state) => state.setPuckiContext)
 
     function navigateToNode(node: ResearchNode) {
         const session = slice.researchSession
@@ -50,7 +51,7 @@ export function ResearchGraphPanel() {
 
         if (node.type === 'keyword' && node.meta.query) {
             setPuckiContext({ currentAsin: undefined, currentQuery: node.meta.query, currentModule: MODULE_IDS.SEARCH })
-            router.push(`${AppRoute.search}/${encodeURIComponent(node.meta.query)}` as Route)
+            router.push(searchQueryRoute(node.meta.query) as Route)
             return
         }
 
@@ -70,7 +71,7 @@ export function ResearchGraphPanel() {
 
         if (suggestion.type === 'keyword' && suggestion.meta.query) {
             setPuckiContext({ currentAsin: undefined, currentQuery: suggestion.meta.query, currentModule: MODULE_IDS.SEARCH })
-            router.push(`${AppRoute.search}/${encodeURIComponent(suggestion.meta.query)}` as Route)
+            router.push(searchQueryRoute(suggestion.meta.query) as Route)
             return
         }
 

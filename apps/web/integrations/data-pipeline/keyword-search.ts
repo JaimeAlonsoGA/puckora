@@ -33,6 +33,8 @@ import { updateScrapeJob } from '@/services/scrape'
 import { clearKeywordProducts, updateKeyword, upsertKeywordProduct } from '@/services/keywords'
 import type { PgDb } from '@puckora/db'
 import type { CatalogItemResult } from '@puckora/sp-api'
+import type { Json } from '@puckora/types'
+import type { SupabaseDatabaseClient } from '@/integrations/supabase/types'
 import {
     fetchSearchListings,
     getMarketplaceId,
@@ -52,8 +54,23 @@ import {
     mergePreviewListing,
 } from './keyword-search/preview-builders'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
+function toScrapedListingJson(listing: ReturnType<typeof buildPreviewListing>): Json {
+    return {
+        asin: listing.asin,
+        rank: listing.rank,
+        name: listing.name,
+        price: listing.price,
+        rating: listing.rating,
+        review_count: listing.review_count,
+        product_url: listing.product_url,
+    }
+}
+
+function toKeywordSearchResultJson(listings: ReturnType<typeof buildPreviewListing>[]): Json {
+    return {
+        listings: listings.map(toScrapedListingJson),
+    }
+}
 
 /**
  * Execute the SP-API keyword search for a given keyword search row.
@@ -64,7 +81,7 @@ type SupabaseInstance = any
  */
 export async function runKeywordSearch(
     db: PgDb,
-    supabase: SupabaseInstance,
+    supabase: SupabaseDatabaseClient,
     params: RunKeywordSearchParams,
 ): Promise<void> {
     const { jobId, keywordId, keyword, marketplace } = RunKeywordSearchParamsSchema.parse(params)
@@ -93,19 +110,22 @@ export async function runKeywordSearch(
             console.error('[keyword-search] HTML listing fetch failed:', err)
         }
 
-        for (const listing of scrapedListings) {
-            try {
+        // Upsert all scraped HTML listings concurrently.
+        // upsertAmazonProduct must complete first — upsertKeywordProduct has a
+        // FK on amazon_products.asin and cannot run until the parent row exists.
+        const scrapeSettled = await Promise.allSettled(
+            scrapedListings.map(async (listing) => {
                 await upsertAmazonProduct(db, buildScrapedProductInsert(listing))
-                await upsertKeywordProduct(db, {
-                    keyword_id: keywordId,
-                    asin: listing.asin,
-                })
-            } catch (err) {
-                const message = getKeywordSearchItemErrorMessage(err, KEYWORD_SEARCH_ERROR_MESSAGE.WRITE_FAILED)
-                itemErrors.push(`${listing.asin}: ${message}`)
-                console.error(`[keyword-search] failed to persist HTML listing ${listing.asin}:`, err)
+                await upsertKeywordProduct(db, { keyword_id: keywordId, asin: listing.asin })
+            }),
+        )
+        scrapeSettled.forEach((result, idx) => {
+            if (result.status === 'rejected') {
+                const message = getKeywordSearchItemErrorMessage(result.reason, KEYWORD_SEARCH_ERROR_MESSAGE.WRITE_FAILED)
+                itemErrors.push(`${scrapedListings[idx].asin}: ${message}`)
+                console.error(`[keyword-search] failed to persist HTML listing ${scrapedListings[idx].asin}:`, result.reason)
             }
-        }
+        })
 
         const previewListingsByAsin = new Map<string, SearchListingSnapshot>()
         for (const listing of scrapedListings) {
@@ -172,10 +192,13 @@ export async function runKeywordSearch(
             getFeeEstimateMap(previewListingsForEnrichment, catalogMap, marketplaceId),
         ])
 
-        for (const listing of previewListingsForEnrichment) {
-            const catalog = catalogMap.get(listing.asin) ?? null
+        // Enrich + upsert all ASINs concurrently. The three DB writes per ASIN
+        // are independent of each other — run them in parallel too. SP-API
+        // catalog fetches above remain sequential (rate-limit protection).
+        const enrichSettled = await Promise.allSettled(
+            previewListingsForEnrichment.map(async (listing) => {
+                const catalog = catalogMap.get(listing.asin) ?? null
 
-            try {
                 const { product, ranks } = enrichAsin(
                     listing.asin,
                     {
@@ -191,25 +214,27 @@ export async function runKeywordSearch(
                     feeEstimateMap.get(listing.asin) ?? null,
                 )
 
+                const categoryRanks = ranks.filter((r) => knownCategoryIds.has(r.category_id))
+
+                // upsertAmazonProduct must complete first — both FK-dependent
+                // writes (category ranks + keyword link) reference amazon_products.asin.
                 await upsertAmazonProduct(db, {
                     ...product,
                     main_image_url: product.main_image_url ?? listing.main_image_url,
                 })
-
-                const categoryRanks = ranks
-                    .filter((categoryRank) => knownCategoryIds.has(categoryRank.category_id))
-                await upsertProductCategoryRanks(db, categoryRanks)
-
-                await upsertKeywordProduct(db, {
-                    keyword_id: keywordId,
-                    asin: listing.asin,
-                })
-            } catch (err) {
-                const message = getKeywordSearchItemErrorMessage(err, KEYWORD_SEARCH_ERROR_MESSAGE.WRITE_FAILED)
-                itemErrors.push(`${listing.asin}: ${message}`)
-                console.error(`[keyword-search] failed for ASIN ${listing.asin}:`, err)
+                await Promise.all([
+                    upsertProductCategoryRanks(db, categoryRanks),
+                    upsertKeywordProduct(db, { keyword_id: keywordId, asin: listing.asin }),
+                ])
+            }),
+        )
+        enrichSettled.forEach((result, idx) => {
+            if (result.status === 'rejected') {
+                const message = getKeywordSearchItemErrorMessage(result.reason, KEYWORD_SEARCH_ERROR_MESSAGE.WRITE_FAILED)
+                itemErrors.push(`${previewListingsForEnrichment[idx].asin}: ${message}`)
+                console.error(`[keyword-search] failed for ASIN ${previewListingsForEnrichment[idx].asin}:`, result.reason)
             }
-        }
+        })
 
         if (!response) {
             itemErrors.push(KEYWORD_SEARCH_ERROR_MESSAGE.ENRICHMENT_UNAVAILABLE)
@@ -228,8 +253,7 @@ export async function runKeywordSearch(
             executor: SCRAPE_EXECUTOR.AGENT,
             error: itemErrors.length > 0 ? itemErrors.slice(0, 3).join('; ') : null,
             completed_at: new Date().toISOString(),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            result: { listings: previewListings } as any,
+            result: toKeywordSearchResultJson(previewListings),
         })
     } catch (err) {
         await updateScrapeJob(supabase, jobId, {

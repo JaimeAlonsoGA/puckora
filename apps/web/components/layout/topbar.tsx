@@ -18,7 +18,7 @@ export async function Topbar() {
 
     return (
         <header
-            className="flex flex-shrink-0 items-center gap-2.5 border-b-hairline bg-background px-4"
+            className="flex shrink-0 justify-between items-center gap-2.5 border-b-hairline bg-background px-4"
             style={{
                 height: 'var(--shell-topbar-height)',
                 minHeight: 'var(--shell-topbar-height)',
@@ -29,14 +29,16 @@ export async function Topbar() {
                 {t('appName')} <em className="font-normal not-italic text-faint">· {t('appTagline')}</em>
             </Body>
 
-            {/* Search bar */}
-            <div className="flex h-7 flex-1 items-center gap-1.75 rounded-md border-hairline bg-card px-2.5">
-                <Search size={12} aria-hidden="true" className="flex-shrink-0 text-faint" />
-                <Caption as="span">{t('topbarSearchPlaceholder')}</Caption>
-            </div>
+            <div className="flex items-center gap-2 px-2.5" >
+                {/* Search bar */}
+                <div className="flex h-7 items-center gap-1.75 rounded-md border-hairline bg-card px-2.5">
+                    <Search size={12} aria-hidden="true" className="shrink-0 text-faint" />
+                    <Caption as="span">{t('topbarSearchPlaceholder')}</Caption>
+                </div>
 
-            {/* Right actions (sign-out, avatar) */}
-            <TopbarActions email={user.email ?? ''} />
+                {/* Right actions (sign-out, avatar) */}
+                <TopbarActions email={user.email ?? ''} />
+            </div>
         </header>
     )
 }

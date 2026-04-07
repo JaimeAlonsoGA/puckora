@@ -6,18 +6,19 @@
  * Pushes the current Supabase session to the Puckora Chrome extension.
  * Called once on mount in the authenticated app layout (via ExtensionSync).
  *
- * Detection uses a postMessage REQUEST/READY handshake — no window globals
- * (can't be set from the ISOLATED-world content script), no inline scripts
- * (blocked by CSP).
+ * Extension detection is delegated to `useExtensionDetection()` so the web app
+ * has a single source of truth for the REQUEST/READY handshake.
  *
  * Re-pushes on any Supabase auth state change (login, token refresh).
  */
 
 import { useEffect, useRef } from 'react'
 import { createClient } from '@/integrations/supabase/client'
+import { useExtensionDetection } from './use-extension-detection'
 
 export function useExtensionSync() {
     const syncedExtId = useRef<string | null>(null)
+    const { extId } = useExtensionDetection()
 
     useEffect(() => {
         async function sync(extId: string) {
@@ -50,33 +51,12 @@ export function useExtensionSync() {
         function trySync(extId: string) {
             if (extId === syncedExtId.current) return
             syncedExtId.current = extId
-            sync(extId)
+            void sync(extId)
         }
 
-        function request() {
-            window.postMessage({ type: 'PUCKORA_EXT_REQUEST' }, '*')
+        if (extId) {
+            trySync(extId)
         }
-
-        function onMessage(event: MessageEvent) {
-            if (event.source !== window) return
-            if (event.data?.type === 'PUCKORA_EXT_READY' && event.data.extId) {
-                trySync(event.data.extId)
-            }
-        }
-        window.addEventListener('message', onMessage)
-
-        // Phase A: fast requests every 150ms for 2s
-        let attempts = 0
-        let phaseB: ReturnType<typeof setInterval> | null = null
-        const fastId = setInterval(() => {
-            attempts++
-            request()
-            if (attempts >= 14) {
-                clearInterval(fastId)
-                phaseB = setInterval(request, 3000)
-            }
-        }, 150)
-        request()
 
         // Re-sync on auth state changes (login, token refresh)
         const supabase = createClient()
@@ -89,15 +69,14 @@ export function useExtensionSync() {
                 event === 'INITIAL_SESSION'
             ) {
                 syncedExtId.current = null
-                request()
+                if (extId) {
+                    trySync(extId)
+                }
             }
         })
 
         return () => {
-            clearInterval(fastId)
-            if (phaseB) clearInterval(phaseB)
-            window.removeEventListener('message', onMessage)
             subscription.unsubscribe()
         }
-    }, [])
+    }, [extId])
 }

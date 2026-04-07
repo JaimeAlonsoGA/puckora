@@ -28,6 +28,8 @@ export type NodeMeta = Readonly<{
     categoryId?: string
     supplierId?: string
     url?: string
+    /** True while a search is still running — renderer uses this for visual state */
+    pending?: boolean
 }>
 
 export interface SuggestedNode {
@@ -96,6 +98,8 @@ export interface ResearchGraphSlice {
     setCurrentNode: (id: string) => void
     setSuggestions: (suggestions: readonly SuggestedNode[]) => void
     resetSession: () => void
+    /** Mutate label/meta of an existing node in-place (e.g. pending → resolved) */
+    updateNode: (id: string, updates: { label?: string; meta?: Partial<NodeMeta> }) => void
 }
 
 export type AddNodeInput = Readonly<{
@@ -122,9 +126,17 @@ export interface UseResearchGraphReturn {
     readonly currentNode: ResearchNode | null
     ensureSession: () => void
     trackSearch: (query: string, parentId?: string) => string
+    /** Add a "Searching…" node while the job is in-flight */
+    trackSearchPending: (query: string, parentId?: string) => string
+    /** Add a forward "back to" node when revisiting a search */
+    trackSearchReturn: (query: string, parentId?: string) => string
     trackCategory: (name: string, categoryId: string, parentId?: string) => string
     trackProduct: (title: string, asin: string, parentId: string) => string
+    /** Add a forward "back to" node when revisiting a product */
+    trackProductReturn: (title: string, asin: string, parentId: string) => string
     trackSupplier: (name: string, supplierId: string, parentId: string) => string
     trackVectorSuggestion: (label: string, parentId: string) => string
     followSuggestion: (suggestion: SuggestedNode) => string
+    /** Mutate label/meta of an existing node (e.g. pending → resolved) */
+    updateNode: (id: string, updates: { label?: string; meta?: Partial<NodeMeta> }) => void
 }

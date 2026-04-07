@@ -46,8 +46,24 @@ function warnProxyFallback(proxyUrl: string, databaseUrl: string) {
     )
 }
 
+function normalizeConnectionUrl(url: string): string {
+    try {
+        const parsed = new URL(url)
+        const mode = parsed.searchParams.get('sslmode')
+        // These three modes generate a deprecation warning in pg-connection-string >= 2.7;
+        // they are currently aliases for 'verify-full'. Replace them explicitly so the
+        // warning is suppressed without changing the runtime SSL behaviour.
+        if (mode === 'prefer' || mode === 'require' || mode === 'verify-ca') {
+            parsed.searchParams.set('sslmode', 'verify-full')
+        }
+        return parsed.toString()
+    } catch {
+        return url
+    }
+}
+
 function createPool(databaseUrl: string): Pool {
-    return new Pool({ connectionString: databaseUrl, ssl: false })
+    return new Pool({ connectionString: normalizeConnectionUrl(databaseUrl), ssl: false })
 }
 
 function createDone(client: PoolClient) {

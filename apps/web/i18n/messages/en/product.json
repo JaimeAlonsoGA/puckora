@@ -1,0 +1,55 @@
+{
+    "product": {
+        "nav": {
+            "backToResults": "Back to results",
+            "backTo": "Back to \"{keyword}\""
+        },
+        "actions": {
+            "openOnAmazon": "Open on Amazon",
+            "findSuppliers": "Find suppliers",
+            "calcFees": "Calc fees",
+            "analyzeReviews": "Analyze reviews"
+        },
+        "hero": {
+            "price": "Price",
+            "revenue": "Monthly revenue",
+            "net": "Net / unit",
+            "fbaFee": "FBA fee"
+        },
+        "economics": {
+            "title": "Amazon economics",
+            "fbaFee": "FBA fee",
+            "referralFee": "Referral fee",
+            "amazonTakes": "Amazon takes"
+        },
+        "position": {
+            "title": "Market position",
+            "bsrRank": "BSR rank",
+            "dailyVelocity": "Daily velocity",
+            "velocityUnits": "{count} / day",
+            "rating": "Rating",
+            "reviewCount": "Reviews"
+        },
+        "logistics": {
+            "title": "Package & logistics",
+            "weight": "Weight",
+            "dims": "Dimensions",
+            "dimsValue": "{l} × {w} × {h} cm",
+            "listingAge": "Listing age",
+            "listingAgeMonths": "{months} mo",
+            "listingAgeMonthsLong": "{months} months"
+        },
+        "meta": {
+            "asin": "ASIN",
+            "marketplace": "Marketplace"
+        },
+        "research": {
+            "section": "Research status",
+            "notePlaceholder": "Add a research note…"
+        },
+        "notFound": {
+            "title": "Product not found",
+            "body": "ASIN {asin} is not in the catalog yet. Run a search or wait for enrichment to complete."
+        }
+    }
+}

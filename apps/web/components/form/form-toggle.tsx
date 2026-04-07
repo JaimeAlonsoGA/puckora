@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@puckora/utils'
+import { cn } from '@/lib/utils'
 import { Label } from '@puckora/ui'
 
 type FormToggleProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> & {

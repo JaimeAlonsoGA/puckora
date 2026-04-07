@@ -5,7 +5,7 @@ import type { Route } from 'next'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Search, Package, AlignLeft, LayoutGrid, Plus, MessageCircle } from 'lucide-react'
-import { cn } from '@puckora/utils'
+import { cn } from '@/lib/utils'
 import { Badge, Caption } from '@puckora/ui'
 import { useAppStore } from '@/lib/store'
 import {
@@ -56,7 +56,7 @@ const MODULES: { id: ModuleId; href: string; labelKey: string; icon: React.React
 
 function MarkedList() {
     const t = useTranslations('nav')
-    const { markedProducts } = useAppStore()
+    const markedProducts = useAppStore((state) => state.markedProducts)
     const items = Object.values(markedProducts)
 
     return (

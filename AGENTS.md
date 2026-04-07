@@ -41,13 +41,16 @@ Rules:
 ## Table of contents
 - [puckora — Agent Reference](#puckora--agent-reference)
   - [Live references — fetch before working on relevant areas](#live-references--fetch-before-working-on-relevant-areas)
+  - [Data systems](#data-systems)
   - [Table of contents](#table-of-contents)
+  - [Hard rules — scalability constraints](#hard-rules--scalability-constraints)
   - [File placement](#file-placement)
   - [SSR-first](#ssr-first)
+  - [Parallel async composition](#parallel-async-composition)
   - [Shell / Orchestrator pattern](#shell--orchestrator-pattern)
   - [Query layer](#query-layer)
   - [Realtime + cache seeding](#realtime--cache-seeding)
-  - [Forms \& mutations](#forms--mutations)
+  - [Re-render optimization](#re-render-optimization)
   - [Design system](#design-system)
   - [Theme (dark/light)](#theme-darklight)
   - [Auth \& middleware](#auth--middleware)
@@ -59,6 +62,80 @@ Rules:
     - [New schema](#new-schema)
     - [New constant](#new-constant)
   - [Pre-flight checklist](#pre-flight-checklist)
+
+---
+
+## Hard rules — scalability constraints
+
+**No hardcoded strings — ever.**
+
+| Category               | Where                                                         | Import from                        |
+| ---------------------- | ------------------------------------------------------------- | ---------------------------------- |
+| Route paths            | `AppRoute.{name}`                                             | `constants/routes.ts`              |
+| HTTP codes             | `API_STATUS.BAD_REQUEST`                                      | `constants/api.ts`                 |
+| API error messages     | `API_ERROR_MESSAGES.*`                                        | `constants/api.ts`                 |
+| Service error prefixes | `SERVICE_ERROR_PREFIXES.*`                                    | `constants/api.ts`                 |
+| Validation messages    | `AUTH_VALIDATION_MESSAGES.*` / `SCRAPE_VALIDATION_MESSAGES.*` | `constants/validation.ts`          |
+| UI strings             | `t('key')` via `next-intl`                                    | `i18n/messages/{locale}/{ns}.json` |
+| Magic numbers          | Named const in `constants/`                                   | Never inline                       |
+
+**Const-as-enum pattern — never use TypeScript `enum`.**
+
+The project-wide pattern: `as const` object + VALUES array + derived union type.
+
+```ts
+// constants/app-state.ts — canonical shape
+export const MARK_STATES = {
+    INTERESTED: 'interested',
+    COMPETITOR: 'competitor',
+    INVESTIGATE: 'investigate',
+} as const
+
+export const MARK_STATE_VALUES = [
+    MARK_STATES.INTERESTED,
+    MARK_STATES.COMPETITOR,
+    MARK_STATES.INVESTIGATE,
+] as const
+
+export type MarkState = (typeof MARK_STATE_VALUES)[number]
+// → 'interested' | 'competitor' | 'investigate'
+```
+
+- VALUES array enables `.map()`, `.includes()`, `z.enum(MARK_STATE_VALUES)`
+- Type is derived — zero duplication, TS errors if VALUES diverges from object
+- Exhaustive consumer maps: `Record<MarkState, Value>` — compile error on missing key
+
+**Derived types — never manually mirror what already exists.**
+
+```ts
+// From const object:
+export type AppRoutePath = (typeof AppRoute)[keyof typeof AppRoute]
+
+// From Zod schema (schema is SSOT for both runtime validation + TypeScript type):
+export type SearchInput = z.infer<typeof SearchSchema>
+```
+
+If a type can be derived, derive it. Writing `type X = 'a' | 'b'` when an `X_VALUES` array exists is a duplication violation.
+
+**Zod schemas as validation SSOT.**
+
+- Schema in `schemas/{domain}.ts` — no React, no server imports
+- Same schema drives: form `zodResolver`, server action body, API route body
+- Validation error messages injected from `constants/validation.ts`: `.min(8, VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH)`
+- Never duplicate validation logic outside the schema
+
+**One source, many consumers — core scalability rule.**
+
+A value is defined once and derived everywhere. When the same string appears in two places, add a constant:
+- Route: defined in `AppRoute`, used in `<Link>`, middleware, tests
+- Mark state: defined in `MARK_STATES`, used in Zod, UI, store, DB query, i18n key map
+- Error: defined in `API_ERROR_MESSAGES`, thrown in service, logged in pipeline, asserted in test
+
+**Constants file rules:**
+- No imports from `server/`, `services/`, `queries/`, or React
+- `as const` on all object literals that produce union types
+- Group by domain: all mark-state data in `app-state.ts`, all routes in `routes.ts`
+- New constant → add to the relevant existing file, never a new file unless the domain is new
 
 ---
 
@@ -122,6 +199,49 @@ export function DomainShell({ user, data }: Props) {
 - ❌ `fetch()` inside a client component for data the server already has
 - ❌ `'use client'` on a layout or page that has no interactive surface
 - ❌ `getSession()` or `getUser()` in middleware — use `getClaims()` (no network round-trip)
+
+---
+
+## Parallel async composition
+
+**Server functions — parallelize all independent awaits.**
+A sequential `await a; await b` when `b` does not use `a`'s result is a per-request latency tax. Treat every server function like a DAG: only await in order when there is a true data dependency.
+
+```ts
+// ✅ getCachedUser: createServerClient only reads cookies — independent of getAuthUser
+const [authUser, supabase] = await Promise.all([getAuthUser(), createServerClient()])
+
+// ✅ page with two independent data needs
+const [user, catalog] = await Promise.all([getCachedUser(), getCachedCatalog()])
+```
+
+**Server Actions — parallelize cross-DB writes:**
+When an action writes to Supabase AND Fly.io (or any two independent stores), use `Promise.all`:
+```ts
+// ✅ Supabase + Fly.io writes are independent
+const [job, keyword] = await Promise.all([
+    createScrapeJob(supabase, userId, input),
+    upsertKeyword(db, input.query),
+])
+```
+
+**API routes & background pipelines — `Promise.allSettled` for batch writes:**
+When processing N independent rows, never `for...await`. One failure must never abort the others:
+```ts
+await Promise.allSettled(
+    items.map(async (item) => Promise.all([upsertProductA(db, item), upsertProductB(db, item)]))
+)
+```
+- DB write loops over independent rows → always `Promise.allSettled`
+- SP-API / third-party catalog fetches → intentionally sequential (rate-limit protection)
+
+**Non-urgent client updates — `startTransition`:**
+Wrap event handlers that trigger navigation, search, or non-urgent state changes so the UI stays responsive during the transition:
+```ts
+import { startTransition } from 'react'
+// in handler:
+startTransition(() => onSearch(query))
+```
 
 ---
 
@@ -196,7 +316,7 @@ export function useInvalidateDomain() {
 - `useQueryClient` is never imported outside `queries/`.
 - Components call `useInvalidate{Domain}()` after a server action — not `useQueryClient` directly.
 - All key factories live in `queries/_keys.ts`. Never hardcode a key string anywhere else.
-- Every new domain must be re-exported from `queries/index.ts`.
+- Every new domain must be re-exported from `queries/index.ts`. Missing re-exports silently break all barrel consumers.
 
 **Hook wrappers (`hooks/`)**
 ```ts
@@ -249,10 +369,63 @@ export function useScrapeRealtime(jobId: string | null, initialJob: ScrapeJob | 
 
 ---
 
-## Forms & mutations
+## Re-render optimization
 
-**Form flow** (client form → server action → cache invalidation)
+React re-renders an entire subtree by default. In data-dense lists (product tables, keyword rows) this taxes the main thread on every interaction. These patterns are **mandatory for any component that renders a list of rows**.
+
+**1. `memo(RowComponent)` — wrap every list row:**
+```tsx
+const ProductRow = memo(function ProductRow({ ... }: ProductRowProps) { ... })
 ```
+Without `memo`, `useCallback` on parent handlers is pointless.
+
+**2. Per-row store selector — never a parent-level collection subscription:**
+```ts
+// ✅ only this row re-renders when ITS own slice changes
+const markState = useAppStore(state => state.items[id]?.markState ?? null)
+
+// ❌ subscribes to entire collection — parent re-renders on ANY item change
+const { items } = useAppStore()
+```
+
+**3. Stable callbacks via `useCallback` + `Store.getState()`:**
+Parent handlers have **empty deps** and read store state at call time via `Store.getState()` instead of as reactive subscriptions — no stale closure, and the handlers never re-create so memo is never busted:
+```ts
+const cycleMark = useCallback((id: string, name: string) => {
+    const { items, markItem, unmarkItem } = useAppStore.getState()
+    // reads current state at call time — no dep
+}, [])  // ← empty deps: never re-created, never busts memo
+```
+
+**4. Transient ref for local state reads in handlers:**
+When a handler needs the current value of a `useState` variable, sync it via `useLayoutEffect` — never assign to `ref.current` during render (React Compiler enforcement):
+```ts
+const notesRef = useRef(notes)
+useLayoutEffect(() => { notesRef.current = notes })  // sync before next interaction
+// handler reads notesRef.current — always fresh, never stale, zero deps
+```
+
+**5. Stable handler signatures — row passes its own id:**
+```ts
+// Row calls parent with its own id:
+onCycleMark(asin, product.title)
+// Parent def stays fully generic:
+const cycleMark = useCallback((asin: string, title: string) => { ... }, [])
+```
+
+**Re-render scope guarantees (mandatory for all list views):**
+
+| User action             | What re-renders                            |
+| ----------------------- | ------------------------------------------ |
+| Mark/unmark a product   | Only that row (per-row store subscription) |
+| Expand / collapse a row | Only rows whose `isExpanded` prop changed  |
+| Note input change       | Only the row whose `note` prop differs     |
+| Any store change        | Parent component: **never**                |
+
+If a list view cannot satisfy this table, the architecture is wrong.
+
+---
+
 schemas/{domain}.ts  →  useFormAction(Schema, action, opts)  →  app/**/actions.ts
                                                                        ↓ success
                                                              useInvalidate{Domain}() + router.refresh()
@@ -293,30 +466,37 @@ export async function doSomething(data: z.infer<typeof Schema>): Promise<{ error
 | Semantic | `--surface-*` `--text-*` `--border-*` `--brand-*` `--space-*` `--radius-*` `--transition-*` | The only layer components may reference.         |
 
 **Spacing** — 4px base: `--space-1` = 4px, `--space-2` = 8px … `--space-24` = 96px.
-**Radius** — zero policy: `--radius-sm/md/lg` = 0px. Only `--radius-full` = 9999px (pills, avatars).
+**Radius — semantic shape language (sharp = data, pill = action, card = content):**
+- `Button` all sizes → `rounded-full` (pill): actions are inviting and springy
+- `Alert` → `rounded-lg` (12px): feedback feels approachable
+- `Surface card / important` → `rounded-xl` (18px): premium editorial container
+- `DataCard`, `KpiCard` → `rounded-none`: data is precise, zero tolerance
+- `Badge` → `rounded-sm` (4px): whisper of shape, not pill, not slab
+- `Surface base / secondary` → `rounded-none`: structural, architectural
+- Never mix tiers — don't apply `rounded-full` to data containers or `rounded-none` to action buttons.
 **Typography** — `--text-xs` (12px) through `--text-5xl` (48px).
 
 **Building-block components** (import from `@puckora/ui`)
 
 **Primitive building blocks:**
 
-| Component  | Key props                                                                                                 |
-| ---------- | --------------------------------------------------------------------------------------------------------- |
-| `Button`   | `variant` (primary/secondary/ghost/danger/outline) · `size` (sm/md/lg) · `loading` · `fullWidth` · `href` |
-| `Stack`    | `gap` (1–16 or none) · `direction` (column/row) · `align` · `justify`                                     |
-| `Surface`  | `variant` (base/card/secondary) · `padding` (none/sm/md/lg/xl) · `border` (none/default/strong)           |
-| `Badge`    | `variant` (default/brand/success/warning/error/info) · `size` (sm/md)                                     |
-| `Alert`    | `variant` (success/warning/error/info) · `title?`                                                         |
-| `TextLink` | `href` · `variant` · `underline` (always/hover/never) · `external`                                        |
-| `Icon`     | `size` (xs/sm/md/lg/xl)                                                                                   |
-| Typography | `Display` `Heading` `Subheading` `Body` `Caption` `Label` `Mono` — all accept `as` prop                   |
+| Component  | Key props                                                                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Button`   | `variant` (primary/secondary/ghost/danger/outline/success/caution) · `size` (sm/md/lg) · `loading` · `fullWidth` · `href`                        |
+| `Stack`    | `gap` (1–16 or none) · `direction` (column/row) · `align` · `justify`                                                                            |
+| `Surface`  | `variant` (base/card/secondary/important) · `padding` (none/sm/md/lg/xl) · `border` (none/default/strong) · `radius` (bool, false strips radius) |
+| `Badge`    | `variant` (default/brand/success/warning/error/info) · `size` (sm/md)                                                                            |
+| `Alert`    | `variant` (success/warning/error/info) · `title?`                                                                                                |
+| `TextLink` | `href` · `variant` · `underline` (always/hover/never) · `external`                                                                               |
+| `Icon`     | `size` (xs/sm/md/lg/xl)                                                                                                                          |
+| Typography | `Display` `Heading` `Subheading` `Body` `Caption` `Label` `Mono` — all accept `as` prop                                                          |
 
 **Composite building blocks — own their complete spatial contract:**
 
 | Component         | Spatial contract (never repeat in consumer)                                                             | Key props                                          |
 | ----------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `DataCard`        | `border-hairline rounded-lg px-3.5 py-3 bg-background flex flex-col`                                    | `title?` (renders section label), `className?`     |
-| `KpiCard`         | `bg-card rounded-md px-3 py-2.5 flex flex-col` + label/value/sub layout                                 | `label` `value` `sub?` `accent?` `valueClassName?` |
+| `DataCard`        | `border-hairline rounded-none px-3.5 py-3 bg-card flex flex-col`                                        | `title?` (renders section label), `className?`     |
+| `KpiCard`         | `bg-card rounded-none px-3 py-2.5 flex flex-col` + label/value/sub layout                               | `label` `value` `sub?` `accent?` `valueClassName?` |
 | `StatItem`        | `flex flex-col gap-px` + label(Caption)/value(Mono sm)/sub(Caption xs)                                  | `label` `value` `sub?` `accent?` `valueClassName?` |
 | `CardHeader`      | `mb-5 flex flex-col gap-1` + Subheading + Body sm                                                       | `title` `description?` `className?`                |
 | `ListToolbar`     | `flex shrink-0 flex-wrap items-center gap-2 border-b-hairline bg-background px-4 py-2`                  | `className?` + all div attrs                       |
@@ -492,3 +672,11 @@ Before submitting any change, verify:
 - [ ] Every new user-visible string added to both `en/{namespace}.json` and `es/{namespace}.json`
 - [ ] `getCachedUser()` used (not `getAuthUser()`) when `display_name` or profile data is needed
 - [ ] `<html>` has `suppressHydrationWarning`, no hardcoded `"dark"` class
+- [ ] Independent `await` calls in server functions → `Promise.all`, not sequential
+- [ ] Batch DB writes in API routes / pipelines → `Promise.allSettled`, not `for...await`
+- [ ] Non-urgent UI updates (search submission, navigation) wrapped in `startTransition`
+- [ ] List row components wrapped in `memo()` — no plain function rows in mapped lists
+- [ ] Parent list handler callbacks use `useCallback` with empty deps + `Store.getState()` reads
+- [ ] Per-row store subscriptions used — never subscribe to full collection at parent level for per-item fields
+- [ ] `useLayoutEffect` used for transient ref sync — never `ref.current = x` during render
+- [ ] New HTTP/API error strings added to `constants/api.ts` — never local consts in route or service files

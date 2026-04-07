@@ -1,0 +1,55 @@
+{
+    "product": {
+        "nav": {
+            "backToResults": "Volver a resultados",
+            "backTo": "Volver a \"{keyword}\""
+        },
+        "actions": {
+            "openOnAmazon": "Ver en Amazon",
+            "findSuppliers": "Buscar proveedores",
+            "calcFees": "Calc. comisiones",
+            "analyzeReviews": "Analizar reseñas"
+        },
+        "hero": {
+            "price": "Precio",
+            "revenue": "Ingresos mensuales",
+            "net": "Ganancia neta / u.",
+            "fbaFee": "Tarifa FBA"
+        },
+        "economics": {
+            "title": "Economía de Amazon",
+            "fbaFee": "Tarifa FBA",
+            "referralFee": "Comisión de referido",
+            "amazonTakes": "Amazon se lleva"
+        },
+        "position": {
+            "title": "Posición en el mercado",
+            "bsrRank": "Ranking BSR",
+            "dailyVelocity": "Vel. diaria",
+            "velocityUnits": "{count} / día",
+            "rating": "Valoración",
+            "reviewCount": "Reseñas"
+        },
+        "logistics": {
+            "title": "Paquete y logística",
+            "weight": "Peso",
+            "dims": "Dimensiones",
+            "dimsValue": "{l} × {w} × {h} cm",
+            "listingAge": "Antigüedad",
+            "listingAgeMonths": "{months} meses",
+            "listingAgeMonthsLong": "{months} meses"
+        },
+        "meta": {
+            "asin": "ASIN",
+            "marketplace": "Marketplace"
+        },
+        "research": {
+            "section": "Estado de investigación",
+            "notePlaceholder": "Añade una nota de investigación…"
+        },
+        "notFound": {
+            "title": "Producto no encontrado",
+            "body": "El ASIN {asin} aún no está en el catálogo. Ejecuta una búsqueda o espera a que termine el enriquecimiento."
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import { PageContainer } from '@/components/layout/page-container'
-import { SettingsSkeleton } from '@/app/(app)/settings/_components/settings-skeleton'
+import { SettingsSkeleton } from '@/app/(app)/settings/_skeletons/settings-skeleton'
 
 export default function SettingsLoading() {
     return (

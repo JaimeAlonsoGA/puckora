@@ -5,7 +5,9 @@
     "main": "./src/index.ts",
     "types": "./src/index.ts",
     "exports": {
-        ".": "./src/index.ts"
+        ".": "./src/index.ts",
+        "./icons": "./src/certs/icons/index.ts",
+        "./certs": "./src/certs/index.ts"
     },
     "scripts": {
         "typecheck": "tsc --noEmit"
@@ -16,6 +18,10 @@
         "tailwind-merge": "^3.0.0"
     },
     "devDependencies": {
+        "@types/react": "^19.0.0",
         "typescript": "^5.8.2"
+    },
+    "peerDependencies": {
+        "react": "^19.0.0"
     }
 }

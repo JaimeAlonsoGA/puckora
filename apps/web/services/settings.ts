@@ -8,12 +8,10 @@
 
 import type { User as AppUser, UserUpdate as AppUserUpdate } from '@puckora/types'
 import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
+import type { SupabaseDatabaseClient } from '@/integrations/supabase/types'
 
 export async function getUser(
-    supabase: SupabaseInstance,
+    supabase: SupabaseDatabaseClient,
     userId: string,
 ): Promise<AppUser> {
     const { data, error } = await supabase
@@ -27,7 +25,7 @@ export async function getUser(
 }
 
 export async function updateUser(
-    supabase: SupabaseInstance,
+    supabase: SupabaseDatabaseClient,
     userId: string,
     update: AppUserUpdate,
 ): Promise<AppUser> {

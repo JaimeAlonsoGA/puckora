@@ -15,35 +15,63 @@
 :root {
     /* ── Surface levels ── */
     --bg1: #ffffff;
-    --bg2: #f5f4f0;
-    --bg3: #eeedea;
+    --bg2: #f6f5f2;
+    --bg3: #edece8;
+
+    /* ── Important card surface (inverts to light in dark mode) ── */
+    --bg-important: #111110;
+
+    /* ── DarkPanel — always-dark surface, never affected by theme ── */
+    --dark-panel-bg: #1a1a18;
+    --dark-panel-pass: #5dcaa5;
+    --dark-panel-warn: #ef9f27;
+    --dark-panel-fail: #f09595;
 
     /* ── Status surfaces ── */
-    --bg-info: #e6f1fb;
-    --bg-warn: #faeeda;
-    --bg-success: #eaf3de;
-    --bg-danger: #fcebeb;
+    --bg-info: #eff6ff;
+    --bg-warn: #fff7ed;
+    --bg-success: #ecfdf5;
+    --bg-danger: #fef2f2;
 
     /* ── Text levels ── */
-    --t1: #1a1a18;
-    --t2: #5f5e5a;
-    --t3: #9c9a92;
+    --t1: #111110;
+    --t2: #5a5855;
+    --t3: #99978f;
+
+    /* ── Important card text ── */
+    --t-important-1: #f0efe9;
+    --t-important-2: #7a7870;
 
     /* ── Status text ── */
-    --t-info: #0c447c;
-    --t-warn: #633806;
-    --t-success: #27500a;
-    --t-danger: #791f1f;
+    --t-info: #1d4ed8;
+    --t-warn: #9a3412;
+    --t-success: #065f46;
+    --t-danger: #991b1b;
 
     /* ── Borders ── */
     --b1: rgba(0, 0, 0, 0.28);
-    --b2: rgba(0, 0, 0, 0.15);
-    --b3: rgba(0, 0, 0, 0.07);
+    --b2: rgba(0, 0, 0, 0.13);
+    --b3: rgba(0, 0, 0, 0.06);
 
     /* ── Brand ── */
-    --green: #1D9E75;
-    --green-bg: #E1F5EE;
-    --green-text: #085041;
+    --green: #059669;
+    --green-bg: #d1fae5;
+    --green-text: #064e3b;
+
+    /* ── Data blue ── */
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --blue-text: #1e3a8a;
+
+    /* ── CTA tokens ── */
+    --cta-default: #111110;
+    --cta-default-fg: #ffffff;
+    --cta-engage: var(--green);
+    --cta-engage-fg: #ffffff;
+    --cta-caution: #ea580c;
+    --cta-caution-fg: #ffffff;
+    --cta-delete: #dc2626;
+    --cta-delete-fg: #ffffff;
 
     /* ── Geometry ── */
     --rad: 8px;
@@ -157,7 +185,7 @@
     --muted-foreground: var(--t2);
     --accent: var(--bg3);
     --accent-foreground: var(--t1);
-    --destructive: #c0152a;
+    --destructive: #dc2626;
     --destructive-foreground: #ffffff;
     --border: var(--b2);
     --input: var(--b2);
@@ -174,70 +202,98 @@
     --sidebar-border: var(--b3);
     --sidebar-ring: var(--green);
 
-    /* ── Chart palette ── */
-    --chart-1: var(--green);
-    --chart-2: #0c447c;
-    --chart-3: #633806;
-    --chart-4: #791f1f;
-    --chart-5: var(--t3);
+    /* ── Chart palette (blue-led data scale + semantic status) ── */
+    --chart-1: var(--blue);
+    --chart-2: var(--green);
+    --chart-3: var(--cta-caution);
+    --chart-4: var(--cta-delete);
+    --chart-5: #7c3aed;
 }
 
 /* ── Dark mode — responds to OS preference ────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg1: #1c1c1a;
-        --bg2: #242422;
-        --bg3: #2c2c2a;
+        --bg1: #111110;
+        --bg2: #1a1a18;
+        --bg3: #232321;
 
-        --bg-info: #042c53;
-        --bg-warn: #412402;
-        --bg-success: #173404;
-        --bg-danger: #501313;
+        /* Important card inverts to a light surface in dark mode */
+        --bg-important: #f0efe9;
 
-        --t1: #e8e6de;
-        --t2: #a8a69e;
-        --t3: #6a6860;
+        --bg-info: #0d1a4a;
+        --bg-warn: #431407;
+        --bg-success: #052e16;
+        --bg-danger: #450a0a;
 
-        --t-info: #85b7eb;
-        --t-warn: #fac775;
-        --t-success: #97c459;
-        --t-danger: #f09595;
+        --t1: #f0efe9;
+        --t2: #a09e96;
+        --t3: #64625a;
+
+        --t-important-1: #111110;
+        --t-important-2: #5a5855;
+
+        --t-info: #60a5fa;
+        --t-warn: #fb923c;
+        --t-success: #4ade80;
+        --t-danger: #f87171;
 
         --b1: rgba(255, 255, 255, 0.28);
-        --b2: rgba(255, 255, 255, 0.14);
-        --b3: rgba(255, 255, 255, 0.07);
+        --b2: rgba(255, 255, 255, 0.12);
+        --b3: rgba(255, 255, 255, 0.06);
 
-        --green-bg: #04342C;
-        --green-text: #9FE1CB;
+        --green: #10b981;
+        --green-bg: #064e3b;
+        --green-text: #6ee7b7;
+
+        --blue: #3b82f6;
+        --blue-bg: #172554;
+        --blue-text: #93c5fd;
+
+        /* CTA — default inverts to light on dark backgrounds */
+        --cta-default: #f0efe9;
+        --cta-default-fg: #111110;
     }
 }
 
 /* ── Dark mode — .dark class toggle (for manual switching) ───────────────── */
 .dark {
-    --bg1: #1c1c1a;
-    --bg2: #242422;
-    --bg3: #2c2c2a;
+    --bg1: #111110;
+    --bg2: #1a1a18;
+    --bg3: #232321;
 
-    --bg-info: #042c53;
-    --bg-warn: #412402;
-    --bg-success: #173404;
-    --bg-danger: #501313;
+    --bg-important: #f0efe9;
 
-    --t1: #e8e6de;
-    --t2: #a8a69e;
-    --t3: #6a6860;
+    --bg-info: #0d1a4a;
+    --bg-warn: #431407;
+    --bg-success: #052e16;
+    --bg-danger: #450a0a;
 
-    --t-info: #85b7eb;
-    --t-warn: #fac775;
-    --t-success: #97c459;
-    --t-danger: #f09595;
+    --t1: #f0efe9;
+    --t2: #a09e96;
+    --t3: #64625a;
+
+    --t-important-1: #111110;
+    --t-important-2: #5a5855;
+
+    --t-info: #60a5fa;
+    --t-warn: #fb923c;
+    --t-success: #4ade80;
+    --t-danger: #f87171;
 
     --b1: rgba(255, 255, 255, 0.28);
-    --b2: rgba(255, 255, 255, 0.14);
-    --b3: rgba(255, 255, 255, 0.07);
+    --b2: rgba(255, 255, 255, 0.12);
+    --b3: rgba(255, 255, 255, 0.06);
 
-    --green-bg: #04342C;
-    --green-text: #9FE1CB;
+    --green: #10b981;
+    --green-bg: #064e3b;
+    --green-text: #6ee7b7;
+
+    --blue: #3b82f6;
+    --blue-bg: #172554;
+    --blue-text: #93c5fd;
+
+    --cta-default: #f0efe9;
+    --cta-default-fg: #111110;
 }
 
 /* ── Light mode — explicit override so class beats @media on dark-OS machines */
@@ -246,29 +302,42 @@
 /* OS, making the light theme impossible to reach for those users.             */
 html.light {
     --bg1: #ffffff;
-    --bg2: #f5f4f0;
-    --bg3: #eeedea;
+    --bg2: #f6f5f2;
+    --bg3: #edece8;
 
-    --bg-info: #e6f1fb;
-    --bg-warn: #faeeda;
-    --bg-success: #eaf3de;
-    --bg-danger: #fcebeb;
+    --bg-important: #111110;
 
-    --t1: #1a1a18;
-    --t2: #5f5e5a;
-    --t3: #9c9a92;
+    --bg-info: #eff6ff;
+    --bg-warn: #fff7ed;
+    --bg-success: #ecfdf5;
+    --bg-danger: #fef2f2;
 
-    --t-info: #0c447c;
-    --t-warn: #633806;
-    --t-success: #27500a;
-    --t-danger: #791f1f;
+    --t1: #111110;
+    --t2: #5a5855;
+    --t3: #99978f;
+
+    --t-important-1: #f0efe9;
+    --t-important-2: #7a7870;
+
+    --t-info: #1d4ed8;
+    --t-warn: #9a3412;
+    --t-success: #065f46;
+    --t-danger: #991b1b;
 
     --b1: rgba(0, 0, 0, 0.28);
-    --b2: rgba(0, 0, 0, 0.15);
-    --b3: rgba(0, 0, 0, 0.07);
+    --b2: rgba(0, 0, 0, 0.13);
+    --b3: rgba(0, 0, 0, 0.06);
 
-    --green-bg: #E1F5EE;
-    --green-text: #085041;
+    --green: #059669;
+    --green-bg: #d1fae5;
+    --green-text: #064e3b;
+
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --blue-text: #1e3a8a;
+
+    --cta-default: #111110;
+    --cta-default-fg: #ffffff;
 }
 
 /* ── Tailwind v4 @theme inline ────────────────────────────────────────────── */
@@ -342,6 +411,32 @@ html.light {
     --color-border-subtle: var(--border-subtle);
     --color-border-strong: var(--border-strong);
     --color-border-focus: var(--border-focus);
+
+    /* Important card — dark surface in light, light surface in dark */
+    --color-important: var(--bg-important);
+    --color-important-fg: var(--t-important-1);
+    --color-important-fg-2: var(--t-important-2);
+
+    /* DarkPanel — always-dark surface + its fixed status signal colours */
+    --color-dark-panel: var(--dark-panel-bg);
+    --color-dark-panel-pass: var(--dark-panel-pass);
+    --color-dark-panel-warn: var(--dark-panel-warn);
+    --color-dark-panel-fail: var(--dark-panel-fail);
+
+    /* Data blue — multiple tones expose via bg-blue / text-blue-fg etc. */
+    --color-blue: var(--blue);
+    --color-blue-subtle: var(--blue-bg);
+    --color-blue-fg: var(--blue-text);
+
+    /* CTA semantic tokens */
+    --color-cta-default: var(--cta-default);
+    --color-cta-default-fg: var(--cta-default-fg);
+    --color-cta-engage: var(--cta-engage);
+    --color-cta-engage-fg: var(--cta-engage-fg);
+    --color-cta-caution: var(--cta-caution);
+    --color-cta-caution-fg: var(--cta-caution-fg);
+    --color-cta-delete: var(--cta-delete);
+    --color-cta-delete-fg: var(--cta-delete-fg);
 
     /* ── Radius utilities (rounded-sm, rounded-md, rounded-lg, rounded-full) ── */
     --radius-sm: 4px;

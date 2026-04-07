@@ -18,7 +18,8 @@ import type { User } from '@puckora/types'
  * Logs out redirecting to /login if not authenticated.
  */
 export const getCachedUser = cache(async (): Promise<User> => {
-    const authUser = await getAuthUser()
-    const supabase = await createServerClient()
+    // createServerClient only reads cookies — no dependency on authUser.
+    // Run both concurrently to eliminate the sequential round-trip.
+    const [authUser, supabase] = await Promise.all([getAuthUser(), createServerClient()])
     return getUser(supabase, authUser.id)
 })

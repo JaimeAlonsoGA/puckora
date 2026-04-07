@@ -11,8 +11,8 @@ import { Caption, Mono } from './typography'
  */
 type KpiCardProps = React.HTMLAttributes<HTMLDivElement> & {
     label: string
-    value: string
-    sub?: string
+    value: React.ReactNode
+    sub?: React.ReactNode
     /** Applies text-primary to the value. */
     accent?: boolean
     valueClassName?: string
@@ -27,23 +27,29 @@ export function KpiCard({
     className,
     ...props
 }: KpiCardProps) {
+    const primitiveValue = typeof value === 'string' || typeof value === 'number'
+    const primitiveSub = typeof sub === 'string' || typeof sub === 'number'
+
     return (
         <div
-            className={cn('bg-card rounded-md px-3 py-2.5 flex flex-col', className)}
+            className={cn('bg-card rounded-none px-3.5 py-3 flex flex-col', className)}
             {...props}
         >
-            <Caption as="p" className="mb-1">{label}</Caption>
-            <Mono
-                as="p"
-                className={cn(
-                    'text-lg font-medium',
-                    accent ? 'text-primary' : 'text-foreground',
-                    valueClassName,
-                )}
-            >
-                {value}
-            </Mono>
-            {sub && <Caption as="p" className="mt-0.5 text-xs">{sub}</Caption>}
+            {/* Label whispers — maximises value impact */}
+            <Caption as="p" className="mb-1 text-xs font-semibold uppercase tracking-widest text-faint">{label}</Caption>
+            {primitiveValue ? (
+                <Mono
+                    as="p"
+                    className={cn(
+                        'text-2xl font-medium leading-none tabular-nums tracking-tight',
+                        accent ? 'text-primary' : 'text-foreground',
+                        valueClassName,
+                    )}
+                >
+                    {value}
+                </Mono>
+            ) : value}
+            {sub ? (primitiveSub ? <Caption as="p" className="mt-1 text-xs text-faint">{sub}</Caption> : sub) : null}
         </div>
     )
 }

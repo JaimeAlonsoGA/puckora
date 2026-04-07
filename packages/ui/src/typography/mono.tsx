@@ -11,7 +11,7 @@ export function Mono({ children, className, as: Tag = 'code' }: MonoProps) {
         <Tag
             className={cn(
                 'font-mono font-normal leading-normal',
-                'text-sm text-muted-foreground',
+                'text-muted-foreground',
                 className,
             )}
         >

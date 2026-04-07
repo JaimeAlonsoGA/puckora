@@ -19,6 +19,7 @@ export type {
     GraphNodeType,
     SuggestionsRequest,
     SuggestionsResponse,
+    NodeMeta,
 } from './types'
 
 export type { SuggestionsApiResponse } from './schemas'
@@ -29,3 +30,5 @@ export {
     SuggestionsRequestSchema,
     SuggestionsResponseSchema,
 } from './schemas'
+
+export { buildNodeLabel } from './utils'

@@ -6,9 +6,8 @@
  * Combines extension detection with a PING to the extension service worker
  * to determine whether the logged-in web app session is already synced.
  *
- * Detection uses a postMessage REQUEST/READY handshake — no window globals
- * (can't be set from the ISOLATED-world content script), no inline scripts
- * (blocked by CSP).
+ * Detection comes from `useExtensionDetection()`, which centralizes the
+ * REQUEST/READY handshake used across the web app.
  *
  * Returns:
  *   status   — 'checking' | 'not-installed' | 'synced' | 'unsynced'
@@ -18,6 +17,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/integrations/supabase/client'
+import { useExtensionDetection } from './use-extension-detection'
 
 export type ExtensionStatus = 'checking' | 'not-installed' | 'synced' | 'unsynced'
 
@@ -43,11 +43,10 @@ function pingExtension(extId: string, onResult: (synced: boolean) => void): void
 }
 
 export function useExtensionStatus(): UseExtensionStatusReturn {
-    const [installed, setInstalled] = useState<boolean | null>(null)
-    const [extId, setExtId] = useState<string | null>(null)
     const [isSynced, setIsSynced] = useState<boolean | null>(null)
     const [isSyncing, setIsSyncing] = useState(false)
     const lastSynced = useRef<boolean | null>(null)
+    const { extId, isInstalled, isChecking } = useExtensionDetection()
 
     const applyResult = useCallback((synced: boolean) => {
         if (synced !== lastSynced.current) {
@@ -56,72 +55,20 @@ export function useExtensionStatus(): UseExtensionStatusReturn {
         }
     }, [])
 
-    // Step 1: detect extension via postMessage REQUEST/READY handshake.
-    // Phase A: fast requests (150ms × 14 ≈ 2s), Phase B: slow (3s, indefinite).
+    // Step 1: once extId is known, PING periodically to check auth status.
     useEffect(() => {
-        let phaseB: ReturnType<typeof setInterval> | null = null
-        let detected = false
-
-        function detect(foundId: string) {
-            if (detected) return
-            detected = true
-            setExtId(foundId)
-            setInstalled(true)
-            clearInterval(fastId)
-            if (phaseB) {
-                clearInterval(phaseB)
-                phaseB = null
-            }
-        }
-
-        function request() {
-            window.postMessage({ type: 'PUCKORA_EXT_REQUEST' }, '*')
-        }
-
-        function onMessage(event: MessageEvent) {
-            if (event.source !== window) return
-            if (event.data?.type === 'PUCKORA_EXT_READY' && event.data.extId) {
-                detect(event.data.extId)
-            }
-        }
-        window.addEventListener('message', onMessage)
-
-        let attempts = 0
-        const fastId = setInterval(() => {
-            attempts++
-            request()
-            if (attempts >= 14) {
-                clearInterval(fastId)
-                setInstalled((prev) => prev ?? false)
-                // Phase B: keep requesting for late installs
-                phaseB = setInterval(request, 3000)
-            }
-        }, 150)
-        request()
-
-        return () => {
-            clearInterval(fastId)
-            if (phaseB) clearInterval(phaseB)
-            window.removeEventListener('message', onMessage)
-        }
-    }, [])
-
-    // Step 2: once extId is known, PING periodically to check auth status.
-    useEffect(() => {
-        if (installed === null) return
-
-        if (installed && !extId) {
+        if (isInstalled && !extId) {
             setIsSynced(false)
             return
         }
-        if (!installed || !extId) return
+        if (!isInstalled || !extId) return
 
         pingExtension(extId, applyResult)
         const id = setInterval(() => pingExtension(extId, applyResult), 3000)
         return () => clearInterval(id)
-    }, [installed, extId, applyResult])
+    }, [isInstalled, extId, applyResult])
 
-    // Step 3: push the web app session to the extension, then confirm with PING.
+    // Step 2: push the web app session to the extension, then confirm with PING.
     const resync = useCallback(async () => {
         if (!extId) return
         setIsSyncing(true)
@@ -180,9 +127,9 @@ export function useExtensionStatus(): UseExtensionStatusReturn {
     }, [extId, applyResult])
 
     const status: ExtensionStatus =
-        installed === null || (installed === true && isSynced === null)
+        isChecking || (isInstalled && isSynced === null)
             ? 'checking'
-            : !installed
+            : !isInstalled
                 ? 'not-installed'
                 : isSynced
                     ? 'synced'

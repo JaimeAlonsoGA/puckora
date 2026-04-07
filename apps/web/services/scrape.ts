@@ -7,12 +7,10 @@
  * Business logic lives in queries/ and server/. This file is pure DB I/O.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
-
 import type { ScrapeJob, ScrapeJobInsert, ScrapeJobUpdate } from '@puckora/types'
 import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
 import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
+import type { SupabaseDatabaseClient } from '@/integrations/supabase/types'
 
 // ---------------------------------------------------------------------------
 // Create
@@ -23,7 +21,7 @@ import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
  * Caller must supply a validated ScrapeJobInsert (payload already parsed).
  */
 export async function createScrapeJob(
-    supabase: SupabaseInstance,
+    supabase: SupabaseDatabaseClient,
     insert: ScrapeJobInsert,
 ): Promise<ScrapeJob> {
     const { data, error } = await supabase
@@ -45,7 +43,7 @@ export async function createScrapeJob(
  * Returns null when the row doesn't exist or the user doesn't own it (RLS).
  */
 export async function getScrapeJob(
-    supabase: SupabaseInstance,
+    supabase: SupabaseDatabaseClient,
     jobId: string,
 ): Promise<ScrapeJob | null> {
     const { data, error } = await supabase
@@ -63,7 +61,7 @@ export async function getScrapeJob(
  * Used by the web app to show in-progress work.
  */
 export async function listPendingScrapeJobs(
-    supabase: SupabaseInstance,
+    supabase: SupabaseDatabaseClient,
     userId: string,
     limit = 20,
 ): Promise<ScrapeJob[]> {
@@ -88,7 +86,7 @@ export async function listPendingScrapeJobs(
  * status, and by the executor to claim a job (status → 'processing').
  */
 export async function updateScrapeJob(
-    supabase: SupabaseInstance,
+    supabase: SupabaseDatabaseClient,
     jobId: string,
     update: ScrapeJobUpdate,
 ): Promise<ScrapeJob> {

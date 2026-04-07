@@ -3,7 +3,7 @@
 import { cn } from '@puckora/utils'
 import { useLinkComponent } from './link-context'
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline'
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'success' | 'caution'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -26,8 +26,18 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantStyles: Record<ButtonVariant, string> = {
     primary: [
-        'bg-primary text-primary-foreground',
-        'hover:bg-primary/90 active:bg-primary/80',
+        'bg-cta-default text-cta-default-fg',
+        'hover:bg-cta-default/90 active:bg-cta-default/80',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    ].join(' '),
+    success: [
+        'bg-cta-engage text-cta-engage-fg',
+        'hover:bg-cta-engage/90 active:bg-cta-engage/80',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    ].join(' '),
+    caution: [
+        'bg-cta-caution text-cta-caution-fg',
+        'hover:bg-cta-caution/90 active:bg-cta-caution/80',
         'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     ].join(' '),
     secondary: [
@@ -41,8 +51,8 @@ const variantStyles: Record<ButtonVariant, string> = {
         'focus-visible:ring-2 focus-visible:ring-ring',
     ].join(' '),
     danger: [
-        'bg-destructive text-destructive-foreground',
-        'hover:bg-destructive/90 active:bg-destructive/80',
+        'bg-cta-delete text-cta-delete-fg',
+        'hover:bg-cta-delete/90 active:bg-cta-delete/80',
         'focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     ].join(' '),
     outline: [
@@ -53,9 +63,9 @@ const variantStyles: Record<ButtonVariant, string> = {
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
-    sm: 'h-9 px-3.5 text-sm gap-2 rounded-md',
-    md: 'h-11 px-5 text-base gap-2 rounded-md',
-    lg: 'h-13 px-7 text-base gap-2.5 rounded-lg',
+    sm: 'h-9 px-4 text-sm gap-2 rounded-full',
+    md: 'h-11 px-5 text-base gap-2 rounded-full',
+    lg: 'h-13 px-7 text-base gap-2.5 rounded-full',
 }
 
 export function Button({

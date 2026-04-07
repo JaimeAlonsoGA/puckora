@@ -1,6 +1,3 @@
-import type { ComponentProps } from 'react'
-import { Badge } from '@puckora/ui'
-
 export const MODULE_IDS = {
     SEARCH: 'search',
     SUPPLIERS: 'suppliers',
@@ -41,8 +38,8 @@ export const MARK_STATE_CYCLE = [null, ...MARK_STATE_VALUES] as const
 export const MARK_STATE_BADGE_VARIANTS = {
     [MARK_STATES.INTERESTED]: 'success',
     [MARK_STATES.COMPETITOR]: 'warning',
-    [MARK_STATES.INVESTIGATE]: 'default',
-} as const satisfies Record<MarkState, ComponentProps<typeof Badge>['variant']>
+    [MARK_STATES.INVESTIGATE]: 'info',
+} as const satisfies Record<MarkState, 'default' | 'success' | 'warning' | 'error' | 'info' | 'brand'>
 
 export const MARK_STATE_DOT_CLASS_NAMES: Record<MarkState, string> = {
     [MARK_STATES.INTERESTED]: 'bg-primary',
@@ -53,5 +50,6 @@ export const MARK_STATE_DOT_CLASS_NAMES: Record<MarkState, string> = {
 export const MARK_STATE_BUTTON_CLASS_NAMES: Record<MarkState, string> = {
     [MARK_STATES.INTERESTED]: 'bg-success-surface text-success-fg border-transparent',
     [MARK_STATES.COMPETITOR]: 'bg-warning-surface text-warning-fg border-transparent',
-    [MARK_STATES.INVESTIGATE]: 'bg-card text-faint border-transparent',
+    [MARK_STATES.INVESTIGATE]: 'bg-faint-surface text-faint border-transparent',
 }
+

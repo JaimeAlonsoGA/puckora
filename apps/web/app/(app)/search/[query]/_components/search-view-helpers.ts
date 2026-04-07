@@ -1,14 +1,7 @@
 import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
 import type { ProductFinancial } from '@puckora/types'
 import { buildAmazonProductUrl } from '@/constants/amazon-marketplace'
-
-export interface SearchDataAvailability {
-    hasListings: boolean
-    hasSignals: boolean
-    hasFinancials: boolean
-    hasCategories: boolean
-    hasImages: boolean
-}
+import type { SearchDataAvailability } from '@/types/search'
 
 export const ACTIVE_JOB_STATUSES = new Set<string>([
     SCRAPE_JOB_STATUS.PENDING,

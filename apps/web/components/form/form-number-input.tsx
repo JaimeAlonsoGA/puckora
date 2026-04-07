@@ -1,4 +1,4 @@
-import { cn } from '@puckora/utils'
+import { cn } from '@/lib/utils'
 
 type FormNumberInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
     ref?: React.Ref<HTMLInputElement>

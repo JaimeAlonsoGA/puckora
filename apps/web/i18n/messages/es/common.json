@@ -38,5 +38,10 @@
         "appName": "Puckora",
         "appTagline": "tu aliado vendedor",
         "topbarSearchPlaceholder": "Busca entre 3,2M productos…"
+    },
+    "mark": {
+        "interested": "Interesado",
+        "competitor": "Competidor",
+        "investigate": "Investigar"
     }
 }

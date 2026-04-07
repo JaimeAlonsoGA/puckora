@@ -1,4 +1,4 @@
-import { cn } from '@puckora/utils'
+import { cn } from '@/lib/utils'
 import { Label, Caption } from '@puckora/ui'
 
 type FormFieldProps = {

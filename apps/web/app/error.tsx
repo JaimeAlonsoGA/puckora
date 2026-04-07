@@ -15,7 +15,7 @@ export default function ErrorPage({
 
     return (
         <div className="flex min-h-screen items-center justify-center">
-            <div className="flex flex-col items-center gap-[var(--space-4)] text-center">
+            <div className="flex flex-col items-center gap-4 text-center">
                 <Heading>{t('title')}</Heading>
                 <Body>{t('description')}</Body>
                 <Button variant="primary" size="sm" onClick={reset}>

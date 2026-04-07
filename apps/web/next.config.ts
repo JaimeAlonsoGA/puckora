@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
     experimental: {
         // Transforms barrel imports into direct imports at build time.
         // Eliminates the 200-800ms cold-start cost of loading the full icon set.
-        optimizePackageImports: ['@tabler/icons-react'],
+        // lucide-react: used in 7 files; barrel has 1 583 re-exports (~2.8s dev penalty).
+        optimizePackageImports: ['@tabler/icons-react', 'lucide-react'],
     },
     images: {
         remotePatterns: [

@@ -1,26 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SuggestionsRequestSchema, SuggestionsResponseSchema } from '@puckora/research-graph'
+import { API_ERROR_MESSAGES, API_STATUS } from '@/constants/api'
 import { buildSuggestionsResponse } from './_lib/suggestion-service'
-
-const ROUTE_ERROR_MESSAGE = {
-    INVALID_JSON: 'Invalid JSON',
-    INVALID_REQUEST: 'Invalid request',
-    INTERNAL_ERROR: 'Internal error',
-} as const
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
     let body: unknown
     try {
         body = await req.json()
     } catch {
-        return NextResponse.json({ error: ROUTE_ERROR_MESSAGE.INVALID_JSON }, { status: 400 })
+        return NextResponse.json(
+            { error: API_ERROR_MESSAGES.INVALID_JSON_BODY },
+            { status: API_STATUS.BAD_REQUEST },
+        )
     }
 
     const parsed = SuggestionsRequestSchema.safeParse(body)
     if (!parsed.success) {
         return NextResponse.json(
-            { error: ROUTE_ERROR_MESSAGE.INVALID_REQUEST, details: parsed.error.flatten() },
-            { status: 422 },
+            { error: API_ERROR_MESSAGES.VALIDATION_FAILED, details: parsed.error.flatten() },
+            { status: API_STATUS.UNPROCESSABLE_ENTITY },
         )
     }
 
@@ -29,7 +27,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         responseData = await buildSuggestionsResponse(parsed.data)
     } catch (err) {
         console.error('[ResearchGraph API] Suggestions error:', err)
-        return NextResponse.json({ error: ROUTE_ERROR_MESSAGE.INTERNAL_ERROR }, { status: 500 })
+        return NextResponse.json(
+            { error: API_ERROR_MESSAGES.INTERNAL_ERROR },
+            { status: API_STATUS.INTERNAL_SERVER_ERROR },
+        )
     }
 
     const validated = SuggestionsResponseSchema.safeParse(responseData)

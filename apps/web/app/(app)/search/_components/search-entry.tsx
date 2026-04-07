@@ -1,19 +1,13 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
-import { Alert, Button, Display, Body, Stack } from '@puckora/ui'
-import { cn } from '@puckora/utils'
-import type { AmazonCategory } from '@puckora/types'
-import { Tab, TabEnum } from '@/types/search'
+import { Alert, Display, Body, Stack } from '@puckora/ui'
 import { MODULE_IDS } from '@/constants/app-state'
-import { TABS } from '@/constants/search'
 import { createScrapeJobAction } from '@/app/(app)/actions'
 import { useAppStore } from '@/lib/store'
-import { KeywordPanel } from './panels/keyword-panel'
-import { CategoryPanel } from './panels/category-panel'
-import { ConstraintsPanel } from './panels/constraints-panel'
-import { SearchExtensionWidget } from './extension-widget'
+import { AmazonSearchInputSchema } from '@/schemas/scrape'
+import { SearchComposer } from './search-composer'
 
 
 // ---------------------------------------------------------------------------
@@ -22,16 +16,15 @@ import { SearchExtensionWidget } from './extension-widget'
 
 interface SearchEntryProps {
     displayName: string
-    categories: AmazonCategory[]
     marketplace: string
 }
 
-export function SearchEntry({ displayName, categories, marketplace }: SearchEntryProps) {
-    const [activeTab, setActiveTab] = useState<Tab>(TabEnum.KEYWORD)
+export function SearchEntry({ displayName, marketplace }: SearchEntryProps) {
     const [serverError, setServerError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
     const t = useTranslations('search')
-    const { resetSession, setPuckiContext } = useAppStore()
+    const resetSession = useAppStore((state) => state.resetSession)
+    const setPuckiContext = useAppStore((state) => state.setPuckiContext)
 
     useEffect(() => {
         resetSession()
@@ -40,62 +33,40 @@ export function SearchEntry({ displayName, categories, marketplace }: SearchEntr
 
     const [greeting] = useState(() => {
         const hour = new Date().getHours()
-        return hour < 12 ? t('greetingMorning') : hour < 18 ? t('greetingAfternoon') : t('greetingEvening')
+        return hour < 12 ? t('entry.greetingMorning') : hour < 18 ? t('entry.greetingAfternoon') : t('entry.greetingEvening')
     })
 
-    function handleSearch(q: string) {
+    const handleSearch = useCallback((q: string) => {
         setServerError(null)
+
+        const parsedInput = AmazonSearchInputSchema.safeParse({ keyword: q, marketplace })
+        if (!parsedInput.success) {
+            setServerError(parsedInput.error.issues[0]?.message ?? null)
+            return
+        }
+
         startTransition(async () => {
-            const result = await createScrapeJobAction({ keyword: q, marketplace })
+            const result = await createScrapeJobAction(parsedInput.data)
             if (result?.error) {
                 setServerError(result.error)
             }
         })
-    }
+    }, [marketplace])
 
     return (
-        <Stack className="h-full items-center justify-center px-8 py-8">
-            <div className="w-full max-w-xl">
+        <div className="flex flex-1 flex-col items-center overflow-y-auto px-8 pb-16 pt-[15vh]">
+            <div className="w-full max-w-3xl">
                 {/* Greeting */}
-                <Stack gap="2" className="mb-8 text-center">
-                    <Display as="h1">{greeting}, {displayName}.</Display>
-                    <Body className="text-muted-foreground">{t('entrySubtitle')}</Body>
+                <Stack gap="4" className="mb-8 text-center">
+                    <Display as="h1" className='font-light'>{greeting}, {displayName}</Display>
+                    <Body className="text-muted-foreground">{t('entry.subtitle')}</Body>
                 </Stack>
 
-                {/* Tabs */}
-                <div className="mb-5 flex w-full overflow-hidden rounded-md border border-border-subtle">
-                    {TABS.map((tab, idx) => (
-                        <Button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            variant="ghost"
-                            className={cn(
-                                'h-auto flex-1 rounded-none py-2.5 text-center text-sm font-medium',
-                                idx < TABS.length - 1 && 'border-r border-r-border-subtle',
-                                activeTab === tab.id
-                                    ? 'bg-card text-foreground'
-                                    : 'text-muted-foreground hover:bg-transparent',
-                            )}
-                        >
-                            {t(tab.labelKey)}
-                        </Button>
-                    ))}
-                </div>
+                {serverError && <Alert variant="error" className="mb-4">{serverError}</Alert>}
 
-                {serverError && <Alert variant="error">{serverError}</Alert>}
-
-                {/* Tab body */}
-                <div className="w-full">
-                    {activeTab === TabEnum.KEYWORD && <KeywordPanel onSearch={handleSearch} isPending={isPending} />}
-                    {activeTab === TabEnum.CATEGORY && <CategoryPanel categories={categories} onSearch={handleSearch} />}
-                    {activeTab === TabEnum.CONSTRAINTS && <ConstraintsPanel onApply={(c) => handleSearch(JSON.stringify(c))} />}
-                </div>
-
-                <div className="mt-5">
-                    <SearchExtensionWidget />
-                </div>
+                <SearchComposer onSearch={handleSearch} isPending={isPending} />
             </div>
-        </Stack>
+        </div>
     )
 }
 

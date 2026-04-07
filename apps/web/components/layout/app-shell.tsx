@@ -14,7 +14,7 @@ export function AppShell({ children }: AppShellProps) {
             <Sidebar />
             <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background">
                 <Topbar />
-                <main className="flex-1 overflow-y-auto">
+                <main className="flex flex-1 flex-col overflow-hidden">
                     {children}
                 </main>
                 <PuckiBar />

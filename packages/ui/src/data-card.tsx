@@ -1,31 +1,50 @@
 import { cn } from '@puckora/utils'
 import { Caption } from './typography'
+import { InfoTooltip } from './info-tooltip'
 
 /**
- * DataCard — bordered data section for analytics panels.
- * Encapsulates: border-hairline rounded-lg px-3.5 py-3 bg-background.
+ * DataCard — rounded analytics card. Replaces the deprecated sharp-edged style.
+ * Spatial contract: px-3.5 py-3 bg-card flex flex-col.
+ *
+ * Tooltip (optional): renders an inline "?" button next to the title.
  *
  * Usage:
  *   <DataCard title="Price Distribution">…</DataCard>
+ *   <DataCard title="Median price" tooltip={{ title: "Median, not average", description: "…" }}>…</DataCard>
  *   <DataCard title="Top Categories" className="col-span-2">…</DataCard>
  */
 type DataCardProps = React.HTMLAttributes<HTMLDivElement> & {
     title?: string
+    /** Optional inline tooltip shown via InfoTooltip next to the title. */
+    tooltip?: { title: string; description: React.ReactNode }
 }
 
-export function DataCard({ title, className, children, ...props }: DataCardProps) {
+export function DataCard({ title, tooltip, className, children, ...props }: DataCardProps) {
     return (
         <div
             className={cn(
-                'border-hairline rounded-lg px-3.5 py-3 bg-background flex flex-col',
+                'rounded-md px-3.5 py-3 bg-card flex flex-col',
                 className,
             )}
             {...props}
         >
-            {title && (
-                <Caption as="p" className="mb-2 font-medium tracking-[.03em]">
-                    {title}
-                </Caption>
+            {(title || tooltip) && (
+                <div className="mb-2.5 flex items-center gap-1.5">
+                    {title && (
+                        <Caption
+                            as="p"
+                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                        >
+                            {title}
+                        </Caption>
+                    )}
+                    {tooltip && (
+                        <InfoTooltip
+                            title={tooltip.title}
+                            description={tooltip.description}
+                        />
+                    )}
+                </div>
             )}
             {children}
         </div>

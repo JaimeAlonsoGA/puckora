@@ -23,10 +23,9 @@ import type {
     AmazonKeywordProductInsert,
     ProductFinancial,
 } from '@puckora/types'
+import { parseAmazonSearchJobPayload } from '@/schemas/scrape'
 import { getScrapeJob } from '@/services/scrape'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseInstance = any
+import type { SupabaseDatabaseClient } from '@/integrations/supabase/types'
 
 function getProductAgeMonths(listingDate: string | null): number | null {
     if (!listingDate) return null
@@ -41,7 +40,7 @@ function getProductAgeMonths(listingDate: string | null): number | null {
     return Math.max(1, months)
 }
 
-function mapAmazonProductToFinancial(product: AmazonProduct): ProductFinancial {
+export function mapAmazonProductToFinancial(product: AmazonProduct): ProductFinancial {
     return {
         asin: product.asin,
         category_id: null,
@@ -161,11 +160,11 @@ export async function getKeyword(
  */
 export async function getKeywordForJob(
     db: PgDb,
-    supabase: SupabaseInstance,
+    supabase: SupabaseDatabaseClient,
     jobId: string,
 ): Promise<AmazonKeyword | null> {
     const job = await getScrapeJob(supabase, jobId)
-    const payload = job?.payload as { keyword?: string; marketplace?: string } | undefined
+    const payload = parseAmazonSearchJobPayload(job?.payload)
     if (!payload?.keyword || !payload?.marketplace) return null
     return getKeyword(db, payload.keyword, payload.marketplace)
 }

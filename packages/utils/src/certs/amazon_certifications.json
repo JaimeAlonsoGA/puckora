@@ -1,0 +1,780 @@
+{
+  "_meta": {
+    "title": "Amazon Restricted Categories & Required Certificates",
+    "last_updated": "2025-2026",
+    "marketplace": "Amazon.com (US) — requirements vary per marketplace",
+    "important_notes": [
+      "Amazon does NOT publish a single official machine-readable list. This data is compiled from Amazon Seller Central documentation, official help pages, and verified third-party sources (Jungle Scout, Red Stag Fulfillment, eCom Gliders — all cross-referenced).",
+      "Requirements change frequently. Always verify current requirements in Seller Central > Add a Product > Show Limitations before sourcing inventory.",
+      "Category approvals are marketplace-specific (US approval does NOT carry over to UK, DE, etc.).",
+      "Sub-category gating is MIXED: some root categories gate the whole tree, others gate individual sub-categories independently. See 'subcategory_gating' field per entry.",
+      "Beyond categories, Amazon also gates individual BRANDS and ASINs regardless of category approval."
+    ],
+    "subcategory_gating_legend": {
+      "root_only": "Approval at root level unlocks all sub-categories automatically",
+      "independent": "Sub-categories each require their own separate approval",
+      "mixed": "Root approval covers most sub-categories, but certain sub-categories require additional or separate approval",
+      "seasonal": "Gating rules change during peak seasons (Q4 holiday period)"
+    }
+  },
+  "gated_categories": [
+    {
+      "id": 1,
+      "category": "Automotive & Powersports",
+      "gated": true,
+      "subcategory_gating": "mixed",
+      "subcategory_notes": "Root category requires approval. Sub-categories involving safety systems (brakes, suspension, helmets) require additional individual approval.",
+      "match_keywords": [
+        "automotive",
+        "powersports",
+        "auto parts",
+        "vehicle parts"
+      ],
+      "required_documents": [
+        "Invoices from authorized automotive distributors (dated within 180 days)",
+        "DOT (Department of Transportation) compliance proof where applicable",
+        "SAE (Society of Automotive Engineers) compliance documentation where applicable",
+        "Safety certifications for safety-critical parts",
+        "Product compatibility documentation",
+        "Installation instructions for professional-install items",
+        "Professional installation disclaimers for certain performance parts"
+      ],
+      "certifications": [
+        "DOT",
+        "SAE"
+      ],
+      "certification_keys": [
+        "DOT",
+        "SAE"
+      ],
+      "common_rejection_reasons": [
+        "Missing compatibility charts",
+        "Lack of safety certifications",
+        "Invoices from unauthorized distributors"
+      ]
+    },
+    {
+      "id": 2,
+      "category": "Beauty & Personal Care",
+      "gated": true,
+      "subcategory_gating": "mixed",
+      "subcategory_notes": "A 'Premium Beauty' sub-category exists with stricter requirements than standard Beauty. Approval for Premium covers standard, but not vice versa. Some ingredient-specific sub-categories (e.g., hydroquinone products) have independent gating.",
+      "match_keywords": [
+        "beauty",
+        "cosmetic",
+        "makeup",
+        "skincare",
+        "skin care",
+        "hair care",
+        "personal care"
+      ],
+      "required_documents": [
+        "Invoices from authorized beauty distributors (min. 10 units)",
+        "Full ingredient lists (INCI format)",
+        "Safety Data Sheets (SDS/MSDS) for applicable ingredients",
+        "FDA facility registration number (if manufacturing in US)",
+        "Product images (all sides, labels visible)"
+      ],
+      "certifications": [
+        "FDA Cosmetic Registration (if applicable)",
+        "GMP (Good Manufacturing Practices) preferred"
+      ],
+      "certification_keys": [
+        "FDA_COSMETIC",
+        "GMP"
+      ],
+      "common_rejection_reasons": [
+        "Products making drug/medical claims",
+        "Restricted ingredients without documentation",
+        "Invoices from unauthorized distributors"
+      ]
+    },
+    {
+      "id": 3,
+      "category": "Children's Products (Toys & Games sub-set)",
+      "gated": true,
+      "subcategory_gating": "independent",
+      "subcategory_notes": "Sub-categories for children under 3 have the strictest testing requirements. Toys & Games root category has additional seasonal gating (holiday Q4 restrictions for new sellers). Each children's product type may require its own CPC.",
+      "match_keywords": [
+        "children",
+        "baby",
+        "toys & games",
+        "kids",
+        "infant"
+      ],
+      "required_documents": [
+        "Children's Product Certificate (CPC) — mandatory for all products for children under 12",
+        "Lead content test report (ISO 17025 lab)",
+        "Phthalates test report for soft plastic components",
+        "Mechanical and physical test reports",
+        "Flammability test results (where applicable)",
+        "Age grading documentation",
+        "Choking hazard assessment",
+        "Invoices from authorized suppliers (min. 10 units)"
+      ],
+      "certifications": [
+        "CPC (Children's Product Certificate) — must include: product ID, CPSC rule citation, manufacturer details, records contact, manufacturing info, testing info, accredited lab details",
+        "CPSC (Consumer Product Safety Commission) compliance",
+        "ASTM F963 (toy safety standard)",
+        "CPSIA compliance (Consumer Product Safety Improvement Act)"
+      ],
+      "certification_keys": [
+        "CPC",
+        "CPSC"
+      ],
+      "common_rejection_reasons": [
+        "Missing or incomplete CPC",
+        "Testing by non-CPSC-accepted laboratory",
+        "Products not meeting age-appropriate safety standards"
+      ]
+    },
+    {
+      "id": 4,
+      "category": "Collectible Books",
+      "gated": true,
+      "subcategory_gating": "root_only",
+      "subcategory_notes": "Root approval generally covers the category. High-value items may trigger additional appraisal requirements at the individual listing level.",
+      "match_keywords": [
+        "collectible books",
+        "rare books"
+      ],
+      "required_documents": [
+        "Proof of authenticity",
+        "Condition grading documentation",
+        "Invoices showing legitimate acquisition",
+        "Professional appraisal for high-value items"
+      ],
+      "certifications": [
+        "Third-party authentication (e.g., PSA, CGC for relevant items)"
+      ],
+      "certification_keys": [],
+      "common_rejection_reasons": [
+        "Unverifiable provenance",
+        "Potential copyright issues"
+      ]
+    },
+    {
+      "id": 5,
+      "category": "Dietary Supplements",
+      "gated": true,
+      "subcategory_gating": "independent",
+      "subcategory_notes": "Each supplement sub-type (weight loss, sports nutrition, herbal, vitamins, etc.) may require independent review. Products making disease claims are effectively prohibited regardless of approval.",
+      "match_keywords": [
+        "supplement",
+        "dietary supplement",
+        "vitamin",
+        "nutraceutical",
+        "sports nutrition",
+        "herbal"
+      ],
+      "required_documents": [
+        "Certificate of Analysis (CoA) from ISO/IEC 17025 accredited laboratory (issued within last 6 months)",
+        "GMP (Good Manufacturing Practices) facility certification",
+        "FDA Facility Registration number",
+        "Invoices from authorized supplement distributors (min. 10 units, dated within 180 days)",
+        "Product liability insurance documentation",
+        "Label review for FDA Supplement Facts panel compliance",
+        "730 days minimum shelf life upon FBA arrival"
+      ],
+      "certifications": [
+        "CoA (Certificate of Analysis) — ISO/IEC 17025 lab",
+        "GMP Certification (FDA 21 CFR Part 111)",
+        "FDA Facility Registration",
+        "NSF or USP certification (preferred/sometimes required)"
+      ],
+      "certification_keys": [
+        "NSF",
+        "USP",
+        "GMP",
+        "COA"
+      ],
+      "common_rejection_reasons": [
+        "CoA older than 6 months",
+        "Non-accredited lab testing",
+        "Disease or drug claims on labeling",
+        "Insufficient shelf life"
+      ]
+    },
+    {
+      "id": 6,
+      "category": "Electronics Accessories",
+      "gated": true,
+      "subcategory_gating": "mixed",
+      "subcategory_notes": "General accessories may be ungated for established accounts. Items with lithium batteries, wireless functionality, or electrical mains connection require individual sub-category approval.",
+      "match_keywords": [
+        "electronics",
+        "computers & accessories",
+        "wireless",
+        "battery",
+        "charger",
+        "cable",
+        "camera & photo"
+      ],
+      "required_documents": [
+        "FCC ID number for wireless products",
+        "UL listing certificate for mains-powered electrical items",
+        "Compatibility testing documentation",
+        "Invoices from authorized electronics distributors",
+        "Safety warning labels",
+        "UN 38.3 transport test for lithium battery products",
+        "MSDS/SDS for products with hazmat classification"
+      ],
+      "certifications": [
+        "FCC (Federal Communications Commission) ID",
+        "UL (Underwriters Laboratories) listing",
+        "CE marking (for EU marketplaces)",
+        "RoHS compliance",
+        "UN 38.3 (lithium batteries)"
+      ],
+      "certification_keys": [
+        "FCC",
+        "UL",
+        "CE",
+        "ROHS",
+        "UN38_3"
+      ],
+      "common_rejection_reasons": [
+        "Missing FCC ID for wireless products",
+        "No UL listing for electrical items"
+      ]
+    },
+    {
+      "id": 7,
+      "category": "Fine Art",
+      "gated": true,
+      "subcategory_gating": "root_only",
+      "subcategory_notes": "Root approval covers the category. High-value pieces or works by contemporary living artists may require additional documentation at listing level.",
+      "match_keywords": [
+        "fine art",
+        "artwork",
+        "painting",
+        "sculpture"
+      ],
+      "required_documents": [
+        "Proof of provenance",
+        "Authenticity documentation",
+        "Artist authorization letter (for contemporary/living artists)",
+        "Insurance appraisal for high-value pieces",
+        "Evidence of authorized distribution rights"
+      ],
+      "certifications": [
+        "Third-party authentication where applicable"
+      ],
+      "certification_keys": [],
+      "common_rejection_reasons": [
+        "Unauthorized copies",
+        "Unverifiable provenance"
+      ]
+    },
+    {
+      "id": 8,
+      "category": "Gift Cards",
+      "gated": true,
+      "subcategory_gating": "root_only",
+      "subcategory_notes": "This category is effectively CLOSED to third-party sellers. Only Amazon and specifically authorized partners may sell gift cards. There is no standard application pathway.",
+      "match_keywords": [
+        "gift card"
+      ],
+      "required_documents": [
+        "Direct partnership agreement with Amazon (no standard application pathway)"
+      ],
+      "certifications": [
+        "N/A — closed category for general sellers"
+      ],
+      "certification_keys": [],
+      "common_rejection_reasons": [
+        "Category is closed to third-party sellers without a direct Amazon partnership agreement"
+      ]
+    },
+    {
+      "id": 9,
+      "category": "Grocery & Gourmet Food",
+      "gated": true,
+      "subcategory_gating": "mixed",
+      "subcategory_notes": "Standard packaged food is the root. Organic, alcohol, perishable, and imported food sub-categories each require their own separate approvals.",
+      "match_keywords": [
+        "grocery",
+        "gourmet food",
+        "food & beverage",
+        "organic food",
+        "packaged food"
+      ],
+      "required_documents": [
+        "FDA Facility Registration number",
+        "Nutritional labeling compliance documentation",
+        "Invoices from authorized food distributors",
+        "Minimum 50 days remaining shelf life on FBA arrival",
+        "USDA Organic certification (for organic products)",
+        "Allergen information documentation",
+        "Country of origin labeling"
+      ],
+      "certifications": [
+        "FDA Food Facility Registration",
+        "USDA Organic (if applicable)",
+        "FSMA (Food Safety Modernization Act) compliance",
+        "HACCP certification (recommended)"
+      ],
+      "certification_keys": [
+        "USDA_ORGANIC",
+        "FDA_FACILITY",
+        "HACCP",
+        "FSMA"
+      ],
+      "common_rejection_reasons": [
+        "Insufficient shelf life",
+        "Missing allergen information",
+        "Outdated labels"
+      ]
+    },
+    {
+      "id": 10,
+      "category": "Health & Personal Care (OTC)",
+      "gated": true,
+      "subcategory_gating": "independent",
+      "subcategory_notes": "OTC medications, medical devices, and personal health equipment each operate as independently gated sub-categories. Diagnostic devices (blood pressure monitors, thermometers) require separate approvals from general health items.",
+      "match_keywords": [
+        "health & personal care",
+        "otc",
+        "over-the-counter",
+        "pharmacy",
+        "first aid"
+      ],
+      "required_documents": [
+        "FDA Registration number",
+        "FDA 510(k) clearance or exemption documentation (for medical devices)",
+        "Drug Facts label compliance",
+        "GMP certification",
+        "Product images showing all labeling",
+        "Invoices from authorized distributors"
+      ],
+      "certifications": [
+        "FDA Drug Registration (OTC drugs)",
+        "FDA 510(k) (Class II medical devices)",
+        "GMP (21 CFR Part 211 for drugs)",
+        "HIPAA compliance documentation (where applicable)",
+        "CE marking (EU marketplaces)"
+      ],
+      "certification_keys": [
+        "FDA_DRUG",
+        "FDA_FACILITY",
+        "GMP"
+      ],
+      "common_rejection_reasons": [
+        "Missing Drug Facts panel",
+        "Unregistered formulations",
+        "Unapproved therapeutic claims"
+      ]
+    },
+    {
+      "id": 11,
+      "category": "Industrial & Scientific",
+      "gated": true,
+      "subcategory_gating": "mixed",
+      "subcategory_notes": "General lab equipment may be open. Hazardous chemical reagents, controlled substances, and precision instruments requiring licensing are independently gated sub-categories.",
+      "match_keywords": [
+        "industrial & scientific",
+        "lab",
+        "laboratory",
+        "chemical",
+        "industrial",
+        "scientific"
+      ],
+      "required_documents": [
+        "Safety Data Sheets (SDS/MSDS)",
+        "Handling and storage instructions",
+        "Invoices from authorized industrial distributors",
+        "Hazmat shipping classifications where applicable",
+        "EPA registration for regulated chemicals"
+      ],
+      "certifications": [
+        "EPA registration (for regulated chemicals)",
+        "DOT hazmat shipping compliance",
+        "ISO certifications (for precision instruments)"
+      ],
+      "certification_keys": [
+        "EPA",
+        "ISO"
+      ],
+      "common_rejection_reasons": [
+        "Missing SDS for hazardous materials",
+        "Unlicensed controlled substances"
+      ]
+    },
+    {
+      "id": 12,
+      "category": "Jewelry",
+      "gated": true,
+      "subcategory_gating": "mixed",
+      "subcategory_notes": "Standard fashion jewelry approval covers most of the category. Fine jewelry (precious metals/stones), children's jewelry, and certified pre-owned jewelry are independently gated.",
+      "match_keywords": [
+        "jewelry",
+        "gemstone",
+        "diamond",
+        "gold",
+        "silver",
+        "fine jewelry"
+      ],
+      "required_documents": [
+        "Material composition documentation",
+        "Lead testing results (especially for children's jewelry)",
+        "Precious metal content verification",
+        "Invoices from authorized jewelry wholesalers",
+        "Third-party authentication (for certified pre-owned)"
+      ],
+      "certifications": [
+        "Lead testing certificate (ISO 17025)",
+        "Precious metal assay / hallmarking",
+        "Third-party gemstone authentication (GIA, AGS, etc.) for fine jewelry"
+      ],
+      "certification_keys": [],
+      "common_rejection_reasons": [
+        "Unverified metal content claims",
+        "Missing lead testing for children's items"
+      ]
+    },
+    {
+      "id": 13,
+      "category": "Medical Devices & Supplies",
+      "gated": true,
+      "subcategory_gating": "independent",
+      "subcategory_notes": "Each device class is independently gated. Class I (basic) may auto-approve for established accounts. Class II and Class III require extensive individual documentation.",
+      "match_keywords": [
+        "medical device",
+        "medical supplies",
+        "surgical",
+        "diagnostic",
+        "therapeutic",
+        "medical equipment"
+      ],
+      "required_documents": [
+        "FDA 510(k) clearance letter (Class II devices)",
+        "FDA PMA (Premarket Approval) for Class III devices",
+        "FDA device registration and listing",
+        "Quality System Regulation (QSR/GMP) documentation",
+        "Invoices from authorized medical distributors",
+        "Labeling compliance documentation"
+      ],
+      "certifications": [
+        "FDA 510(k) or PMA",
+        "FDA Device Registration",
+        "ISO 13485 (medical device quality management)",
+        "CE marking with MDR compliance (EU)",
+        "UL or ETL listing for powered devices"
+      ],
+      "certification_keys": [
+        "ISO_13485",
+        "UL",
+        "CE"
+      ],
+      "common_rejection_reasons": [
+        "Missing 510(k) for Class II devices",
+        "Unapproved medical claims"
+      ]
+    },
+    {
+      "id": 14,
+      "category": "Music (Collectible)",
+      "gated": true,
+      "subcategory_gating": "root_only",
+      "subcategory_notes": "Collectible music (vinyl, signed items) is gated at root level. Standard new music releases are generally open.",
+      "match_keywords": [
+        "collectible music",
+        "vinyl",
+        "music collectible"
+      ],
+      "required_documents": [
+        "Proof of authenticity",
+        "Condition documentation",
+        "Invoices from legitimate sources"
+      ],
+      "certifications": [
+        "Third-party authentication for high-value signed items"
+      ],
+      "certification_keys": [],
+      "common_rejection_reasons": [
+        "Questionable authenticity",
+        "Copyright infringement concerns"
+      ]
+    },
+    {
+      "id": 15,
+      "category": "Pesticides & Pesticide Devices",
+      "gated": true,
+      "subcategory_gating": "independent",
+      "subcategory_notes": "Every individual pesticide product requires its own EPA registration. Sub-categories (insecticides, herbicides, rodenticides, devices) are independently gated. This is one of the strictest categories.",
+      "match_keywords": [
+        "pesticide",
+        "pest control",
+        "insecticide",
+        "herbicide",
+        "rodenticide",
+        "lawn & garden"
+      ],
+      "required_documents": [
+        "EPA Registration number (per product)",
+        "EPA-approved product label",
+        "Safety Data Sheet (SDS)",
+        "Proof of authorized distributor relationship",
+        "Child-resistant packaging compliance documentation"
+      ],
+      "certifications": [
+        "EPA Registration (FIFRA — Federal Insecticide, Fungicide, and Rodenticide Act)",
+        "State-level pesticide registrations (as applicable)",
+        "Child-resistant packaging certification (16 CFR 1700)"
+      ],
+      "certification_keys": [
+        "EPA_FIFRA"
+      ],
+      "common_rejection_reasons": [
+        "Missing EPA registration",
+        "Non-compliant labeling",
+        "Products not registered for the intended use"
+      ]
+    },
+    {
+      "id": 16,
+      "category": "Sports Collectibles",
+      "gated": true,
+      "subcategory_gating": "root_only",
+      "subcategory_notes": "Root approval covers the main category. High-value game-used items or memorabilia from specific leagues may require additional authentication.",
+      "match_keywords": [
+        "sports collectible",
+        "memorabilia",
+        "autograph"
+      ],
+      "required_documents": [
+        "Proof of authenticity (COA from recognized authenticator)",
+        "Condition documentation",
+        "Invoices from legitimate sources"
+      ],
+      "certifications": [
+        "COA from recognized authentication services (PSA, JSA, Beckett, etc.)"
+      ],
+      "certification_keys": [],
+      "common_rejection_reasons": [
+        "Unverifiable authenticity",
+        "Missing or insufficient COA"
+      ]
+    },
+    {
+      "id": 17,
+      "category": "Streaming Media Players",
+      "gated": true,
+      "subcategory_gating": "root_only",
+      "subcategory_notes": "Approval is required to sell all streaming devices. Amazon restricts this heavily to protect its own devices and prevent counterfeit listings.",
+      "match_keywords": [
+        "streaming media",
+        "media player",
+        "streaming device",
+        "fire tv",
+        "roku"
+      ],
+      "required_documents": [
+        "Invoices from authorized electronics distributors",
+        "FCC certification",
+        "Brand authorization letter (if reselling third-party brands)"
+      ],
+      "certifications": [
+        "FCC ID",
+        "UL or ETL listing"
+      ],
+      "certification_keys": [
+        "FCC",
+        "UL"
+      ],
+      "common_rejection_reasons": [
+        "Unauthorized resellers",
+        "Counterfeit product risk"
+      ]
+    },
+    {
+      "id": 18,
+      "category": "Tobacco & Tobacco-Related Products",
+      "gated": true,
+      "subcategory_gating": "root_only",
+      "subcategory_notes": "The entire category is heavily restricted or prohibited in most cases. Tobacco products themselves are prohibited for sale to general marketplace sellers. Only select accessories may be approved.",
+      "match_keywords": [
+        "tobacco",
+        "cigarette",
+        "cigar",
+        "smoking"
+      ],
+      "required_documents": [
+        "Age verification mechanism proof",
+        "State tobacco license (where applicable)",
+        "FDA tobacco registration (for manufacturers)",
+        "Compliance documentation for applicable jurisdiction"
+      ],
+      "certifications": [
+        "FDA tobacco product registration",
+        "State tobacco retail/distributor license"
+      ],
+      "certification_keys": [
+        "TTB"
+      ],
+      "common_rejection_reasons": [
+        "Tobacco products are largely prohibited on Amazon for third-party sellers",
+        "Missing age-verification compliance"
+      ]
+    },
+    {
+      "id": 19,
+      "category": "Video, DVD & Blu-ray",
+      "gated": true,
+      "subcategory_gating": "root_only",
+      "subcategory_notes": "Gated primarily to prevent counterfeit media. Used DVDs are extremely difficult to get approved for. New, sealed product from authorized distributors is the viable path.",
+      "match_keywords": [
+        "dvd",
+        "blu-ray",
+        "blu ray",
+        "video",
+        "movie"
+      ],
+      "required_documents": [
+        "Invoices from authorized distributors showing NEW items",
+        "Minimum 3 invoices covering at least 30 units",
+        "Invoices dated within 180 days"
+      ],
+      "certifications": [
+        "N/A — documentation-based approval, no specific certifications required"
+      ],
+      "certification_keys": [],
+      "common_rejection_reasons": [
+        "Counterfeit risk",
+        "Invoices showing used product",
+        "Unauthorized distributors"
+      ]
+    },
+    {
+      "id": 20,
+      "category": "Watches",
+      "gated": true,
+      "subcategory_gating": "mixed",
+      "subcategory_notes": "Standard watches and luxury/fine watches are separate sub-categories with different requirements. Certified Pre-Owned (CPO) watches require independent approval.",
+      "match_keywords": [
+        "watches",
+        "timepiece",
+        "clock"
+      ],
+      "required_documents": [
+        "Professional seller account in good standing",
+        "Invoices using manufacturer UPC codes",
+        "Manufacturer-authorized distributor invoices",
+        "For CPO watches: water resistance test results, timekeeping accuracy certification from third-party watchmaker",
+        "Seller performance metrics meeting Amazon minimums"
+      ],
+      "certifications": [
+        "Third-party watch certification (for CPO watches)",
+        "Brand authorization for luxury brands (e.g., Rolex, TAG Heuer require direct brand authorization)"
+      ],
+      "certification_keys": [],
+      "common_rejection_reasons": [
+        "Unauthorized reselling of luxury brands",
+        "Missing CPO test results",
+        "Poor seller metrics"
+      ]
+    },
+    {
+      "id": 21,
+      "category": "Wine, Beer & Spirits (Alcohol)",
+      "gated": true,
+      "subcategory_gating": "independent",
+      "subcategory_notes": "Alcohol is among the most restricted categories. Each alcohol type may require separate approval. Availability is limited to specific US states with compliant regulations. Access is largely by invitation only.",
+      "match_keywords": [
+        "wine",
+        "beer",
+        "spirits",
+        "alcohol",
+        "liquor",
+        "distilled",
+        "fermented"
+      ],
+      "required_documents": [
+        "State alcohol retailer/distributor license",
+        "Federal Basic Permit (TTB)",
+        "Age verification system documentation",
+        "Direct invitation from Amazon (most common entry path)"
+      ],
+      "certifications": [
+        "TTB Basic Permit (Alcohol and Tobacco Tax and Trade Bureau)",
+        "State-level liquor license",
+        "Age verification compliance"
+      ],
+      "certification_keys": [
+        "TTB"
+      ],
+      "common_rejection_reasons": [
+        "Missing state license",
+        "Not invited by Amazon",
+        "Age verification gaps"
+      ]
+    },
+    {
+      "id": 22,
+      "category": "Hazardous Materials (Hazmat / Dangerous Goods)",
+      "gated": true,
+      "subcategory_gating": "independent",
+      "subcategory_notes": "Hazmat status is product-level, not purely category-level. Products across many categories can be flagged as Hazmat. Each hazmat product requires individual compliance. This is a cross-cutting gating type, not a standalone browsing category.",
+      "match_keywords": [
+        "hazardous",
+        "hazmat",
+        "dangerous goods",
+        "flammable",
+        "corrosive",
+        "explosive"
+      ],
+      "required_documents": [
+        "Material Safety Data Sheet (MSDS/SDS)",
+        "UN 38.3 test report (for lithium batteries)",
+        "DOT hazmat shipping documentation",
+        "Exemption documentation if claiming de minimis quantities",
+        "Proper hazmat labeling"
+      ],
+      "certifications": [
+        "UN 38.3 (lithium batteries)",
+        "DOT compliance",
+        "IATA/ICAO classification (air transport)",
+        "REACH compliance (EU)"
+      ],
+      "certification_keys": [
+        "DOT",
+        "UN38_3",
+        "REACH"
+      ],
+      "common_rejection_reasons": [
+        "Missing SDS",
+        "Incorrect hazmat classification"
+      ]
+    }
+  ],
+  "ungated_categories_with_gated_subcategories": [
+    {
+      "category": "Books",
+      "note": "Generally open, but specific publishers and used books from certain brands now require approval. New sellers may find Books gated at account level until they meet performance thresholds."
+    },
+    {
+      "category": "Home & Kitchen",
+      "note": "Generally open. Some electrical appliances sub-categories require FCC/UL documentation."
+    },
+    {
+      "category": "Toys & Games",
+      "note": "Generally open outside Q4. Holiday season (October–December) adds gating for new/low-volume sellers. Children's toys (under 12) are gated under Children's Products rules."
+    },
+    {
+      "category": "Clothing & Accessories",
+      "note": "Generally open. Certain brands are gated. Counterfeit-prone luxury brands require LOA (Letter of Authorization)."
+    },
+    {
+      "category": "Sports & Outdoors",
+      "note": "Generally open. Safety equipment (helmets, harnesses) and sports collectibles are gated sub-categories."
+    }
+  ],
+  "universal_documents_required_across_all_applications": [
+    "Professional Amazon Seller Account in good standing",
+    "Invoices from legitimate manufacturer or licensed distributor (typically 3 invoices, 30+ units total, dated within 180 days)",
+    "Your business name and address visible on invoices",
+    "Supplier name and address visible on invoices",
+    "Product images (all sides, labels legible, white background preferred)",
+    "Seller performance metrics meeting Amazon minimums"
+  ]
+}

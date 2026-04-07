@@ -6,6 +6,13 @@
  */
 import { DEFAULT_WEB_MARKETPLACE } from '@/constants/amazon-marketplace'
 import { SCRAPE_VALIDATION_MESSAGES } from '@/constants/validation'
+import {
+    SCRAPE_JOB_TYPE,
+    ScrapeJobPayloadSchema,
+    ScrapedListingSchema,
+    type ScrapeJobPayload,
+    type ScrapedListing,
+} from '@puckora/scraper-core'
 import { z } from 'zod'
 
 // ---------------------------------------------------------------------------
@@ -41,3 +48,28 @@ export const AmazonProductInputSchema = z.object({
 })
 
 export type AmazonProductInput = z.infer<typeof AmazonProductInputSchema>
+
+type AmazonSearchJobPayload = Extract<ScrapeJobPayload, { type: typeof SCRAPE_JOB_TYPE.AMAZON_SEARCH }>
+
+const ScrapeJobListingsResultSchema = z.union([
+    z.array(ScrapedListingSchema),
+    z.object({ listings: z.array(ScrapedListingSchema) }),
+])
+
+export function parseAmazonSearchJobPayload(payload: unknown): AmazonSearchJobPayload | null {
+    const parsed = ScrapeJobPayloadSchema.safeParse(payload)
+    if (!parsed.success || parsed.data.type !== SCRAPE_JOB_TYPE.AMAZON_SEARCH) {
+        return null
+    }
+
+    return parsed.data
+}
+
+export function parseScrapeJobListings(result: unknown): ScrapedListing[] {
+    const parsed = ScrapeJobListingsResultSchema.safeParse(result)
+    if (!parsed.success) {
+        return []
+    }
+
+    return Array.isArray(parsed.data) ? parsed.data : parsed.data.listings
+}

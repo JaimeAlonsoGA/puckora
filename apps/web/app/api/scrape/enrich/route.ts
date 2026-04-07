@@ -25,6 +25,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { after } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/integrations/supabase/admin'
 import { ScrapeResultSchema } from '@puckora/scraper-core'
 import { SCRAPE_JOB_STATUS, SCRAPE_PRODUCT_STATUS } from '@puckora/scraper-core'
 import { API_ERROR_MESSAGES, API_STATUS } from '@/constants/api'
@@ -32,8 +33,8 @@ import { upsertAmazonProduct } from '@/services/products'
 import { updateScrapeJob } from '@/services/scrape'
 import { getKeywordForJob, upsertKeywordProduct } from '@/services/keywords'
 import { createFlyioDb } from '@/integrations/flyio/client'
-import type { AmazonProductInsert } from '@puckora/types'
-import type { ScrapedListing } from '@puckora/scraper-core'
+import type { AmazonProductInsert, Database, Json } from '@puckora/types'
+import type { ScrapeResult, ScrapedListing } from '@puckora/scraper-core'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -44,7 +45,7 @@ import type { ScrapedListing } from '@puckora/scraper-core'
  * This validates the JWT against the project and respects RLS.
  */
 function createBearerClient(accessToken: string) {
-    return createClient(
+    return createClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
@@ -56,15 +57,27 @@ function createBearerClient(accessToken: string) {
     )
 }
 
-/**
- * Create an admin client that bypasses RLS.
- * Used only for the job update (the executor user_id is verified via the JWT).
- */
-function createAdminClient() {
-    return createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    )
+function toScrapedListingJson(listing: ScrapedListing): Json {
+    return {
+        asin: listing.asin,
+        rank: listing.rank,
+        name: listing.name,
+        price: listing.price,
+        rating: listing.rating,
+        review_count: listing.review_count,
+        product_url: listing.product_url,
+    }
+}
+
+function toScrapeResultJson(result: ScrapeResult): Json {
+    return {
+        job_id: result.job_id,
+        executor: result.executor,
+        listings: result.listings.map(toScrapedListingJson),
+        blocked: result.blocked,
+        page_count: result.page_count,
+        scraped_at: result.scraped_at,
+    }
 }
 
 /**
@@ -137,17 +150,17 @@ export async function POST(req: NextRequest) {
     const db = createFlyioDb()
 
     // 4. Upsert each listing into amazon_products ----------------------------
-    // Use the admin client so we don't hit RLS on amazon_products.
-    const upsertErrors: string[] = []
-    for (const listing of result.listings) {
-        try {
-            await upsertAmazonProduct(db, normaliseListing(listing))
-        } catch (err) {
-            upsertErrors.push(
-                `${listing.asin}: ${err instanceof Error ? err.message : API_ERROR_MESSAGES.UPSERT_FAILED}`,
-            )
-        }
-    }
+    // All writes are independent (each ASIN is its own row) — run concurrently.
+    const upsertSettled = await Promise.allSettled(
+        result.listings.map((listing) => upsertAmazonProduct(db, normaliseListing(listing))),
+    )
+    const upsertErrors = upsertSettled
+        .map((r, i) =>
+            r.status === 'rejected'
+                ? `${result.listings[i].asin}: ${r.reason instanceof Error ? r.reason.message : API_ERROR_MESSAGES.UPSERT_FAILED}`
+                : null,
+        )
+        .filter((e): e is string => e !== null)
 
     // 5. Mark the job done (or failed if blocked) ----------------------------
     try {
@@ -159,8 +172,7 @@ export async function POST(req: NextRequest) {
                 : upsertErrors.length > 0
                     ? `${upsertErrors.length} upsert error(s): ${upsertErrors.slice(0, 3).join('; ')}`
                     : null,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            result: result as any,
+            result: toScrapeResultJson(result),
             executor: result.executor,
             completed_at: now,
         })
@@ -176,16 +188,19 @@ export async function POST(req: NextRequest) {
         try {
             const keywordRow = await getKeywordForJob(db, adminClient, result.job_id)
             if (keywordRow) {
-                for (const listing of result.listings) {
-                    try {
-                        await upsertKeywordProduct(db, {
-                            keyword_id: keywordRow.id,
-                            asin: listing.asin,
-                        })
-                    } catch (err) {
-                        console.error(`[scrape/enrich] upsertKeywordProduct failed for ${listing.asin}:`, err)
+                const linkSettled = await Promise.allSettled(
+                    result.listings.map((listing) =>
+                        upsertKeywordProduct(db, { keyword_id: keywordRow.id, asin: listing.asin }),
+                    ),
+                )
+                linkSettled.forEach((r, i) => {
+                    if (r.status === 'rejected') {
+                        console.error(
+                            `[scrape/enrich] upsertKeywordProduct failed for ${result.listings[i].asin}:`,
+                            r.reason,
+                        )
                     }
-                }
+                })
             }
         } catch (err) {
             console.error('[scrape/enrich] getKeywordByScrapeJob failed:', err)

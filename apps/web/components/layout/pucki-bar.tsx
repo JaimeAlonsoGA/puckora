@@ -13,11 +13,11 @@ export function PuckiBar() {
 
     return (
         <div
-            className="flex flex-shrink-0 items-center gap-2 border-t-hairline bg-background px-3.5"
+            className="flex shrink-0 items-center gap-2 border-t-hairline px-3.5"
             style={{ height: 'var(--shell-pucki-height)' }}
         >
             {/* Pucki avatar */}
-            <div className="flex size-5.5 flex-shrink-0 items-center justify-center rounded-full bg-card border-hairline-default">
+            <div className="flex size-5.5 shrink-0 items-center justify-center rounded-full bg-card border-hairline-default">
                 <Bot size={12} aria-hidden="true" className="text-faint" />
             </div>
 

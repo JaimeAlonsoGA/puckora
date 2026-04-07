@@ -5,7 +5,7 @@
  *
  * Responsibilities (routing only — no UI, no inline strings):
  *   1. Subscribe to Realtime + seed TanStack cache via useScrapeRealtime.
- *   2. Route to the correct view: JobProgress (when a job is active) → SearchForm.
+ *   2. Render JobProgress — always mounted with a valid initialJobId (see page.tsx guard).
  *
  * All UI, i18n, and data concerns live in the dedicated sub-components.
  */
@@ -14,7 +14,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useScrapeRealtime } from '@/hooks/use-scrape-realtime'
 import { scrapeJobQueryOptions } from '@/queries'
 import { JobProgress } from './job-progress'
-import { SearchForm } from './search-form'
 import type { ScrapeJob } from '@puckora/types'
 
 // ---------------------------------------------------------------------------
@@ -39,9 +38,5 @@ export function SearchShell({ initialJobId, initialJob }: SearchShellProps) {
     // Poll as a safety-net alongside Realtime
     const { data: job } = useQuery(scrapeJobQueryOptions(initialJobId))
 
-    // ── Active job ──────────────────────────────────────────────────────────
-    if (initialJobId) return <JobProgress job={job ?? initialJob} />
-
-    // ── Idle: show search form ───────────────────────────────────────────────
-    return <SearchForm />
+    return <JobProgress job={job ?? initialJob} />
 }

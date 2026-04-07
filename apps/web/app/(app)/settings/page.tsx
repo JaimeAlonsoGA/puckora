@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { getCachedUser } from '@/server/users'
 import { PageContainer } from '@/components/layout/page-container'
 import { Heading, Body } from '@puckora/ui'
-import { SettingsSkeleton } from '@/app/(app)/settings/_components/settings-skeleton'
+import { SettingsSkeleton } from '@/app/(app)/settings/_skeletons/settings-skeleton'
 import { ProfileForm } from '@/app/(app)/settings/_components/profile-form'
 import { MarketplaceSelector } from '@/app/(app)/settings/_components/marketplace-selector'
 import { LanguageSelector } from '@/app/(app)/settings/_components/language-selector'
@@ -14,7 +14,7 @@ export default async function SettingsPage() {
 
     return (
         <PageContainer>
-            <div className="flex flex-col gap-[var(--space-2)]">
+            <div className="flex flex-col gap-2">
                 <Heading as="h1">{t('title')}</Heading>
                 <Body>{t('description')}</Body>
             </div>
@@ -30,7 +30,7 @@ async function SettingsContent() {
     const user = await getCachedUser()
 
     return (
-        <div className="mt-[var(--space-8)] flex flex-col gap-[var(--space-8)]">
+        <div className="mt-8 flex flex-col gap-8">
             <ProfileForm profile={user} />
             <MarketplaceSelector currentMarketplace={user.marketplace ?? 'US'} />
             <LanguageSelector currentLanguage={user.language ?? 'en'} />

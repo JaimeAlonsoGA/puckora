@@ -19,6 +19,7 @@ import type {
     ProductCategoryRank,
     ProductCategoryRankInsert,
 } from '@puckora/types'
+import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
 
 type AmazonProductColumnName = keyof typeof amazonProducts['_']['columns']
 
@@ -150,7 +151,7 @@ export async function updateAmazonProduct(
         .set({ ...update, updated_at: new Date().toISOString() } as Partial<typeof amazonProducts.$inferInsert>)
         .where(eq(amazonProducts.asin, asin))
         .returning()
-    if (!rows[0]) throw new Error(`updateAmazonProduct: asin ${asin} not found`)
+    if (!rows[0]) throw new Error(`${SERVICE_ERROR_PREFIXES.UPDATE_AMAZON_PRODUCT_FAILED}: asin ${asin} not found`)
     return rows[0] as AmazonProduct
 }
 

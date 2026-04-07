@@ -38,3 +38,9 @@ export const keywordKeys = {
         [...keywordKeys.all, 'results', keyword, marketplace] as const,
 }
 
+export const amazonProductKeys = {
+    all: ['amazon_product'] as const,
+    detail: (asin: string, marketplace: string) =>
+        [...amazonProductKeys.all, 'detail', asin, marketplace] as const,
+}
+

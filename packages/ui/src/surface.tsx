@@ -1,6 +1,6 @@
 import { cn } from '@puckora/utils'
 
-type SurfaceVariant = 'base' | 'card' | 'secondary'
+type SurfaceVariant = 'base' | 'card' | 'secondary' | 'important'
 type SurfacePadding = 'none' | 'sm' | 'md' | 'lg' | 'xl'
 type SurfaceBorder = 'none' | 'default' | 'strong'
 
@@ -13,9 +13,10 @@ type SurfaceProps = React.HTMLAttributes<HTMLDivElement> & {
 }
 
 const VARIANT_MAP: Record<SurfaceVariant, string> = {
-    base: 'bg-background',
-    card: 'bg-card',
-    secondary: 'bg-muted',
+    base: 'bg-background rounded-none',
+    card: 'bg-card rounded-xl',
+    secondary: 'bg-muted rounded-none',
+    important: 'bg-important text-important-fg rounded-xl',
 }
 
 const PADDING_MAP: Record<SurfacePadding, string> = {
@@ -48,7 +49,7 @@ export function Surface({
                 VARIANT_MAP[variant],
                 PADDING_MAP[padding],
                 BORDER_MAP[border],
-                radius && 'rounded-md',
+                radius === false && 'rounded-none',
                 className,
             )}
             {...props}

@@ -44,7 +44,7 @@ export function Alert({
         <div
             role="alert"
             className={cn(
-                'flex flex-col gap-1 px-4 py-3 rounded-md',
+                'flex flex-col gap-1 px-4 py-3 rounded-lg',
                 styles.container,
                 className,
             )}

@@ -17,6 +17,8 @@ export const AppRoute = {
     tools: '/tools',
     pucki: '/pucki',
     settings: '/settings',
+    /** Category explorer — WIP, not yet implemented */
+    categories: '/categories',
     /** API endpoints */
     apiSettings: '/api/settings',
     apiPulseSearch: '/api/pulse/search',
@@ -25,3 +27,13 @@ export const AppRoute = {
 } as const
 
 export type AppRoutePath = (typeof AppRoute)[keyof typeof AppRoute]
+
+/** Dynamic route to a specific product within a keyword search context. */
+export const searchProductRoute = (query: string, asin: string | null | undefined): string => {
+    if (!asin) return AppRoute.search
+    return `/search/${encodeURIComponent(query)}/product/${asin}`
+}
+
+/** Dynamic route to keyword search results page. */
+export const searchQueryRoute = (keyword: string): string =>
+    `${AppRoute.search}/${encodeURIComponent(keyword)}`

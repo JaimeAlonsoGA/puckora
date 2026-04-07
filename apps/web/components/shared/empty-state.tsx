@@ -1,5 +1,5 @@
 import { Body, Subheading } from '@puckora/ui'
-import { cn } from '@puckora/utils'
+import { cn } from '@/lib/utils'
 
 type EmptyStateProps = {
     title: string

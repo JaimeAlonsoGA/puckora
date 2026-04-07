@@ -130,4 +130,23 @@ export const createResearchGraphSlice: StateCreator<
     resetSession: (): void => {
         set({ researchSession: null, suggestions: [] })
     },
+
+    updateNode: (id: string, updates: { label?: string; meta?: Partial<import('../types').NodeMeta> }): void => {
+        set((state) => ({
+            researchSession: state.researchSession
+                ? {
+                    ...state.researchSession,
+                    nodes: state.researchSession.nodes.map((n) =>
+                        n.id === id
+                            ? {
+                                ...n,
+                                ...(updates.label !== undefined ? { label: updates.label } : {}),
+                                ...(updates.meta !== undefined ? { meta: { ...n.meta, ...updates.meta } } : {}),
+                            }
+                            : n,
+                    ),
+                }
+                : null,
+        }))
+    },
 })

@@ -26,7 +26,7 @@ export function TopbarActions({ email }: TopbarActionsProps) {
     }
 
     return (
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
             {/* Theme toggle */}
             <button
                 onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
@@ -42,7 +42,7 @@ export function TopbarActions({ email }: TopbarActionsProps) {
                 <DropdownMenu.Trigger asChild>
                     <button
                         title={email}
-                        className="flex-shrink-0 size-6.5 rounded-full bg-card border-hairline transition-opacity data-[state=open]:opacity-70 hover:opacity-70 cursor-pointer outline-none"
+                        className="shrink-0 size-6.5 rounded-full bg-card border-hairline transition-opacity data-[state=open]:opacity-70 hover:opacity-70 cursor-pointer outline-none"
                         aria-label="User menu"
                     />
                 </DropdownMenu.Trigger>

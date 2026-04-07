@@ -16,30 +16,30 @@ export function SearchExtensionWidget() {
                 <Stack direction="row" align="center" gap="3">
                     <IconPlugConnected size={20} aria-hidden="true" className="text-muted-foreground" />
                     <div>
-                        <Subheading>{t('shellExtensionWidgetTitle')}</Subheading>
+                        <Subheading>{t('extension.widgetTitle')}</Subheading>
                         <Caption>
                             {isInstalled
-                                ? t('shellExtensionWidgetInstalled')
+                                ? t('extension.widgetInstalled')
                                 : isChecking
-                                    ? t('shellExtensionChecking')
-                                    : t('shellExtensionWidgetNotInstalled')}
+                                    ? t('extension.checking')
+                                    : t('extension.widgetNotInstalled')}
                         </Caption>
                     </div>
                 </Stack>
 
                 <Body className="text-muted-foreground">
-                    {t('shellExtensionWidgetBody')}
+                    {t('extension.widgetBody')}
                 </Body>
 
                 <Stack gap="2" className="text-muted-foreground">
-                    <Caption>{t('shellExtensionWidgetAmazon')}</Caption>
-                    <Caption>{t('shellExtensionWidgetGlobalSources')}</Caption>
-                    <Caption>{t('shellExtensionWidgetCompanion')}</Caption>
+                    <Caption>{t('extension.widgetAmazon')}</Caption>
+                    <Caption>{t('extension.widgetGlobalSources')}</Caption>
+                    <Caption>{t('extension.widgetCompanion')}</Caption>
                 </Stack>
 
                 {!isInstalled && !isChecking && (
                     <Button href={EXTENSION_INSTALL_URL} variant="secondary">
-                        {t('shellExtensionWidgetCta')}
+                        {t('extension.widgetCta')}
                     </Button>
                 )}
             </Stack>

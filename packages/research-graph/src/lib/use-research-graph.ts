@@ -14,6 +14,7 @@ import type {
     UseResearchGraphReturn,
     SuggestionsRequest,
     ResearchGraphSlice,
+    NodeMeta,
 } from '../types'
 import { SuggestionsResponseSchema } from '../schemas'
 import { GraphNodeType as NodeTypeEnum } from '../types'
@@ -92,6 +93,30 @@ export function useResearchGraph(
         return id
     }, [store, fetchSuggestions])
 
+    const trackSearchPending = useCallback((query: string, parentId?: string): string => {
+        const resolvedParentId = parentId ?? store.researchSession?.nodes[0]?.id ?? null
+        const id = store.addNode({
+            type: NodeTypeEnum.KEYWORD,
+            label: buildNodeLabel.keywordPending(query),
+            parentId: resolvedParentId,
+            meta: { query, pending: true },
+        })
+        // No suggestions fetch while pending — wait until job resolves
+        return id
+    }, [store])
+
+    const trackSearchReturn = useCallback((query: string, parentId?: string): string => {
+        const resolvedParentId = parentId ?? store.researchSession?.currentId ?? store.researchSession?.nodes[0]?.id ?? null
+        const id = store.addNode({
+            type: NodeTypeEnum.KEYWORD,
+            label: buildNodeLabel.keywordReturn(query),
+            parentId: resolvedParentId,
+            meta: { query },
+        })
+        if (id) void fetchSuggestions(id)
+        return id
+    }, [store, fetchSuggestions])
+
     const trackCategory = useCallback((
         name: string,
         categoryId: string,
@@ -116,6 +141,21 @@ export function useResearchGraph(
         const id = store.addNode({
             type: NodeTypeEnum.PRODUCT,
             label: buildNodeLabel.product(title),
+            parentId,
+            meta: { asin },
+        })
+        if (id) void fetchSuggestions(id)
+        return id
+    }, [store, fetchSuggestions])
+
+    const trackProductReturn = useCallback((
+        title: string,
+        asin: string,
+        parentId: string,
+    ): string => {
+        const id = store.addNode({
+            type: NodeTypeEnum.PRODUCT,
+            label: buildNodeLabel.productReturn(title),
             parentId,
             meta: { asin },
         })
@@ -163,6 +203,13 @@ export function useResearchGraph(
         return id
     }, [store, fetchSuggestions])
 
+    const updateNode = useCallback((
+        id: string,
+        updates: { label?: string; meta?: Partial<NodeMeta> },
+    ): void => {
+        store.updateNode(id, updates)
+    }, [store])
+
     const currentNode = useMemo((): ResearchNode | null => {
         const session = store.researchSession
         if (!session?.currentId) return null
@@ -175,10 +222,14 @@ export function useResearchGraph(
         currentNode,
         ensureSession,
         trackSearch,
+        trackSearchPending,
+        trackSearchReturn,
         trackCategory,
         trackProduct,
+        trackProductReturn,
         trackSupplier,
         trackVectorSuggestion,
         followSuggestion,
+        updateNode,
     }
 }

@@ -16,6 +16,13 @@ import { createFlyioDb } from '@/integrations/flyio/client'
 import { KeywordResultsSearchParamsSchema } from '@/schemas/api'
 import { getKeyword, getProductsForKeyword } from '@/services/keywords'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+const NO_STORE_HEADERS = {
+    'Cache-Control': 'no-store, max-age=0, must-revalidate',
+}
+
 export async function GET(req: NextRequest) {
     const parsedParams = KeywordResultsSearchParamsSchema.safeParse({
         keyword: req.nextUrl.searchParams.get('keyword') ?? undefined,
@@ -46,10 +53,10 @@ export async function GET(req: NextRequest) {
     try {
         const db = createFlyioDb()
         const keywordRow = await getKeyword(db, keyword, marketplace)
-        if (!keywordRow) return NextResponse.json([])
+        if (!keywordRow) return NextResponse.json([], { headers: NO_STORE_HEADERS })
 
         const products = await getProductsForKeyword(db, keywordRow.id)
-        return NextResponse.json(products)
+        return NextResponse.json(products, { headers: NO_STORE_HEADERS })
     } catch (err) {
         const message = err instanceof Error ? err.message : API_ERROR_MESSAGES.INTERNAL_ERROR
         return NextResponse.json({ error: message }, { status: API_STATUS.INTERNAL_SERVER_ERROR })
