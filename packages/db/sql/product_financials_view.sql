@@ -56,27 +56,49 @@ drop function if exists public.extract_asin_age_months (text);
 --   Previous approach used rank ASC (min = rank 2) which gave 157k estimate vs
 --   actual 33k sales — 4.7× overestimate purely from rank selection.
 --
--- Coefficients calibrated 2026-04-07 against 165-product Zoof ground-truth
--- sample (cat scratching post, electric candles, hydroponics, portable charger).
--- Calibration method: median ideal-A = median(zoof_mo_sales × rank^B) per depth
--- using max-rank-at-shallowest-depth strategy.
+-- Coefficients recalibrated 2026-04-08 against 433-product Zoof ground-truth
+-- (14 keywords: air fryer, baby monitor, bluetooth speaker, cat scratching post,
+--  dog collar, electric candles, hydroponics, led strip lights, office chair,
+--  phone case, portable charger, protein powder, vitamin c serum, yoga mat).
+-- Method: median actual-A = median(zoof_mo_sales × rank^B) per canonical depth;
+-- per-category path overrides where n≥15 for lower within-depth variance.
 --
---   depth 1   (root dept)          A = 375,000  B = 0.93  (alias of d2)
---   depth 2   (broad sub-dept)     A = 375,000  B = 0.93  (median ideal-A, n=7)
---   depth 3   (department level)   A =  90,000  B = 0.91  (median ideal-A, n=65)
---   depth 4   (category level)     A =   9,000  B = 0.91  (median ideal-A, n=71)
---   depth 5–6 (sub-category)       A = 114,000  B = 0.88  (median ideal-A, n=16)
---   depth 7–8 (deep leaf)          A =   4,000  B = 0.84  (no calibration data)
---   depth 9+  (very deep leaf)     A =     600  B = 0.80  (no calibration data)80  (no calibration data)
+-- Per-category overrides (matched via full_path LIKE, CASE order = priority):
+--   Hydroponics                   A =   5,000  (n=39,  ratio vs depth-fallback 0.13×)
+--   Office Furniture              A =  15,000  (n=7,   ratio 0.39×)
+--   Yoga                          A =  40,000  (n=17)
+--   Pet > Cats                    A =  40,000  (n=38)
+--   Baby Nursery                  A =  45,000  (n=15)
+--   Home Office Furniture         A =  45,000  (n=21)
+--   Small Appliances              A =  55,000  (n=21)
+--   Outdoor Lighting              A =  55,000  (n=29)
+--   Pet > Dogs > Training         A =  60,000  (n=27)
+--   Novelty Lighting              A =  90,000  (n=45)
+--   Pet > Dogs > Collars          A = 160,000  (n=21)
+--   Sports Nutrition              A = 110,000  (n=30)
+--   MP3 Accessories               A = 190,000  (n=15)
+--   Portable Audio & Video        A =  85,000  (n=15, fallback within Electronics)
+--   Skin Care                     A = 270,000  (n=14, approaching threshold)
+--   Phone Cases                   A = 480,000  (n=6,  depth-2 outlier)
+--
+-- Depth-based fallbacks (recalibrated 2026-04-08, n=433):
+--   depth 1   (root)              A = 295,000  B = 0.93  (rare; use depth-2 logic)
+--   depth 2   (broad sub-dept)    A = 295,000  B = 0.93  (median ideal-A, n=53)
+--   depth 3   (department level)  A = 115,000  B = 0.91  (median ideal-A, n=150)
+--   depth 4   (category level)    A =  40,000  B = 0.91  (median ideal-A, n=164; was 9k)
+--   depth 5–6 (sub-category)      A =  90,000  B = 0.88  (median ideal-A, n=59)
+--   depth 7–8 (deep leaf)         A =   4,000  B = 0.84  (no calibration data)
+--   depth 9+  (very deep leaf)    A =     600  B = 0.80  (no calibration data)
 --
 -- ── Review velocity ─────────────────────────────────────────────────────────
 -- monthly_units_review = review_count / age_months / review_rate
---   review_rate = 0.037  (recalibrated 2026-04-08; back-solved from n=140 matched
---                         Zoof products: median 3.72%, P25=2.25%, P75=7.54%)
---   By keyword: electric candles 3.04%, hydroponic 4.51%, cat scratching 5.86%,
---               portable charger 1.54%  — 0.037 is the empirical overall median.
---   Note: rate varies ~4× across categories (Electronics ~1.5%, Pet ~6%).
---   Per-category rates are the logical next improvement.
+--   review_rate = 0.033  (recalibrated 2026-04-08 from 14-keyword n=431 Zoof sample;
+--                         median 3.3%, P25=1.7%, P75=6.1%)
+--   By keyword: protein powder 1.0%, portable charger 1.7%, vitamin c 1.8%,
+--               phone case 2.4%, office chair 3.1%, led strip 2.8%, dog collar 2.9%,
+--               air fryer 3.5%, baby monitor 3.6%, hydroponics 4.6%,
+--               cat scratching 5.8%, yoga mat 6.7%, bluetooth speaker 8.9%
+--   Varies 9× across categories; depth-based note: depth 4 BSR fix is higher priority.
 --   Only computed when listing_date IS NOT NULL.
 --
 -- ── Blended weights (dynamic) ───────────────────────────────────────────────
@@ -108,18 +130,37 @@ with
         --
         -- Performance: uses the denormalized category_depth column +
         --   partial composite index (asin, category_depth ASC, rank DESC)
-        --   WHERE rank_type = 'best_seller'.  No join with amazon_categories needed.
+        --   WHERE rank_type = 'best_seller'. JOIN amazon_categories for per-category
+        --   bsr_a calibration (PK lookup, negligible overhead).
         select distinct
             on (pcr.asin) pcr.asin,
             pcr.rank as bsr_rank,
             pcr.category_depth as bsr_depth,
             case
-                when pcr.category_depth = 1 then 375000.0
-                when pcr.category_depth = 2 then 375000.0
-                when pcr.category_depth = 3 then 90000.0
-                when pcr.category_depth = 4 then 9000.0
-                when pcr.category_depth <= 6 then 114000.0
-                when pcr.category_depth <= 8 then 4000.0
+                -- ── Per-category overrides (Zoof n≥15, 2026-04-08) ──────────────────
+                -- Most-specific paths first; depth fallbacks at bottom.
+                when ac.full_path like 'Patio, Lawn & Garden%Hydroponics%'                    then   5000.0
+                when ac.full_path like 'Office Products > Office Furniture%'                  then  15000.0
+                when ac.full_path like 'Sports & Outdoors > Exercise & Fitness > Yoga%'       then  40000.0
+                when ac.full_path like 'Pet Supplies > Cats%'                                 then  40000.0
+                when ac.full_path like 'Baby Products > Nursery%'                             then  45000.0
+                when ac.full_path like 'Home & Kitchen > Furniture > Home Office%'            then  45000.0
+                when ac.full_path like 'Home & Kitchen > Kitchen%Small Appliances%'           then  55000.0
+                when ac.full_path like 'Tools & Home Improvement > Lighting%Outdoor%'         then  55000.0
+                when ac.full_path like 'Pet Supplies > Dogs > Training%'                      then  60000.0
+                when ac.full_path like 'Tools & Home Improvement > Lighting%Novelty%'         then  90000.0
+                when ac.full_path like 'Health & Household > Diet & Sports Nutrition%'        then 110000.0
+                when ac.full_path like 'Pet Supplies > Dogs > Collars%'                       then 160000.0
+                when ac.full_path like 'Electronics > Portable Audio & Video > MP3%'          then 190000.0
+                when ac.full_path like 'Health & Household > Personal Care > Skin Care%'      then 270000.0
+                when ac.full_path like 'Electronics > Portable Audio & Video%'                then  85000.0
+                when ac.full_path like 'Cell Phones & Accessories > Cases%'                   then 480000.0
+                -- ── Depth-based fallbacks (recalibrated 2026-04-08) ─────────────────
+                when pcr.category_depth <= 2 then 295000.0
+                when pcr.category_depth  = 3 then 115000.0
+                when pcr.category_depth  = 4 then  40000.0
+                when pcr.category_depth <= 6 then  90000.0
+                when pcr.category_depth <= 8 then   4000.0
                 else 600.0
             end as bsr_a,
             case
@@ -130,6 +171,7 @@ with
                 else 0.80
             end as bsr_b
         from public.product_category_ranks pcr
+        join public.amazon_categories ac on ac.id = pcr.category_id
         where
             pcr.rank_type = 'best_seller'
             and pcr.rank > 0
@@ -268,7 +310,7 @@ with
                 when b.product_age_months is not null
                 and b.review_count is not null
                 and b.review_count > 0 then round(
-                    b.review_count::float / b.product_age_months / 0.037
+                    b.review_count::float / b.product_age_months / 0.033
                 )::integer
                 else null
             end as monthly_units_review
