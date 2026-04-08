@@ -52,6 +52,12 @@ function getRegionEndpoint(marketplaceId: string): string {
 // Raw response shape used only within getCatalogItemParsed
 interface RawCatalogResponse {
     asin: string
+    relationships?: Array<{
+        marketplaceId?: string
+        type?: string
+        childAsins?: string[]
+        identifiers?: Array<{ type?: string; identifier?: string }>
+    }>
     summaries?: Array<{
         marketplaceId: string
         itemName?: string
@@ -117,6 +123,7 @@ export async function getCatalogItemParsed(
         'images',
         'productTypes',
         'salesRanks',
+        'relationships',
     ].join(',')
 
     const url =
@@ -184,6 +191,15 @@ export async function getCatalogItemParsed(
         rank: r.rank,
     }))
 
+    // ── Relationships — extract parent ASIN for variation children ────────────
+    const relationshipsEntry = raw.relationships?.find(
+        (r) => r.marketplaceId === marketplaceId || !r.marketplaceId,
+    )
+    const parent_asin =
+        relationshipsEntry?.type === 'VARIATION'
+            ? (relationshipsEntry.identifiers?.find((id) => id.type === 'ASIN')?.identifier ?? null)
+            : null
+
     return {
         title: summary?.itemName ?? null,
         brand: summary?.brand ?? null,
@@ -206,6 +222,7 @@ export async function getCatalogItemParsed(
         pkg_height_cm: pkgDims.height_cm,
         pkg_weight_kg: pkgDims.weight_kg,
 
+        parent_asin,
         category_ranks,
         listing_date: (() => {
             const raw_val = (attrs['product_site_launch_date'] ?? [])[0]?.value

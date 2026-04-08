@@ -434,6 +434,9 @@ export interface CatalogItemResult {
     // Date the listing first appeared on Amazon
     listing_date: string | null
 
+    // Parent ASIN when this ASIN is a variation child (type = 'VARIATION' in relationships)
+    parent_asin: string | null
+
     // All category ranks this ASIN appears in
     category_ranks: Array<{ classificationId: string; title: string; rank: number }>
 }

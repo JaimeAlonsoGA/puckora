@@ -7,10 +7,13 @@ export { parseAsin } from './parse-asin'
 export {
 	FBA_TIER,
 	FBA_TIER_VALUES,
+	FULFILLMENT_TYPE,
+	FULFILLMENT_TYPE_VALUES,
 	buildFbaTierDistribution,
 	getFbaTier,
+	getFulfillmentType,
 } from './fba-tiers'
-export type { FbaTier, FbaTierItem } from './fba-tiers'
+export type { FbaTier, FbaTierItem, FulfillmentType } from './fba-tiers'
 export {
 	formatCompactMoney,
 	formatCount,

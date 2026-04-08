@@ -77,6 +77,8 @@ export const amazonProducts = pgTable('amazon_products', {
     pkg_width_cm: real('pkg_width_cm'),
     pkg_height_cm: real('pkg_height_cm'),
     pkg_weight_kg: real('pkg_weight_kg'),
+    // Variation hierarchy
+    parent_asin: text('parent_asin'),
     // Fees
     fba_fee: real('fba_fee'),
     referral_fee: real('referral_fee'),

@@ -69,6 +69,7 @@ export function enrichAsin(
         referral_fee: feeResult?.referral_fee ?? null,
 
         listing_date: catalog?.listing_date ?? null,
+        parent_asin: catalog?.parent_asin ?? null,
 
         scrape_status: catalog
             ? SCRAPE_PRODUCT_STATUS.ENRICHED
