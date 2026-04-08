@@ -45,32 +45,32 @@ drop function if exists public.extract_asin_age_months(text);
 -- ── BSR power law ──────────────────────────────────────────────────────────
 -- monthly_units_bsr = A × canonical_rank^(-B)
 --
--- KEY CHANGE 2026-04-07: the power law now uses a single "canonical rank"
--- per ASIN — the shallowest available best_seller rank across all scraped
--- category pages for that product. This is the closest approximation to the
--- "main category BSR" that tools like Helium 10 and Zoof report from product
--- pages. Previously, each (asin, category_rank) row used its own rank
--- (often rank 1–10 in a narrow sub-category badge), which caused 5–14× sales
--- overestimates on sub-category page entries.
+-- CANONICAL RANK CONVENTION (2026-04-07):
+--   The canonical BSR is the HIGHEST-NUMBERED best_seller rank at the shallowest
+--   scraped depth. This matches Zoof/H10 which report the Amazon product-page BSR —
+--   which is the rank in the most competitive (largest) main category.
 --
--- Coefficients re-calibrated 2026-04-07 against 165-product Zoof ground-truth
--- sample across 4 keywords (cat scratching post, electric candles, hydroponics,
--- portable charger magnetic). Calibration method: median ideal-A per depth
--- using shallowest-best-seller rank strategy.
+--   Example: B06XCTP65H has depth-2 best_seller ranks in 3 categories:
+--     rank  2 in "Patio > Outdoor Décor"       ← small niche, not main BSR
+--     rank  5 in "Tools & Home > Lighting"      ← mid-size category
+--     rank 22 in "Home & Kitchen > Lighting"    ← main competitive category
+--   Zoof BSR = 22. Taking rank DESC (max at min depth) always matches.
 --
---   depth 1   (root dept)          A = 350,000  B = 0.93  (n < 5, unchanged)
---   depth 2   (broad sub-dept)     A = 300,000  B = 0.93  (was 350,000; −14%)
---   depth 3   (department level)   A =  90,000  B = 0.91  (was 120,000; −25%)
---   depth 4   (category level)     A =   9,000  B = 0.91  (was 120,000; −93%!)
---   depth 5–6 (sub-category)       A =  50,000  B = 0.88  (was 25,000; +100%)
---   depth 7–8 (deep leaf)          A =   4,000  B = 0.84  (unchanged)
---   depth 9+  (very deep leaf)     A =     600  B = 0.80  (unchanged)
+--   Previous approach used rank ASC (min = rank 2) which gave 157k estimate vs
+--   actual 33k sales — 4.7× overestimate purely from rank selection.
 --
---   Note on depth 4 vs 5–6: when the shallowest best_seller is at depth 4
---   the product is in a narrower niche than a product whose shallowest rank
---   is at depth 5 in a large electronics sub-tree. The coefficient asymmetry
---   reflects this: depth=5 in electronics is a larger market than depth=4
---   in "Pet Supplies > Cats > Cat Furniture".
+-- Coefficients calibrated 2026-04-07 against 165-product Zoof ground-truth
+-- sample (cat scratching post, electric candles, hydroponics, portable charger).
+-- Calibration method: median ideal-A = median(zoof_mo_sales × rank^B) per depth
+-- using max-rank-at-shallowest-depth strategy.
+--
+  --   depth 1   (root dept)          A = 375,000  B = 0.93  (alias of d2)
+  --   depth 2   (broad sub-dept)     A = 375,000  B = 0.93  (median ideal-A, n=7)
+  --   depth 3   (department level)   A =  90,000  B = 0.91  (median ideal-A, n=65)
+  --   depth 4   (category level)     A =   9,000  B = 0.91  (median ideal-A, n=71)
+  --   depth 5–6 (sub-category)       A = 114,000  B = 0.88  (median ideal-A, n=16)
+  --   depth 7–8 (deep leaf)          A =   4,000  B = 0.84  (no calibration data)
+  --   depth 9+  (very deep leaf)     A =     600  B = 0.80  (no calibration data)80  (no calibration data)
 --
 -- ── Review velocity ─────────────────────────────────────────────────────────
 -- monthly_units_review = review_count / age_months / review_rate
@@ -96,33 +96,44 @@ drop view if exists public.product_financials;
 create view public.product_financials as
 
 with canonical_bsr as (
-  -- Per-ASIN: the shallowest best_seller rank across all scraped category pages.
-  -- This approximates the "main category BSR" used by tools like Helium 10 and Zoof.
-  -- Ordered by depth ASC, then rank ASC so the broadest, lowest-number rank wins.
+  -- Per-ASIN: the HIGHEST-NUMBERED best_seller rank at the shallowest scraped depth.
+  --
+  -- Rationale (discovered 2026-04-07 from Zoof BSR cross-check):
+  --   A product like B06XCTP65H has three depth-2 best_seller entries:
+  --     rank 2  in "Patio > Outdoor Décor"           (niche side-category)
+  --     rank 5  in "Tools & Home > Lighting"          (mid-size category)
+  --     rank 22 in "Home & Kitchen > Lighting"        (main, most competitive)
+  --   Zoof reports BSR = 22. Taking rank DESC (highest number = most competitive
+  --   category at shallowest depth) consistently matches the product-page BSR.
+  --
+  -- Performance: uses the denormalized category_depth column +
+  --   partial composite index (asin, category_depth ASC, rank DESC)
+  --   WHERE rank_type = 'best_seller'.  No join with amazon_categories needed.
   select distinct on (pcr.asin)
     pcr.asin,
     pcr.rank                              as bsr_rank,
+    pcr.category_depth                    as bsr_depth,
     case
-      when ac.depth  = 1 then 350000.0
-      when ac.depth  = 2 then 300000.0
-      when ac.depth  = 3 then  90000.0
-      when ac.depth  = 4 then   9000.0
-      when ac.depth <= 6 then  50000.0
-      when ac.depth <= 8 then   4000.0
-      else                        600.0
+      when pcr.category_depth  = 1 then 375000.0
+      when pcr.category_depth  = 2 then 375000.0
+      when pcr.category_depth  = 3 then  90000.0
+      when pcr.category_depth  = 4 then   9000.0
+      when pcr.category_depth <= 6 then 114000.0
+      when pcr.category_depth <= 8 then   4000.0
+      else                                  600.0
     end                                   as bsr_a,
     case
-      when ac.depth <= 2 then 0.93
-      when ac.depth <= 4 then 0.91
-      when ac.depth <= 6 then 0.88
-      when ac.depth <= 8 then 0.84
-      else                    0.80
+      when pcr.category_depth <= 2 then 0.93
+      when pcr.category_depth <= 4 then 0.91
+      when pcr.category_depth <= 6 then 0.88
+      when pcr.category_depth <= 8 then 0.84
+      else                              0.80
     end                                   as bsr_b
   from public.product_category_ranks pcr
-  join public.amazon_categories ac on ac.id = pcr.category_id
   where pcr.rank_type = 'best_seller'
     and pcr.rank > 0
-  order by pcr.asin, ac.depth asc, pcr.rank asc
+    and pcr.category_depth is not null
+  order by pcr.asin, pcr.category_depth asc, pcr.rank desc  -- max rank = most competitive
 ),
 base as (
   select
@@ -175,11 +186,11 @@ base as (
     -- Fall back to this row's rank/depth when no best_seller data exists for this ASIN.
     coalesce(cb.bsr_rank, pcr.rank)       as bsr_rank,
     coalesce(cb.bsr_a, case
-      when ac.depth  = 1 then 350000.0
-      when ac.depth  = 2 then 300000.0
+      when ac.depth  = 1 then 375000.0
+      when ac.depth  = 2 then 375000.0
       when ac.depth  = 3 then  90000.0
       when ac.depth  = 4 then   9000.0
-      when ac.depth <= 6 then  50000.0
+      when ac.depth <= 6 then 114000.0
       when ac.depth <= 8 then   4000.0
       else                        600.0
     end)                                  as bsr_a,
@@ -233,16 +244,16 @@ blended as (
     case
       when e.monthly_units_review is null                                    then 1.00
       when e.review_count < 20                                               then 0.90
-      when e.review_count >= 100 and e.product_age_months is not null        then 0.20
+      when e.review_count >= 100 and e.product_age_months is not null        then 0.35
       when e.bsr_rank > 5000                                                 then 0.30
-      else                                                                        0.40
+      else                                                                        0.55
     end as w_bsr,
     case
       when e.monthly_units_review is null                                    then 0.00
       when e.review_count < 20                                               then 0.10
-      when e.review_count >= 100 and e.product_age_months is not null        then 0.80
+      when e.review_count >= 100 and e.product_age_months is not null        then 0.65
       when e.bsr_rank > 5000                                                 then 0.70
-      else                                                                        0.60
+      else                                                                        0.45
     end as w_review,
     case
       when e.fba_fee is not null
