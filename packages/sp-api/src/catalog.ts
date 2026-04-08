@@ -53,10 +53,12 @@ function getRegionEndpoint(marketplaceId: string): string {
 interface RawCatalogResponse {
     asin: string
     relationships?: Array<{
-        marketplaceId?: string
-        type?: string
-        childAsins?: string[]
-        identifiers?: Array<{ type?: string; identifier?: string }>
+        marketplaceId: string
+        relationships: Array<{
+            type: string
+            childAsins?: string[]
+            parentAsins?: string[]
+        }>
     }>
     summaries?: Array<{
         marketplaceId: string
@@ -192,13 +194,12 @@ export async function getCatalogItemParsed(
     }))
 
     // ── Relationships — extract parent ASIN for variation children ────────────
-    const relationshipsEntry = raw.relationships?.find(
-        (r) => r.marketplaceId === marketplaceId || !r.marketplaceId,
-    )
+    // SP-API shape: relationships[]{marketplaceId, relationships[]{type, parentAsins?, childAsins?}}
+    const marketplaceRel = raw.relationships?.find((r) => r.marketplaceId === marketplaceId)
     const parent_asin =
-        relationshipsEntry?.type === 'VARIATION'
-            ? (relationshipsEntry.identifiers?.find((id) => id.type === 'ASIN')?.identifier ?? null)
-            : null
+        marketplaceRel?.relationships
+            .find((r) => r.type === 'VARIATION' && (r.parentAsins?.length ?? 0) > 0)
+            ?.parentAsins?.[0] ?? null
 
     return {
         title: summary?.itemName ?? null,
@@ -477,6 +478,7 @@ export function parseCatalogItem(
         pkg_width_cm: pkgDims.width_cm,
         pkg_height_cm: pkgDims.height_cm,
         pkg_weight_kg: pkgDims.weight_kg,
+        parent_asin: null,
         category_ranks,
         listing_date,
     }
