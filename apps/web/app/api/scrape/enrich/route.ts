@@ -162,28 +162,9 @@ export async function POST(req: NextRequest) {
         )
         .filter((e): e is string => e !== null)
 
-    // 5. Mark the job done (or failed if blocked) ----------------------------
-    try {
-        const now = new Date().toISOString()
-        await updateScrapeJob(adminClient, result.job_id, {
-            status: result.blocked ? SCRAPE_JOB_STATUS.FAILED : SCRAPE_JOB_STATUS.DONE,
-            error: result.blocked
-                ? API_ERROR_MESSAGES.SCRAPER_BLOCKED
-                : upsertErrors.length > 0
-                    ? `${upsertErrors.length} upsert error(s): ${upsertErrors.slice(0, 3).join('; ')}`
-                    : null,
-            result: toScrapeResultJson(result),
-            executor: result.executor,
-            completed_at: now,
-        })
-    } catch (err) {
-        // Log but don't fail the response — listings were already saved
-        console.error('[scrape/enrich] updateScrapeJob failed:', err)
-    }
-
-    // 6. Link listings to keyword context -------------------------------------
-    // If this scrape was triggered by a keyword search, link each ASIN to the
-    // keyword via amazon_keyword_products. Conflicts are silently ignored.
+    // 5. Link listings to keyword context -------------------------------------
+    // Must happen BEFORE marking the job done so that when the Realtime UPDATE
+    // fires on the client the keyword–product associations already exist.
     if (!result.blocked && result.listings.length > 0) {
         try {
             const keywordRow = await getKeywordForJob(db, adminClient, result.job_id)
@@ -207,19 +188,61 @@ export async function POST(req: NextRequest) {
         }
     }
 
+    // 6. Mark the job done (or failed if blocked) ----------------------------
+    // Fires the Supabase Realtime UPDATE that triggers the client to refetch
+    // products — keyword links are already in place from the step above.
+    try {
+        const now = new Date().toISOString()
+        await updateScrapeJob(adminClient, result.job_id, {
+            status: result.blocked ? SCRAPE_JOB_STATUS.FAILED : SCRAPE_JOB_STATUS.DONE,
+            error: result.blocked
+                ? API_ERROR_MESSAGES.SCRAPER_BLOCKED
+                : upsertErrors.length > 0
+                    ? `${upsertErrors.length} upsert error(s): ${upsertErrors.slice(0, 3).join('; ')}`
+                    : null,
+            result: toScrapeResultJson(result),
+            executor: result.executor,
+            completed_at: now,
+        })
+    } catch (err) {
+        // Log but don't fail the response — listings were already saved
+        console.error('[scrape/enrich] updateScrapeJob failed:', err)
+    }
+
     // 7. Background SP-API enrichment ----------------------------------------
     // Fire-and-forget: enrich fresh ASINs without blocking the response.
-    // Pass the full listings so the pipeline has rank + price data for fees.
+    // When enrichment finishes, update the job result with `enriched_at` so
+    // the client Realtime subscription fires one final product refetch and can
+    // stop polling.
     if (!result.blocked && result.listings.length > 0) {
         const listings = result.listings
+        const jobId = result.job_id
+        const baseResult = toScrapeResultJson(result)
         after(async () => {
+            // SP-API enrichment — adds fees, weights, and financials to each ASIN.
             try {
                 const { enrichAsinBatch } = await import('@/integrations/data-pipeline/enrich')
-                const { syncAmazonProductVectorsDownstream } = await import('@/integrations/data-pipeline/vector-sync')
                 await enrichAsinBatch(db, listings)
-                await syncAmazonProductVectorsDownstream()
             } catch (err) {
                 console.error('[scrape/enrich] SP-API enrichment failed:', err)
+            }
+
+            // Always write enriched_at so the client can stop polling, regardless
+            // of whether SP-API enrichment or vector sync succeeded.
+            try {
+                await updateScrapeJob(adminClient, jobId, {
+                    result: { ...(baseResult as object), enriched_at: new Date().toISOString() },
+                })
+            } catch (err) {
+                console.error('[scrape/enrich] Failed to set enriched_at on job:', err)
+            }
+
+            // Vector index update is best-effort — must not block the enriched_at signal.
+            try {
+                const { syncAmazonProductVectorsDownstream } = await import('@/integrations/data-pipeline/vector-sync')
+                await syncAmazonProductVectorsDownstream()
+            } catch (err) {
+                console.error('[scrape/enrich] Vector sync failed:', err)
             }
         })
     }

@@ -14,7 +14,7 @@ import {
 
 export function SearchMetricCardSkeleton() {
     return (
-        <SkeletonPanel className="rounded-none p-3">
+        <SkeletonPanel className="p-3">
             <SkeletonBlock className="mb-3 h-3.5 w-24" />
             <SkeletonBlock className="mb-2 h-6 w-20" />
             <SkeletonBlock className="h-3 w-16" />
@@ -143,15 +143,20 @@ export function SearchOverviewSkeleton() {
                         <SkeletonBlock className="h-4 w-20" />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2">
-                        {Array.from({ length: 3 }).map((_, index) => (
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
+                        {Array.from({ length: 5 }).map((_, index) => (
                             <SearchMetricCardSkeleton key={index} />
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-[1fr_1.4fr] gap-2">
-                        <SearchDataCardSkeleton rows={4} />
-                        <SearchDataCardSkeleton rows={5} />
+                    <div className="flex flex-row gap-2">
+                        <div className="flex-3 min-w-0">
+                            <SearchDataCardSkeleton rows={4} />
+                        </div>
+                        <div className="flex-2 min-w-0 flex flex-col gap-2">
+                            <SearchDataCardSkeleton rows={3} />
+                            <SearchDataCardSkeleton rows={3} />
+                        </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2">

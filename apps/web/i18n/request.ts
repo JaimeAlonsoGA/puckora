@@ -16,7 +16,7 @@ export default getRequestConfig(async () => {
 
     // Load each namespace separately so new namespaces can be added without
     // touching this file — just drop a new JSON file in the locale folder.
-    const [common, settings, auth, errors, search, pucki, product] = await Promise.all([
+    const [common, settings, auth, errors, search, pucki, product, tutorial] = await Promise.all([
         import(`./messages/${locale}/common.json`).then((m) => m.default),
         import(`./messages/${locale}/settings.json`).then((m) => m.default),
         import(`./messages/${locale}/auth.json`).then((m) => m.default),
@@ -24,11 +24,12 @@ export default getRequestConfig(async () => {
         import(`./messages/${locale}/search.json`).then((m) => m.default),
         import(`./messages/${locale}/pucki.json`).then((m) => m.default),
         import(`./messages/${locale}/product.json`).then((m) => m.default),
+        import(`./messages/${locale}/tutorial.json`).then((m) => m.default),
     ])
 
     return {
         locale,
         timeZone: 'UTC',
-        messages: { ...common, ...settings, ...auth, ...errors, ...search, ...pucki, ...product },
+        messages: { ...common, ...settings, ...auth, ...errors, ...search, ...pucki, ...product, ...tutorial },
     }
 })

@@ -4,7 +4,12 @@ import { coerceNumber } from './number'
 export function formatMoney(value: number | string | null | undefined): string {
     const numericValue = coerceNumber(value)
     if (numericValue == null) return '—'
-    return `$${numericValue.toFixed(2)}`
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(numericValue)
 }
 
 export function formatCompactMoney(value: number | string | null | undefined): string {

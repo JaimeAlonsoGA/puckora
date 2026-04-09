@@ -33,8 +33,13 @@ function isLoopbackUrl(value: string): boolean {
     }
 }
 
-function isConnectionRefusedError(error: unknown): error is NodeJS.ErrnoException {
-    return !!error && typeof error === 'object' && 'code' in error && error.code === 'ECONNREFUSED'
+// ECONNREFUSED = proxy port not listening; ENETUNREACH = proxy up but WireGuard tunnel broken;
+// ETIMEDOUT    = proxy accepted connection but tunnel timed out.
+// All three mean "proxy is not forwarding" and should trigger the local-proxy fallback path.
+function isProxyUnreachableError(error: unknown): error is NodeJS.ErrnoException {
+    if (!error || typeof error !== 'object' || !('code' in error)) return false
+    const code = (error as NodeJS.ErrnoException).code
+    return code === 'ECONNREFUSED' || code === 'ENETUNREACH' || code === 'ETIMEDOUT'
 }
 
 function warnProxyFallback(proxyUrl: string, databaseUrl: string) {
@@ -63,7 +68,13 @@ function normalizeConnectionUrl(url: string): string {
 }
 
 function createPool(databaseUrl: string): Pool {
-    return new Pool({ connectionString: normalizeConnectionUrl(databaseUrl), ssl: false })
+    return new Pool({
+        connectionString: normalizeConnectionUrl(databaseUrl),
+        ssl: false,
+        max: 10,
+        connectionTimeoutMillis: 10_000,
+        options: '--statement_timeout=30000',
+    })
 }
 
 function createDone(client: PoolClient) {
@@ -85,9 +96,20 @@ export function createDb(databaseUrl: string): PgDb {
             try {
                 return await originalQuery(...args)
             } catch (error) {
-                if (!isConnectionRefusedError(error)) throw error
+                if (!isProxyUnreachableError(error)) throw error
                 warnProxyFallback(resolvedUrl, databaseUrl)
-                return fallbackPool.query(...args)
+                try {
+                    return await fallbackPool.query(...args)
+                } catch (fallbackError) {
+                    if (isProxyUnreachableError(fallbackError)) {
+                        throw new Error(
+                            `[db] Catalog database is unreachable. ` +
+                            `Ensure the Fly proxy is running: fly proxy --app puckora-db 15432:5432. ` +
+                            `(proxy=${resolvedUrl}, direct=${databaseUrl})`,
+                        )
+                    }
+                    throw fallbackError
+                }
             }
         }) as Pool['query']
 
@@ -107,7 +129,7 @@ export function createDb(databaseUrl: string): PgDb {
                 originalConnect()
                     .then((client) => callback(undefined, client, createDone(client)))
                     .catch((error) => {
-                        if (!isConnectionRefusedError(error)) {
+                        if (!isProxyUnreachableError(error)) {
                             callback(error as Error, undefined, () => undefined)
                             return
                         }
@@ -120,7 +142,7 @@ export function createDb(databaseUrl: string): PgDb {
             }
 
             return originalConnect().catch((error) => {
-                if (!isConnectionRefusedError(error)) throw error
+                if (!isProxyUnreachableError(error)) throw error
                 return fallbackConnect()
             })
         }

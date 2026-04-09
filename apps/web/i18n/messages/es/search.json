@@ -97,10 +97,15 @@
         },
         "overview": {
             "productsCount": "productos",
+            "totalResultsCount": "en Amazon",
+            "sampledCount": "muestreados",
             "seeAll": "Ver los {count} productos →",
             "newListingsOnly": "Solo nuevos ({count})",
             "priceRangeOnly": "Solo rango {range}",
-            "categoriesTitle": "Principales categorías"
+            "categoriesTitle": "Principales categorías",
+            "topProductsCard": {
+                "title": "Mejores productos por ranking"
+            }
         },
         "price": {
             "card": "Precio mediano",
@@ -128,6 +133,24 @@
             "tierSpecialOversize": "Sobredimensionado Especial",
             "tierUnknown": "Desconocido"
         },
+        "revenue": {
+            "card": "Ingresos est.",
+            "tooltipTitle": "Ingresos mensuales medianos",
+            "tooltip": "Ingresos mensuales estimados medianos entre todos los productos analizados. Basado en señales de rango de ventas de SP-API.",
+            "average": "Promedio: {value}"
+        },
+        "rating": {
+            "card": "Valoración",
+            "tooltipTitle": "Valoración media",
+            "tooltip": "Valoración media en los productos analizados. Una puntuación constante de 4+ indica un buen encaje producto-mercado.",
+            "outOf": "sobre 5 estrellas"
+        },
+        "reviews": {
+            "card": "Barrera de reseñas",
+            "tooltipTitle": "Reseñas medianas",
+            "tooltip": "Número mediano de reseñas entre los productos analizados. Más reseñas indica una barrera más difícil de superar.",
+            "averageRange": "Media: {n}"
+        },
         "weight": {
             "stat": {
                 "card": "Peso mediano",
@@ -142,11 +165,20 @@
                 "tooltip": "Distribución del peso del paquete entre los productos analizados. Los grupos más ligeros suelen tener una economía FBA más simple."
             }
         },
+        "images": {
+            "card": "Muestra del catálogo"
+        },
+        "certs": {
+            "card": "Certificaciones",
+            "tooltipTitle": "Certificaciones requeridas",
+            "tooltip": "Certificaciones encontradas en las categorías de productos de este nicho. Verifica los requisitos actuales en Seller Central antes de abastecerte."
+        },
         "brands": {
             "card": "Distribución por marca",
             "tooltipTitle": "Concentración de marcas",
             "tooltip": "Muestra cuánto mercado controlan las marcas principales. Menos marcas dominantes suele significar un moat competitivo más estrecho.",
-            "summary": "Cuota de las principales marcas entre {count} marcas competidoras"
+            "summary": "Cuota de las principales marcas entre {count} marcas competidoras",
+            "marketShare": "Cuota de mercado"
         },
         "products": {
             "colProduct": "Producto",
@@ -269,6 +301,9 @@
             "toysGames": "Juguetes y juegos",
             "officeProducts": "Oficina",
             "automotive": "Automoción"
+        },
+        "relatedKeywords": {
+            "context": "Búsquedas relacionadas"
         }
     }
 }

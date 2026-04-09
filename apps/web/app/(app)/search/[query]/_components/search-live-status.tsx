@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl'
 import { Alert } from '@puckora/ui'
 import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
 import type { ScrapeJob } from '@puckora/types'
-import { ACTIVE_JOB_STATUSES } from './search-view-helpers'
 import type { SearchDataAvailability } from '@/types/search'
 
 interface SearchLiveStatusProps {
@@ -17,23 +16,9 @@ export function SearchLiveStatus({ job, availability }: SearchLiveStatusProps) {
 
     if (!job) return null
 
-    const isRunning = ACTIVE_JOB_STATUSES.has(job.status)
-
-    if (isRunning && !availability.hasListings) {
-        return (
-            <Alert variant="info" title={t('liveStatus.collectingTitle')}>
-                {t('liveStatus.collectingBody')}
-            </Alert>
-        )
-    }
-
-    if (isRunning && availability.hasListings && !availability.hasFinancials) {
-        return (
-            <Alert variant="info" title={t('liveStatus.partialTitle')}>
-                {t('liveStatus.partialBody')}
-            </Alert>
-        )
-    }
+    // Suppress informational alerts while the scraper is running — the products
+    // view (with skeleton rows) communicates progress visually.
+    // Only surface actionable states: failed job or partial data warning.
 
     if (job.status === SCRAPE_JOB_STATUS.FAILED) {
         return (

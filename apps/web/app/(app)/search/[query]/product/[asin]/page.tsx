@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { getCachedUser } from '@/server/users'
 import { getCachedProductByAsin } from '@/server/amazon-product'
+import { fromSearchSlug } from '@/constants/routes'
 import { ProductShell } from './_components/product-shell'
 
 interface ProductPageProps {
@@ -15,7 +16,7 @@ interface ProductPageProps {
  */
 export default async function ProductPage({ params }: ProductPageProps) {
     const { query, asin } = await params
-    const decodedQuery = decodeURIComponent(query)
+    const decodedQuery = fromSearchSlug(query)
 
     return (
         <Suspense fallback={<div className="flex-1 animate-pulse bg-muted/30" />}>

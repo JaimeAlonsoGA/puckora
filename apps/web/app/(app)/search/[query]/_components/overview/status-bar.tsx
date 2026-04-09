@@ -11,22 +11,31 @@ import { AnimatedSpanNumber } from '../search-live-animations'
 
 interface StatusBarProps {
     job: ScrapeJob | null
-    totalProducts: number
+    sampledCount: number
+    totalResults: number | null
     isJobActive: boolean
     isRefreshing: boolean
     availability: SearchDataAvailability
 }
 
-export function StatusBar({ job, totalProducts, isJobActive, isRefreshing, availability }: StatusBarProps) {
+export function StatusBar({ job, sampledCount, totalResults, isJobActive, isRefreshing, availability }: StatusBarProps) {
     const t = useTranslations('search')
     return (
         <>
             <Stack direction="row" wrap align="center" gap="2">
+                {(sampledCount > 0 || !isJobActive) && (
+                    <Caption as="span" className="text-muted-foreground">
+                        <AnimatedSpanNumber value={sampledCount} formatter={formatCount} />
+                        {' '}{t('overview.sampledCount')}
+                    </Caption>
+                )}
                 <SearchQueryIndicator isJobActive={isJobActive} isRefreshing={isRefreshing} />
-                <Caption as="span" className="text-muted-foreground">
-                    <AnimatedSpanNumber value={totalProducts} formatter={formatCount} />
-                    {' '}{t('overview.productsCount')}
-                </Caption>
+                {totalResults != null && (
+                    <Caption as="span" className="text-muted-foreground">
+                        <AnimatedSpanNumber value={totalResults} formatter={formatCount} />
+                        {' '}{t('overview.totalResultsCount')}
+                    </Caption>
+                )}
             </Stack>
             <SearchLiveStatus job={job} availability={availability} />
         </>

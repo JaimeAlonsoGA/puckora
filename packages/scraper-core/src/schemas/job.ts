@@ -92,6 +92,7 @@ export const ScrapedListingSchema = z.object({
     rating: z.number().min(1).max(5).nullable(),
     review_count: z.number().int().nullable(),
     product_url: z.string(),
+    bought_past_month: z.number().int().nullable().default(null),
 })
 
 export const ScrapeResultSchema = z.object({

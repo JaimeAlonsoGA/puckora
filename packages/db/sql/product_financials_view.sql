@@ -117,68 +117,10 @@ drop view if exists public.product_financials;
 create view public.product_financials as
 
 with
-    canonical_bsr as (
-        -- Per-ASIN: the HIGHEST-NUMBERED best_seller rank at the shallowest scraped depth.
-        --
-        -- Rationale (discovered 2026-04-07 from Zoof BSR cross-check):
-        --   A product like B06XCTP65H has three depth-2 best_seller entries:
-        --     rank 2  in "Patio > Outdoor Décor"           (niche side-category)
-        --     rank 5  in "Tools & Home > Lighting"          (mid-size category)
-        --     rank 22 in "Home & Kitchen > Lighting"        (main, most competitive)
-        --   Zoof reports BSR = 22. Taking rank DESC (highest number = most competitive
-        --   category at shallowest depth) consistently matches the product-page BSR.
-        --
-        -- Performance: uses the denormalized category_depth column +
-        --   partial composite index (asin, category_depth ASC, rank DESC)
-        --   WHERE rank_type = 'best_seller'. JOIN amazon_categories for per-category
-        --   bsr_a calibration (PK lookup, negligible overhead).
-        select distinct
-            on (pcr.asin) pcr.asin,
-            pcr.rank as bsr_rank,
-            pcr.category_depth as bsr_depth,
-            case
-                -- ── Per-category overrides (Zoof n≥15, 2026-04-08) ──────────────────
-                -- Most-specific paths first; depth fallbacks at bottom.
-                when ac.full_path like 'Patio, Lawn & Garden%Hydroponics%'                    then   5000.0
-                when ac.full_path like 'Office Products > Office Furniture%'                  then  15000.0
-                when ac.full_path like 'Sports & Outdoors > Exercise & Fitness > Yoga%'       then  40000.0
-                when ac.full_path like 'Pet Supplies > Cats%'                                 then  40000.0
-                when ac.full_path like 'Baby Products > Nursery%'                             then  45000.0
-                when ac.full_path like 'Home & Kitchen > Furniture > Home Office%'            then  45000.0
-                when ac.full_path like 'Home & Kitchen > Kitchen%Small Appliances%'           then  55000.0
-                when ac.full_path like 'Tools & Home Improvement > Lighting%Outdoor%'         then  55000.0
-                when ac.full_path like 'Pet Supplies > Dogs > Training%'                      then  60000.0
-                when ac.full_path like 'Tools & Home Improvement > Lighting%Novelty%'         then  90000.0
-                when ac.full_path like 'Health & Household > Diet & Sports Nutrition%'        then 110000.0
-                when ac.full_path like 'Pet Supplies > Dogs > Collars%'                       then 160000.0
-                when ac.full_path like 'Electronics > Portable Audio & Video > MP3%'          then 190000.0
-                when ac.full_path like 'Health & Household > Personal Care > Skin Care%'      then 270000.0
-                when ac.full_path like 'Electronics > Portable Audio & Video%'                then  85000.0
-                when ac.full_path like 'Cell Phones & Accessories > Cases%'                   then 480000.0
-                -- ── Depth-based fallbacks (recalibrated 2026-04-08) ─────────────────
-                when pcr.category_depth <= 2 then 295000.0
-                when pcr.category_depth  = 3 then 115000.0
-                when pcr.category_depth  = 4 then  40000.0
-                when pcr.category_depth <= 6 then  90000.0
-                when pcr.category_depth <= 8 then   4000.0
-                else 600.0
-            end as bsr_a,
-            case
-                when pcr.category_depth <= 2 then 0.93
-                when pcr.category_depth <= 4 then 0.91
-                when pcr.category_depth <= 6 then 0.88
-                when pcr.category_depth <= 8 then 0.84
-                else 0.80
-            end as bsr_b
-        from public.product_category_ranks pcr
-        join public.amazon_categories ac on ac.id = pcr.category_id
-        where
-            pcr.rank_type = 'best_seller'
-            and pcr.rank > 0
-            and pcr.category_depth is not null
-        order by pcr.asin, pcr.category_depth asc, pcr.rank desc -- max rank = most competitive
-    ),
     base as (
+        -- canonical_bsr lookup is now a LATERAL join (correlated per p.asin) so the
+        -- planner uses a single index seek per product instead of a full 2.26M-row scan
+        -- over all best_seller ranks followed by a Merge Left Join.
         select
             p.asin,
             pcr.category_id,
@@ -246,9 +188,36 @@ with
             -- BSR rank and coefficients come from canonical_bsr (shallowest best_seller rank).
             -- Fall back to this row's rank/depth when no best_seller data exists for this ASIN.
             coalesce(cb.bsr_rank, pcr.rank) as bsr_rank,
-            coalesce(
-                cb.bsr_a,
-                case
+            case
+            -- canonical BSR exists: path overrides first, then calibrated depth fallbacks
+                when cb.bsr_rank is not null then case
+                -- ── Per-category overrides (Zoof n≥15, 2026-04-08) ───────────────
+                    when bsr_ac.full_path like 'Patio, Lawn & Garden%Hydroponics%' then 5000.0
+                    when bsr_ac.full_path like 'Office Products > Office Furniture%' then 15000.0
+                    when bsr_ac.full_path like 'Sports & Outdoors > Exercise & Fitness > Yoga%' then 40000.0
+                    when bsr_ac.full_path like 'Pet Supplies > Cats%' then 40000.0
+                    when bsr_ac.full_path like 'Baby Products > Nursery%' then 45000.0
+                    when bsr_ac.full_path like 'Home & Kitchen > Furniture > Home Office%' then 45000.0
+                    when bsr_ac.full_path like 'Home & Kitchen > Kitchen%Small Appliances%' then 55000.0
+                    when bsr_ac.full_path like 'Tools & Home Improvement > Lighting%Outdoor%' then 55000.0
+                    when bsr_ac.full_path like 'Pet Supplies > Dogs > Training%' then 60000.0
+                    when bsr_ac.full_path like 'Tools & Home Improvement > Lighting%Novelty%' then 90000.0
+                    when bsr_ac.full_path like 'Health & Household > Diet & Sports Nutrition%' then 110000.0
+                    when bsr_ac.full_path like 'Pet Supplies > Dogs > Collars%' then 160000.0
+                    when bsr_ac.full_path like 'Electronics > Portable Audio & Video > MP3%' then 190000.0
+                    when bsr_ac.full_path like 'Health & Household > Personal Care > Skin Care%' then 270000.0
+                    when bsr_ac.full_path like 'Electronics > Portable Audio & Video%' then 85000.0
+                    when bsr_ac.full_path like 'Cell Phones & Accessories > Cases%' then 480000.0
+                    -- ── Calibrated depth fallbacks (2026-04-08) ─────────────────────
+                    when cb.bsr_depth <= 2 then 295000.0
+                    when cb.bsr_depth = 3 then 115000.0
+                    when cb.bsr_depth = 4 then 40000.0
+                    when cb.bsr_depth <= 6 then 90000.0
+                    when cb.bsr_depth <= 8 then 4000.0
+                    else 600.0
+                end
+                -- no canonical BSR: fall back using this row's category depth
+                else case
                     when ac.depth = 1 then 375000.0
                     when ac.depth = 2 then 375000.0
                     when ac.depth = 3 then 90000.0
@@ -257,17 +226,23 @@ with
                     when ac.depth <= 8 then 4000.0
                     else 600.0
                 end
-            ) as bsr_a,
-            coalesce(
-                cb.bsr_b,
-                case
+            end as bsr_a,
+            case
+                when cb.bsr_rank is not null then case
+                    when cb.bsr_depth <= 2 then 0.93
+                    when cb.bsr_depth <= 4 then 0.91
+                    when cb.bsr_depth <= 6 then 0.88
+                    when cb.bsr_depth <= 8 then 0.84
+                    else 0.80
+                end
+                else case
                     when ac.depth <= 2 then 0.93
                     when ac.depth <= 4 then 0.91
                     when ac.depth <= 6 then 0.88
                     when ac.depth <= 8 then 0.84
                     else 0.80
                 end
-            ) as bsr_b,
+            end as bsr_b,
             (
                 p.product_type in (
                     'SHIRT',
@@ -292,7 +267,26 @@ with
             public.amazon_products p
             join public.product_category_ranks pcr on pcr.asin = p.asin
             join public.amazon_categories ac on ac.id = pcr.category_id
-            left join canonical_bsr cb on cb.asin = p.asin
+            -- LATERAL: one index seek per p.asin using partial composite index
+            -- (asin, category_depth ASC, rank DESC) WHERE rank_type = 'best_seller'.
+            -- LIMIT 1 on ORDER BY category_depth ASC, rank DESC picks the highest-numbered
+            -- rank at the shallowest depth — matching the product-page BSR (Zoof convention).
+            left join lateral (
+                select
+                    pcr2.rank as bsr_rank,
+                    pcr2.category_id as canonical_category_id,
+                    pcr2.category_depth as bsr_depth
+                from public.product_category_ranks pcr2
+                where
+                    pcr2.asin = p.asin
+                    and pcr2.rank_type = 'best_seller'
+                    and pcr2.rank > 0
+                    and pcr2.category_depth is not null
+                order by pcr2.category_depth asc, pcr2.rank desc
+                limit 1
+            ) cb on true
+            -- one-row PK lookup for the canonical BSR category (only for ASINs that have one)
+            left join public.amazon_categories bsr_ac on bsr_ac.id = cb.canonical_category_id
         where
             p.price is not null
             and p.price > 0

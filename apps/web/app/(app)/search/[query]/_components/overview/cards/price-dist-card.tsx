@@ -31,8 +31,6 @@ export function PriceDistCard({ stats, availability, className }: PriceDistCardP
                         key={bucket.range}
                         label={bucket.range}
                         value={bucket.pct}
-                        highlight={bucket.is_sweet}
-                        badge={bucket.is_sweet ? t('price.sweetSpot') : undefined}
                     />
                 ))}
             </BarChart>

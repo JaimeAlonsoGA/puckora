@@ -1,11 +1,13 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { DataCard, DualStat } from '@puckora/ui'
-import { formatCount, formatRating, type SearchOverviewStats } from '@puckora/utils'
+import { BarChart, BarChartRow, DataCard } from '@puckora/ui'
+import type { SearchOverviewStats } from '@puckora/utils'
 import type { SearchDataAvailability } from '@/types/search'
 import { SearchDataCardSkeleton } from '@/app/(app)/search/_skeletons/search-results-skeleton'
-import { AnimatedMonoNumber } from '../../search-live-animations'
+import { REVIEW_TIER_BADGE_CLASS } from '@/constants/search-tiers'
+import { useHoverTutorial } from '@/hooks/use-hover-tutorial'
+import { TUTORIAL_KEYS } from '@/constants/tutorial'
 
 interface ReviewsStatCardProps {
     stats: SearchOverviewStats
@@ -14,21 +16,32 @@ interface ReviewsStatCardProps {
 
 export function SocialSnapshotCard({ stats, availability }: ReviewsStatCardProps) {
     const t = useTranslations('search')
+    const tutorial = useHoverTutorial(TUTORIAL_KEYS.SOCIAL_STAT)
 
-    if (!availability.hasSignals) return <SearchDataCardSkeleton rows={2} />
+    if (!availability.hasSignals || stats.review_buckets.length === 0) {
+        return <SearchDataCardSkeleton rows={5} />
+    }
+
+    // Top-2 buckets by count get a tier-colored badge; rest stay muted
+    const sorted = [...stats.review_buckets].sort((a, b) => b.count - a.count)
+    const top2Ranges = new Set(sorted.slice(0, 2).map((b) => b.range))
 
     return (
         <DataCard
-            title={t('socials.card')}
-            tooltip={{ title: t('socials.tooltipTitle'), description: t('socials.tooltip') }}
+            title={t('reviews.card')}
+            {...tutorial}
         >
-            <DualStat
-                primaryValue={<AnimatedMonoNumber value={stats.median_review_count ?? null} formatter={formatCount} as="span" />}
-                secondaryValue={<AnimatedMonoNumber value={stats.avg_rating ?? null} formatter={formatRating} as="span" />}
-                primaryLabel={t('socials.medianReviews')}
-                secondaryLabel={t('socials.medianRating')}
-                subtitle={[t('socials.averageRange', { n: formatCount(stats.avg_review_count) })]}
-            />
+            <BarChart>
+                {stats.review_buckets.map((bucket) => (
+                    <BarChartRow
+                        key={bucket.range}
+                        label={bucket.range}
+                        value={bucket.pct}
+                        badge={bucket.tier}
+                        badgeClassName={top2Ranges.has(bucket.range) ? REVIEW_TIER_BADGE_CLASS[bucket.tier] : undefined}
+                    />
+                ))}
+            </BarChart>
         </DataCard>
     )
 }

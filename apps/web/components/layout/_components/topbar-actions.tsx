@@ -3,11 +3,12 @@
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Sun, Moon, Settings, LogOut } from 'lucide-react'
+import { Sun, Moon, Settings, LogOut, BookOpen } from 'lucide-react'
 import { DropdownMenu } from 'radix-ui'
 import { useTranslations } from 'next-intl'
 import { createClient } from '@/integrations/supabase/client'
 import { AppRoute } from '@/constants/routes'
+import { useAppStore } from '@/lib/store'
 
 type TopbarActionsProps = {
     email: string
@@ -19,6 +20,8 @@ export function TopbarActions({ email }: TopbarActionsProps) {
     const { resolvedTheme, setTheme } = useTheme()
     const tNav = useTranslations('nav')
     const tCommon = useTranslations('common')
+    const tutorialEnabled = useAppStore((s) => s.tutorialEnabled)
+    const toggleTutorial = useAppStore((s) => s.toggleTutorial)
 
     async function signOut() {
         await supabase.auth.signOut()
@@ -27,6 +30,19 @@ export function TopbarActions({ email }: TopbarActionsProps) {
 
     return (
         <div className="flex shrink-0 items-center gap-2">
+            {/* Tutorial toggle */}
+            <button
+                onClick={toggleTutorial}
+                className={`flex size-6.5 items-center justify-center rounded-md transition-colors cursor-pointer ${tutorialEnabled
+                        ? 'bg-accent text-foreground'
+                        : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                    }`}
+                aria-label="Toggle tutorial explanations"
+                title={tutorialEnabled ? 'Disable tutorial' : 'Enable tutorial'}
+            >
+                <BookOpen size={13} aria-hidden="true" />
+            </button>
+
             {/* Theme toggle */}
             <button
                 onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}

@@ -89,10 +89,15 @@
         },
         "overview": {
             "productsCount": "products",
+            "totalResultsCount": "on Amazon",
+            "sampledCount": "sampled",
             "seeAll": "See all {count} products →",
             "newListingsOnly": "New listings only ({count})",
             "priceRangeOnly": "{range} range only",
-            "categoriesTitle": "Top categories"
+            "categoriesTitle": "CATEGORIES",
+            "topProductsCard": {
+                "title": "Top products by rank"
+            }
         },
         "price": {
             "card": "Price snapshot",
@@ -120,6 +125,24 @@
             "tierSpecialOversize": "Special Oversize",
             "tierUnknown": "Unknown"
         },
+        "revenue": {
+            "card": "Est. revenue",
+            "tooltipTitle": "Median monthly revenue",
+            "tooltip": "Median estimated monthly revenue across all sampled products. Based on SP-API sales rank signals.",
+            "average": "Average: {value}"
+        },
+        "rating": {
+            "card": "Rating",
+            "tooltipTitle": "Average star rating",
+            "tooltip": "Average star rating across sampled products. A consistent 4+ signals strong product-market fit.",
+            "outOf": "out of 5 stars"
+        },
+        "reviews": {
+            "card": "Reviews",
+            "tooltipTitle": "Median review count",
+            "tooltip": "Median number of reviews across sampled products. Higher counts signal a stronger review wall to compete against.",
+            "averageRange": "Average: {n}"
+        },
         "socials": {
             "card": "Social landscape",
             "tooltipTitle": "Ratings and review wall",
@@ -142,11 +165,20 @@
                 "tooltip": "Package-weight spread across sampled products. Lighter clusters usually mean simpler FBA economics."
             }
         },
+        "images": {
+            "card": "Catalog sample"
+        },
+        "certs": {
+            "card": "Certifications",
+            "tooltipTitle": "Required certifications",
+            "tooltip": "Certifications found across product categories in this niche. Verify current requirements in Seller Central before sourcing."
+        },
         "brands": {
             "card": "Brand distribution",
             "tooltipTitle": "Brand concentration",
             "tooltip": "Shows how much of the market each leading brand controls. Fewer dominant brands usually means a tighter competitive moat.",
-            "summary": "Top brand share across {count} competing brands"
+            "summary": "Top brand share across {count} competing brands",
+            "marketShare": "Market Share"
         },
         "products": {
             "colProduct": "Product",
@@ -269,6 +301,9 @@
             "toysGames": "Toys & Games",
             "officeProducts": "Office Products",
             "automotive": "Automotive"
+        },
+        "relatedKeywords": {
+            "context": "Related searches"
         }
     }
 }

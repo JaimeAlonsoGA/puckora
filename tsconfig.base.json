@@ -1,9 +1,8 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
         "paths": {
             "@puckora/vectors": [
-                "packages/vectors/src/index.ts"
+                "./packages/vectors/src/index.ts"
             ]
         },
         "target": "ES2022",

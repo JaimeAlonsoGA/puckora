@@ -1,0 +1,51 @@
+{
+    "tutorial": {
+        "panel": {
+            "placeholder": "Hover any metric or card to see an explanation."
+        },
+        "price_stat": {
+            "title": "Median Price",
+            "text": "Median selling price across all ranked products. Your landed cost must support a price within 20% of this value to remain competitive on search ranking and conversion rate."
+        },
+        "revenue_stat": {
+            "title": "Estimated Monthly Revenue",
+            "text": "Estimated monthly revenue per SKU, modeled from BSR velocity data. Median filters out hero-SKU outliers. A high median in a fragmented field signals accessible, recurring demand."
+        },
+        "rating_stat": {
+            "title": "Rating & Reviews",
+            "text": "Average rating and review count across top-ranked products. Markets above 4.3 stars with high review counts require a differentiated listing or aggressive launch spend to gain traction."
+        },
+        "social_stat": {
+            "title": "Social Proof Signals",
+            "text": "Bought-in-past-month count and Q&A volume — Amazon's published demand signals. High purchase counts with low review totals indicate an active niche with a low barrier to capturing early social proof."
+        },
+        "fba_fees_stat": {
+            "title": "FBA Fees",
+            "text": "FBA pick-pack-ship cost driven by product dimensions and weight. If total Amazon fees (FBA plus referral) exceed 35% of retail price, net margin before ad spend is structurally thin."
+        },
+        "certifications": {
+            "title": "Regulatory Certifications",
+            "text": "Regulatory requirements active in this category. Each badge is a legal prerequisite — lab testing, registration, or periodic renewal — that must be cleared before an ASIN can go live on Amazon."
+        },
+        "market_share": {
+            "title": "Market Share by Brand",
+            "text": "Revenue distribution across brands. Inner ring shows brand-level share of niche revenue; outer ring shows per-product share within each brand. Concentrated share in one brand signals a dominant entrenched competitor."
+        },
+        "product_images": {
+            "title": "Product Gallery",
+            "text": "Primary images of the top-ranked products in this category. Use this to assess current packaging norms, photography style conventions, and visual differentiation gaps in the competitive set."
+        },
+        "related_keywords": {
+            "title": "Related Keyword Suggestions",
+            "text": "Semantically adjacent search terms derived from vector similarity of product embeddings, not keyword co-occurrence. Surfaces neighboring niches and long-tail demand clusters worth validating before committing to sourcing."
+        },
+        "top_categories": {
+            "title": "Top Categories",
+            "text": "Browse nodes Amazon assigns to products matching this search. Your selected node determines your BSR ladder, eligibility for category-specific badges, and the set of competing ASINs you rank against."
+        },
+        "price_dist": {
+            "title": "Price Distribution",
+            "text": "Revenue-weighted price spread across ranked products. The peak cluster shows where buying concentrates. Pricing above it requires clear premium differentiation; below it signals low quality perception and compresses unit margin."
+        }
+    }
+}

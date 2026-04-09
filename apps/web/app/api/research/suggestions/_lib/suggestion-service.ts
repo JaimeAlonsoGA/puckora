@@ -65,7 +65,16 @@ async function resolveSuggestions(request: SuggestionsRequest): Promise<Suggesti
     try {
         vectorResults = await resolveVectorSuggestions(context)
     } catch (error) {
-        console.error('[ResearchGraph API] Vector suggestions unavailable:', error)
+        const isConnRefused =
+            error != null &&
+            typeof error === 'object' &&
+            'code' in error &&
+            (error as NodeJS.ErrnoException).code === 'ECONNREFUSED'
+        if (isConnRefused) {
+            console.warn('[ResearchGraph API] Vector DB unavailable — falling back to keyword results')
+        } else {
+            console.error('[ResearchGraph API] Vector suggestions error:', error)
+        }
     }
 
     if (vectorResults.length > 0) {

@@ -2,7 +2,6 @@
 // Keeping this file for any consumers that may still import from '@/types/search'.
 export type { Tab } from '@/constants/search'
 export { TAB_IDS as TabEnum } from '@/constants/search'
-export type { SearchOverviewParamId, SearchOverviewQuickCheckThresholds } from '@/constants/search'
 
 /**
  * Data availability flags for a set of scraped ProductFinancial rows.

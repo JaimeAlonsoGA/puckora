@@ -35,6 +35,8 @@ export {
 	buildBrandDistribution,
 	buildListingAgeBuckets,
 	buildPriceBuckets,
+	buildRatingBuckets,
+	buildReviewBuckets,
 	buildTopCategories,
 	buildWeightBuckets,
 	computeOverviewStats,
@@ -44,9 +46,12 @@ export type {
 	BrandDistributionItem,
 	ListingAgeBucket,
 	PriceBucket,
+	RatingBucket,
+	ReviewBucket,
 	SearchOverviewListingAgeBucketId,
 	SearchOverviewStats,
 	TopCategory,
 	WeightBucket,
 } from './search-overview'
 export { sleep, jitter, pooled, dedupeBy } from './async'
+export type { CertKey, GatedCategory, SubcategoryGating } from './certs'

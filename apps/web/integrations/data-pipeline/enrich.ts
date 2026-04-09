@@ -118,6 +118,7 @@ export async function enrichAsinBatch(
                     rating: listing.rating,
                     review_count: listing.review_count,
                     product_url: listing.product_url,
+                    bought_past_month: listing.bought_past_month ?? null,
                 },
                 catalog,
                 fee,

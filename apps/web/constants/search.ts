@@ -234,49 +234,6 @@ export const WEIGHT_RANGE_VALUES = ['lt1', '1to3', 'any'] as const satisfies rea
 
 export const SEARCH_MARK_STATE_VALUES = MARK_STATE_VALUES
 
-export const SEARCH_OVERVIEW_PARAM = {
-    WEIGHT: 'weight',
-    REVIEWS: 'reviews',
-    AMAZON_CUT: 'amazonCut',
-    PRICE: 'price',
-} as const
-
-export const SEARCH_OVERVIEW_PARAM_VALUES = [
-    SEARCH_OVERVIEW_PARAM.WEIGHT,
-    SEARCH_OVERVIEW_PARAM.REVIEWS,
-    SEARCH_OVERVIEW_PARAM.AMAZON_CUT,
-    SEARCH_OVERVIEW_PARAM.PRICE,
-] as const
-
-export type SearchOverviewParamId = (typeof SEARCH_OVERVIEW_PARAM_VALUES)[number]
-
-export interface SearchOverviewQuickCheckThresholds {
-    maxAvgWeightKg: number
-    reviewWallCount: number
-    maxAmazonCutPct: number
-    maxPriceUsd: number
-}
-
-export const SEARCH_OVERVIEW_QUICK_CHECK_DEFAULTS: SearchOverviewQuickCheckThresholds = {
-    maxAvgWeightKg: 1,
-    reviewWallCount: 250,
-    maxAmazonCutPct: 30,
-    maxPriceUsd: 35,
-}
-
-export const SEARCH_OVERVIEW_DEFAULT_PARAM_IDS = [
-    SEARCH_OVERVIEW_PARAM.WEIGHT,
-    SEARCH_OVERVIEW_PARAM.REVIEWS,
-    SEARCH_OVERVIEW_PARAM.AMAZON_CUT,
-] as const satisfies readonly SearchOverviewParamId[]
-
-export const SEARCH_OVERVIEW_QUICK_CHECK_BANDS = {
-    WEIGHT_WARN_MULTIPLIER: 1.35,
-    REVIEW_PASS_RATIO: 0.6,
-    AMAZON_CUT_PASS_RATIO: 0.8,
-    PRICE_WARN_MULTIPLIER: 1.15,
-} as const
-
 export type ConstraintKey = 'budgetRange' | 'priceRange' | 'weightKg' | 'marketplace'
 export type Constraints = Partial<Record<ConstraintKey, string>>
 

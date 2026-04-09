@@ -9,6 +9,13 @@ export const ACTIVE_JOB_STATUSES = new Set<string>([
     SCRAPE_JOB_STATUS.RUNNING,
 ])
 
+/**
+ * Fallback polling cutoff for SP-API enrichment.
+ * If a completed job has no `enriched_at` after this window (e.g. the after()
+ * background task failed silently), polling stops automatically.
+ */
+export const ENRICHMENT_TIMEOUT_MS = 5 * 60_000
+
 export function getMarketplaceProductUrl(marketplace: string, asin: string | null | undefined): string {
     if (!asin) return '#'
 

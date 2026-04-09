@@ -13,7 +13,7 @@
  * Supabase instance (scrape_jobs stays on Supabase). Callers must provide both.
  */
 
-import { eq, and, inArray, sql } from 'drizzle-orm'
+import { eq, and, inArray, notInArray, sql } from 'drizzle-orm'
 import { type PgDb, amazonKeywords, amazonKeywordProducts, amazonProducts, productFinancialsView } from '@puckora/db'
 import type {
     AmazonProduct,
@@ -67,6 +67,7 @@ export function mapAmazonProductToFinancial(product: AmazonProduct): ProductFina
         net_per_unit: product.price != null && product.fba_fee != null && product.referral_fee != null
             ? Number((product.price - product.fba_fee - product.referral_fee).toFixed(2))
             : null,
+        bought_past_month: product.bought_past_month ?? null,
         monthly_units_bsr: null,
         monthly_units_review: null,
         monthly_units: null,
@@ -201,57 +202,126 @@ export async function clearKeywordProducts(
 }
 
 /**
+ * Remove ASIN links that are NOT in the current search's discovered set.
+ * Called at the END of a keyword-search run instead of at the start, so
+ * existing products stay visible to the user while the new search is in
+ * progress. No-op when discoveredAsins covers all existing links.
+ */
+export async function deleteStaleKeywordProducts(
+    db: PgDb,
+    keywordId: string,
+    discoveredAsins: string[],
+): Promise<void> {
+    if (discoveredAsins.length === 0) return
+    await db
+        .delete(amazonKeywordProducts)
+        .where(
+            and(
+                eq(amazonKeywordProducts.keyword_id, keywordId),
+                notInArray(amazonKeywordProducts.asin, discoveredAsins),
+            ),
+        )
+}
+
+/**
  * Return ProductFinancial rows for all ASINs linked to a keyword search,
  * ordered by BSR (product_financials.rank ascending — lower = better).
+ *
+ * 2-step query separates ASIN lookup from view access:
+ *   1. Fast indexed scan on amazon_keyword_products.keyword_id → list of ASINs.
+ *   2. product_financials queried with asin IN (list) — Postgres pushes the
+ *      filter into the view's base table scan, avoiding full materialisation.
+ *      Previously a single LEFT JOIN forced a 14-15 s full view sweep under
+ *      write load; this approach reduces that to <500 ms.
+ *   3. Fallback: ASINs absent from the view (no category ranks yet) are
+ *      resolved from amazon_products and mapped to ProductFinancial shape.
  */
 export async function getProductsForKeyword(
     db: PgDb,
     keywordId: string,
 ): Promise<ProductFinancial[]> {
-    // Step 1: get all ASINs for this keyword
-    const links = await db
+    // Step 1: Get ASINs (fast — index scan on keyword_id PK)
+    const asinRows = await db
         .select({ asin: amazonKeywordProducts.asin })
         .from(amazonKeywordProducts)
         .where(eq(amazonKeywordProducts.keyword_id, keywordId))
 
-    if (links.length === 0) return []
+    if (asinRows.length === 0) return []
 
-    const asins = links.map((r) => r.asin)
+    const asins = asinRows.map((r) => r.asin).filter((a): a is string => a !== null)
 
-    // Step 2: fetch product_financials view, sorted by BSR (nulls last)
-    const rows = await db
-        .select()
-        .from(productFinancialsView)
-        .where(inArray(productFinancialsView.asin!, asins))
-        .orderBy(sql`${productFinancialsView.rank} asc nulls last`)
+    // Steps 2+3 in parallel: query the view AND pre-fetch amazon_products for
+    // the same ASIN list simultaneously. View rows are preferred (they carry
+    // financial data); amazon_products rows cover ASINs not yet in the view
+    // (no category ranks = excluded from view's INNER JOIN). Parallelising the
+    // two queries eliminates the sequential step-3 wait (~400 ms over WireGuard).
+    const [viewRows, productRows] = await Promise.all([
+        db
+            .select({
+                asin: productFinancialsView.asin,
+                category_id: productFinancialsView.category_id,
+                rank: productFinancialsView.rank,
+                rank_type: productFinancialsView.rank_type,
+                category_depth: productFinancialsView.category_depth,
+                category_path: productFinancialsView.category_path,
+                observed_at: productFinancialsView.observed_at,
+                title: productFinancialsView.title,
+                brand: productFinancialsView.brand,
+                product_type: productFinancialsView.product_type,
+                main_image_url: productFinancialsView.main_image_url,
+                price: productFinancialsView.price,
+                rating: productFinancialsView.rating,
+                review_count: productFinancialsView.review_count,
+                fba_fee: productFinancialsView.fba_fee,
+                referral_fee: productFinancialsView.referral_fee,
+                total_amazon_fees: productFinancialsView.total_amazon_fees,
+                amazon_fee_pct: productFinancialsView.amazon_fee_pct,
+                net_per_unit: productFinancialsView.net_per_unit,
+                monthly_units_bsr: productFinancialsView.monthly_units_bsr,
+                monthly_units_review: productFinancialsView.monthly_units_review,
+                monthly_units: productFinancialsView.monthly_units,
+                monthly_revenue: productFinancialsView.monthly_revenue,
+                monthly_net: productFinancialsView.monthly_net,
+                daily_velocity: productFinancialsView.daily_velocity,
+                w_bsr: productFinancialsView.w_bsr,
+                w_review: productFinancialsView.w_review,
+                confidence: productFinancialsView.confidence,
+                product_type_mismatch: productFinancialsView.product_type_mismatch,
+                product_age_months: productFinancialsView.product_age_months,
+                listing_date: productFinancialsView.listing_date,
+                review_rate_per_month: productFinancialsView.review_rate_per_month,
+                pkg_weight_kg: productFinancialsView.pkg_weight_kg,
+                pkg_length_cm: productFinancialsView.pkg_length_cm,
+                pkg_width_cm: productFinancialsView.pkg_width_cm,
+                pkg_height_cm: productFinancialsView.pkg_height_cm,
+            })
+            .from(productFinancialsView)
+            .where(inArray(productFinancialsView.asin, asins))
+            .orderBy(sql`${productFinancialsView.rank} asc nulls last`),
+        db.select().from(amazonProducts).where(inArray(amazonProducts.asin, asins)),
+    ])
 
+    // Deduplicate: view returns one row per BSR category per ASIN.
+    // Keep the first (best-ranked) occurrence per ASIN.
     const dedupedFinancialRows = new Map<string, ProductFinancial>()
-    for (const row of rows as ProductFinancial[]) {
-        if (!row.asin) continue
-        if (!dedupedFinancialRows.has(row.asin)) {
-            dedupedFinancialRows.set(row.asin, row)
+    for (const row of viewRows) {
+        if (row.asin && !dedupedFinancialRows.has(row.asin)) {
+            dedupedFinancialRows.set(row.asin, row as unknown as ProductFinancial)
         }
     }
 
     const financialRows = Array.from(dedupedFinancialRows.values())
-    const financialAsins = new Set(financialRows.map((row) => row.asin).filter((asin): asin is string => Boolean(asin)))
-    const fallbackAsins = asins.filter((asin) => !financialAsins.has(asin))
+    const fallbackAsins = asins.filter((a) => !dedupedFinancialRows.has(a))
 
     if (fallbackAsins.length === 0) return financialRows
 
-    const fallbackRows = await db
-        .select()
-        .from(amazonProducts)
-        .where(inArray(amazonProducts.asin, fallbackAsins))
+    // Step 3: Use the pre-fetched amazon_products rows (already in productRows).
+    // Filter to ASINs not covered by the view, map to ProductFinancial shape.
+    const fallbackAsinSet = new Set(fallbackAsins)
+    const fallbackRows = (productRows as AmazonProduct[]).filter((r) => fallbackAsinSet.has(r.asin))
 
-    const fallbackMap = new Map(
-        (fallbackRows as AmazonProduct[]).map((product) => [product.asin, product] as const),
-    )
-
-    const fallbackProducts = fallbackAsins
-        .map((asin) => fallbackMap.get(asin))
-        .filter((product): product is AmazonProduct => product != null)
-        .map(mapAmazonProductToFinancial)
-
-    return [...financialRows, ...fallbackProducts]
+    return [
+        ...financialRows,
+        ...fallbackRows.map(mapAmazonProductToFinancial),
+    ]
 }

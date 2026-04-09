@@ -1,0 +1,51 @@
+{
+    "tutorial": {
+        "panel": {
+            "placeholder": "Pasa el cursor sobre cualquier métrica o tarjeta para ver una explicación."
+        },
+        "price_stat": {
+            "title": "Precio mediano",
+            "text": "Precio de venta mediano entre todos los productos clasificados. Tu coste de adquisición debe permitir situarte dentro del 20% de este valor para ser competitivo en ranking y tasa de conversión."
+        },
+        "revenue_stat": {
+            "title": "Ingresos mensuales estimados",
+            "text": "Ingresos mensuales estimados por SKU, modelados desde datos de velocidad BSR. La mediana filtra valores atípicos. Una mediana alta en un mercado fragmentado indica demanda accesible y recurrente."
+        },
+        "rating_stat": {
+            "title": "Valoración y reseñas",
+            "text": "Valoración media y volumen de reseñas entre los productos mejor posicionados. Mercados con media superior a 4,3 estrellas y alto recuento de reseñas exigen un listing diferenciado o inversión agresiva en lanzamiento."
+        },
+        "social_stat": {
+            "title": "Señales de prueba social",
+            "text": "Recuentos de compras del último mes y volumen de Q&A — señales de demanda publicadas por Amazon. Alta actividad de compra con pocas reseñas indica un nicho activo con menor barrera competitiva de entrada."
+        },
+        "fba_fees_stat": {
+            "title": "Tarifas de FBA",
+            "text": "Coste de logística FBA determinado por dimensiones y peso del producto. Si las tarifas totales de Amazon (FBA más referido) superan el 35% del precio, el margen neto antes de publicidad es estructuralmente insuficiente."
+        },
+        "certifications": {
+            "title": "Certificaciones regulatorias",
+            "text": "Requisitos regulatorios activos en esta categoría. Cada distintivo es un prerrequisito legal — pruebas de laboratorio, registro o renovación periódica — que debe completarse antes de que un ASIN pueda publicarse en Amazon."
+        },
+        "market_share": {
+            "title": "Cuota de mercado por marca",
+            "text": "Distribución de ingresos entre marcas. El anillo interior muestra la cuota a nivel de marca; el exterior muestra la cuota por producto dentro de cada marca. Cuota concentrada en una marca señala un competidor dominante."
+        },
+        "product_images": {
+            "title": "Galería de productos",
+            "text": "Imágenes principales de los productos mejor posicionados en esta categoría. Útil para evaluar el estilo de fotografía normalizado, convenciones de packaging y oportunidades de diferenciación visual en el conjunto competitivo."
+        },
+        "related_keywords": {
+            "title": "Sugerencias de palabras clave relacionadas",
+            "text": "Términos de búsqueda semánticamente adyacentes derivados de similitud vectorial entre embeddings de productos, no de co-ocurrencia de keywords. Detecta nichos vecinos y clusters de demanda de cola larga."
+        },
+        "top_categories": {
+            "title": "Categorías principales",
+            "text": "Nodos de navegación que Amazon asigna a los productos de esta búsqueda. El nodo elegido determina tu escalera BSR, la elegibilidad a insignias de categoría y el conjunto de ASINs contra los que compites."
+        },
+        "price_dist": {
+            "title": "Distribución de precios",
+            "text": "Distribución de precios ponderada por ingresos entre los productos clasificados. El cluster de mayor concentración indica dónde se concentra la compra. Por encima requiere diferenciación premium; por debajo comprime el margen unitario."
+        }
+    }
+}

@@ -1,3 +1,7 @@
+'use client'
+
+import { useState, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { cn } from '@puckora/utils'
 import { Caption } from './typography'
 
@@ -5,8 +9,8 @@ import { Caption } from './typography'
 // InfoTooltip
 //
 // A small circular "?" trigger that reveals a dark popover on hover or
-// keyboard focus. Fully CSS-driven (group-hover + group-focus-within):
-// no JS, safe for SSR, no external dependency.
+// keyboard focus. Uses a React portal (position: fixed) so it escapes any
+// ancestor overflow:hidden/overflow:auto clipping — safe across all layouts.
 //
 // Usage:
 //   <InfoTooltip
@@ -20,6 +24,9 @@ import { Caption } from './typography'
 //     <InfoTooltip title="Why median?" description="Resistant to outliers." />
 //   </div>
 // ---------------------------------------------------------------------------
+
+const TOOLTIP_PX = 208 // w-52
+const GAP_PX = 8
 
 type InfoTooltipProps = {
     title: string
@@ -35,50 +42,78 @@ export function InfoTooltip({
     position = 'right',
     className,
 }: InfoTooltipProps) {
+    const triggerRef = useRef<HTMLSpanElement>(null)
+    const [coords, setCoords] = useState<{ top: number; left: number } | null>(null)
+
+    const show = useCallback(() => {
+        const rect = triggerRef.current?.getBoundingClientRect()
+        if (!rect) return
+        const top = rect.top + rect.height / 2 - 10 // align near top of trigger
+        const left =
+            position === 'right'
+                ? rect.right + GAP_PX
+                : rect.left - GAP_PX - TOOLTIP_PX
+        setCoords({ top, left })
+    }, [position])
+
+    const hide = useCallback(() => setCoords(null), [])
+
     return (
-        <span
-            className={cn('group relative inline-flex items-center', className)}
-            // Keyboard-accessible: focuses the group so focus-within works
-            tabIndex={0}
-            aria-label={title}
-        >
-            {/* Trigger */}
+        <>
             <span
-                aria-hidden="true"
-                className={cn(
-                    'inline-flex size-3.5 items-center justify-center rounded-full',
-                    'border border-border text-faint cursor-help select-none',
-                    'text-[8px] font-semibold leading-none',
-                )}
+                ref={triggerRef}
+                className={cn('inline-flex items-center', className)}
+                tabIndex={0}
+                aria-label={title}
+                onMouseEnter={show}
+                onFocus={show}
+                onMouseLeave={hide}
+                onBlur={hide}
             >
-                ?
+                {/* Trigger */}
+                <span
+                    aria-hidden="true"
+                    className={cn(
+                        'inline-flex size-3.5 items-center justify-center rounded-full',
+                        'border border-border text-faint cursor-help select-none',
+                        'text-[8px] font-semibold leading-none',
+                    )}
+                >
+                    ?
+                </span>
             </span>
 
-            {/* Popover — invisible until group is hovered or focused */}
-            <span
-                role="tooltip"
-                className={cn(
-                    'pointer-events-none absolute z-20 w-52',
-                    'rounded-lg bg-important px-3 py-2 shadow-md',
-                    'opacity-0 invisible transition-opacity duration-150',
-                    'group-hover:opacity-100 group-hover:visible',
-                    'group-focus-within:opacity-100 group-focus-within:visible',
-                    position === 'right' ? 'left-5 top-0' : 'right-5 top-0',
+            {/* Portal — renders into document.body, escaping all overflow containers */}
+            {coords &&
+                createPortal(
+                    <span
+                        role="tooltip"
+                        style={{
+                            position: 'fixed',
+                            top: coords.top,
+                            left: coords.left,
+                            zIndex: 9999,
+                            width: TOOLTIP_PX,
+                            pointerEvents: 'none',
+                        }}
+                        className="rounded-lg bg-important px-3 py-2 shadow-md shadow-black/20"
+                    >
+                        <Caption
+                            as="p"
+                            className="font-medium text-important-fg mb-1 leading-snug"
+                        >
+                            {title}
+                        </Caption>
+                        <Caption
+                            as="p"
+                            className="text-important-fg-2 leading-relaxed"
+                        >
+                            {description}
+                        </Caption>
+                    </span>,
+                    document.body,
                 )}
-            >
-                <Caption
-                    as="p"
-                    className="font-medium text-important-fg mb-1 leading-snug"
-                >
-                    {title}
-                </Caption>
-                <Caption
-                    as="p"
-                    className="text-important-fg-2 leading-relaxed"
-                >
-                    {description}
-                </Caption>
-            </span>
-        </span>
+        </>
     )
 }
+

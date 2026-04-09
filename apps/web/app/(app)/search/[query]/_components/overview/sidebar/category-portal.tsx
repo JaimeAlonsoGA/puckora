@@ -6,7 +6,9 @@ import type { Route } from 'next'
 import { Caption, DataCard, RankedList, RankedListItem, Stack } from '@puckora/ui'
 import { formatCount, shortenCategoryPath } from '@puckora/utils'
 import type { TopCategory } from '@puckora/utils'
-import { AppRoute } from '@/constants/routes'
+import { searchQueryRoute } from '@/constants/routes'
+import { useHoverTutorial } from '@/hooks/use-hover-tutorial'
+import { TUTORIAL_KEYS } from '@/constants/tutorial'
 
 interface CategoryPortalProps {
     categories: TopCategory[]
@@ -14,19 +16,15 @@ interface CategoryPortalProps {
 
 export function CategoryPortal({ categories }: CategoryPortalProps) {
     const t = useTranslations('search')
+    const tutorial = useHoverTutorial(TUTORIAL_KEYS.TOP_CATEGORIES)
 
     return (
-        <DataCard>
-            <Stack direction="row" justify="between" align="center" gap="2" className="mb-2.5">
-                <Caption>
-                    {t('overview.categoriesTitle')}
-                </Caption>
-            </Stack>
+        <DataCard title={t('overview.categoriesTitle')} {...tutorial}>
             <RankedList>
                 {categories.map((cat, index) => (
                     <Link
                         key={cat.name}
-                        href={AppRoute.categories as Route}
+                        href={searchQueryRoute(cat.name) as Route}
                         className="block hover:bg-muted/40 transition-colors"
                     >
                         <RankedListItem

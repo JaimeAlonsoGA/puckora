@@ -9,125 +9,127 @@
  */
 import { sql } from 'drizzle-orm'
 import {
-    pgTable,
-    pgView,
-    text,
-    integer,
-    boolean,
-    real,
-    numeric,
-    date,
-    timestamp,
-    uuid,
-    index,
-    uniqueIndex,
-    primaryKey,
+  pgTable,
+  pgView,
+  text,
+  integer,
+  boolean,
+  real,
+  numeric,
+  date,
+  timestamp,
+  uuid,
+  index,
+  uniqueIndex,
+  primaryKey,
 } from 'drizzle-orm/pg-core'
 import {
-    categoryScrapeStatusEnum,
-    productScrapeStatusEnum,
+  categoryScrapeStatusEnum,
+  productScrapeStatusEnum,
 } from '../enums'
 
 // ── amazon_categories ───────────────────────────────────────────────────────
 
 export const amazonCategories = pgTable('amazon_categories', {
-    id: text('id').primaryKey(),
-    name: text('name').notNull(),
-    full_path: text('full_path').notNull(),
-    depth: integer('depth').notNull(),
-    breadcrumb: text('breadcrumb').array().notNull().default([]),
-    is_leaf: boolean('is_leaf').notNull().default(false),
-    marketplace: text('marketplace').notNull().default('US'),
-    parent_id: text('parent_id'),
-    bestsellers_url: text('bestsellers_url'),
-    scrape_status: categoryScrapeStatusEnum('scrape_status').notNull().default('pending'),
-    last_scraped_at: timestamp('last_scraped_at', { mode: 'string', withTimezone: true }),
-    created_at: timestamp('created_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  full_path: text('full_path').notNull(),
+  depth: integer('depth').notNull(),
+  breadcrumb: text('breadcrumb').array().notNull().default([]),
+  is_leaf: boolean('is_leaf').notNull().default(false),
+  marketplace: text('marketplace').notNull().default('US'),
+  parent_id: text('parent_id'),
+  bestsellers_url: text('bestsellers_url'),
+  scrape_status: categoryScrapeStatusEnum('scrape_status').notNull().default('pending'),
+  last_scraped_at: timestamp('last_scraped_at', { mode: 'string', withTimezone: true }),
+  created_at: timestamp('created_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-    index('idx_amazon_categories_marketplace').on(t.marketplace),
-    index('idx_amazon_categories_parent_id').on(t.parent_id),
-    index('idx_amazon_categories_scrape_status').on(t.scrape_status),
+  index('idx_amazon_categories_marketplace').on(t.marketplace),
+  index('idx_amazon_categories_parent_id').on(t.parent_id),
+  index('idx_amazon_categories_scrape_status').on(t.scrape_status),
 ])
 
 // ── amazon_products ─────────────────────────────────────────────────────────
 
 export const amazonProducts = pgTable('amazon_products', {
-    asin: text('asin').primaryKey(),
-    title: text('title'),
-    brand: text('brand'),
-    manufacturer: text('manufacturer'),
-    price: real('price'),
-    rating: real('rating'),
-    review_count: integer('review_count'),
-    main_image_url: text('main_image_url'),
-    product_url: text('product_url'),
-    product_type: text('product_type'),
-    color: text('color'),
-    model_number: text('model_number'),
-    package_quantity: integer('package_quantity'),
-    bullet_points: text('bullet_points').array(),
-    browse_node_id: text('browse_node_id'),
-    listing_date: date('listing_date'),
-    // Dimensions
-    item_length_cm: real('item_length_cm'),
-    item_width_cm: real('item_width_cm'),
-    item_height_cm: real('item_height_cm'),
-    item_weight_kg: real('item_weight_kg'),
-    pkg_length_cm: real('pkg_length_cm'),
-    pkg_width_cm: real('pkg_width_cm'),
-    pkg_height_cm: real('pkg_height_cm'),
-    pkg_weight_kg: real('pkg_weight_kg'),
-    // Variation hierarchy
-    parent_asin: text('parent_asin'),
-    // Fees
-    fba_fee: real('fba_fee'),
-    referral_fee: real('referral_fee'),
-    embedding: text('embedding'),
-    // Status
-    scrape_status: productScrapeStatusEnum('scrape_status').notNull().default('scraped'),
-    enriched_at: timestamp('enriched_at', { mode: 'string', withTimezone: true }),
-    created_at: timestamp('created_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
-    updated_at: timestamp('updated_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
+  asin: text('asin').primaryKey(),
+  title: text('title'),
+  brand: text('brand'),
+  manufacturer: text('manufacturer'),
+  price: real('price'),
+  rating: real('rating'),
+  review_count: integer('review_count'),
+  main_image_url: text('main_image_url'),
+  product_url: text('product_url'),
+  product_type: text('product_type'),
+  color: text('color'),
+  model_number: text('model_number'),
+  package_quantity: integer('package_quantity'),
+  bullet_points: text('bullet_points').array(),
+  browse_node_id: text('browse_node_id'),
+  listing_date: date('listing_date'),
+  // Dimensions
+  item_length_cm: real('item_length_cm'),
+  item_width_cm: real('item_width_cm'),
+  item_height_cm: real('item_height_cm'),
+  item_weight_kg: real('item_weight_kg'),
+  pkg_length_cm: real('pkg_length_cm'),
+  pkg_width_cm: real('pkg_width_cm'),
+  pkg_height_cm: real('pkg_height_cm'),
+  pkg_weight_kg: real('pkg_weight_kg'),
+  // Variation hierarchy
+  parent_asin: text('parent_asin'),
+  // Demand signals (scraped from Amazon search page HTML)
+  bought_past_month: integer('bought_past_month'),
+  // Fees
+  fba_fee: real('fba_fee'),
+  referral_fee: real('referral_fee'),
+  embedding: text('embedding'),
+  // Status
+  scrape_status: productScrapeStatusEnum('scrape_status').notNull().default('scraped'),
+  enriched_at: timestamp('enriched_at', { mode: 'string', withTimezone: true }),
+  created_at: timestamp('created_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp('updated_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-    index('idx_amazon_products_scrape_status').on(t.scrape_status),
-    index('idx_amazon_products_updated_at').on(t.updated_at),
+  index('idx_amazon_products_scrape_status').on(t.scrape_status),
+  index('idx_amazon_products_updated_at').on(t.updated_at),
 ])
 
 // ── product_category_ranks ──────────────────────────────────────────────────
 
 export const productCategoryRanks = pgTable('product_category_ranks', {
-    asin: text('asin').notNull().references(() => amazonProducts.asin),
-    category_id: text('category_id').notNull().references(() => amazonCategories.id),
-    rank: integer('rank').notNull(),
-    rank_type: text('rank_type').notNull(),
-    observed_at: timestamp('observed_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
+  asin: text('asin').notNull().references(() => amazonProducts.asin),
+  category_id: text('category_id').notNull().references(() => amazonCategories.id),
+  rank: integer('rank').notNull(),
+  rank_type: text('rank_type').notNull(),
+  observed_at: timestamp('observed_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-    primaryKey({ columns: [t.asin, t.category_id] }),
-    index('idx_product_category_ranks_category_id').on(t.category_id),
-    index('idx_product_category_ranks_observed_at').on(t.observed_at),
+  primaryKey({ columns: [t.asin, t.category_id] }),
+  index('idx_product_category_ranks_category_id').on(t.category_id),
+  index('idx_product_category_ranks_observed_at').on(t.observed_at),
 ])
 
 // ── amazon_keywords ─────────────────────────────────────────────────────────
 
 export const amazonKeywords = pgTable('amazon_keywords', {
-    id: uuid('id').primaryKey().defaultRandom(),
-    keyword: text('keyword').notNull(),
-    marketplace: text('marketplace').notNull().default('US'),
-    total_results: integer('total_results'),
-    unique_brands: integer('unique_brands'),
-    last_searched_at: timestamp('last_searched_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
+  id: uuid('id').primaryKey().defaultRandom(),
+  keyword: text('keyword').notNull(),
+  marketplace: text('marketplace').notNull().default('US'),
+  total_results: integer('total_results'),
+  unique_brands: integer('unique_brands'),
+  last_searched_at: timestamp('last_searched_at', { mode: 'string', withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-    uniqueIndex('idx_amazon_keywords_keyword_marketplace').on(t.keyword, t.marketplace),
+  uniqueIndex('idx_amazon_keywords_keyword_marketplace').on(t.keyword, t.marketplace),
 ])
 
 // ── amazon_keyword_products ─────────────────────────────────────────────────
 
 export const amazonKeywordProducts = pgTable('amazon_keyword_products', {
-    keyword_id: uuid('keyword_id').notNull().references(() => amazonKeywords.id, { onDelete: 'cascade' }),
-    asin: text('asin').notNull().references(() => amazonProducts.asin),
+  keyword_id: uuid('keyword_id').notNull().references(() => amazonKeywords.id, { onDelete: 'cascade' }),
+  asin: text('asin').notNull().references(() => amazonProducts.asin),
 }, (t) => [
-    primaryKey({ columns: [t.keyword_id, t.asin] }),
-    index('idx_amazon_keyword_products_asin').on(t.asin),
+  primaryKey({ columns: [t.keyword_id, t.asin] }),
+  index('idx_amazon_keyword_products_asin').on(t.asin),
 ])
 
 // ── product_financials view ──────────────────────────────────────────────────
@@ -135,52 +137,54 @@ export const amazonKeywordProducts = pgTable('amazon_keyword_products', {
 // Full SQL + calibration notes: packages/db/sql/product_financials_view.sql
 
 export const productFinancialsView = pgView('product_financials', {
-    // Identity
-    asin: text('asin'),
-    category_id: text('category_id'),
-    rank: integer('rank'),
-    rank_type: text('rank_type'),
-    category_depth: integer('category_depth'),
-    category_path: text('category_path'),
-    observed_at: timestamp('observed_at', { mode: 'string', withTimezone: true }),
-    // Product snapshot
-    title: text('title'),
-    brand: text('brand'),
-    product_type: text('product_type'),
-    main_image_url: text('main_image_url'),
-    price: real('price'),
-    rating: real('rating'),
-    review_count: integer('review_count'),
-    // Fees
-    fba_fee: real('fba_fee'),
-    referral_fee: real('referral_fee'),
-    total_amazon_fees: numeric('total_amazon_fees'),
-    amazon_fee_pct: numeric('amazon_fee_pct'),
-    net_per_unit: numeric('net_per_unit'),
-    // Unit estimates
-    monthly_units_bsr: integer('monthly_units_bsr'),
-    monthly_units_review: integer('monthly_units_review'),
-    monthly_units: integer('monthly_units'),
-    // Revenue
-    monthly_revenue: numeric('monthly_revenue'),
-    monthly_net: numeric('monthly_net'),
-    daily_velocity: numeric('daily_velocity'),
-    // Blend weights (for tooltips)
-    w_bsr: real('w_bsr'),
-    w_review: real('w_review'),
-    // Confidence
-    confidence: text('confidence'),
-    // Data quality
-    product_type_mismatch: boolean('product_type_mismatch'),
-    // Meta
-    product_age_months: integer('product_age_months'),
-    listing_date: date('listing_date'),
-    review_rate_per_month: numeric('review_rate_per_month'),
-    // Dimensions
-    pkg_weight_kg: real('pkg_weight_kg'),
-    pkg_length_cm: real('pkg_length_cm'),
-    pkg_width_cm: real('pkg_width_cm'),
-    pkg_height_cm: real('pkg_height_cm'),
+  // Identity
+  asin: text('asin'),
+  category_id: text('category_id'),
+  rank: integer('rank'),
+  rank_type: text('rank_type'),
+  category_depth: integer('category_depth'),
+  category_path: text('category_path'),
+  observed_at: timestamp('observed_at', { mode: 'string', withTimezone: true }),
+  // Product snapshot
+  title: text('title'),
+  brand: text('brand'),
+  product_type: text('product_type'),
+  main_image_url: text('main_image_url'),
+  price: real('price'),
+  rating: real('rating'),
+  review_count: integer('review_count'),
+  // Fees
+  fba_fee: real('fba_fee'),
+  referral_fee: real('referral_fee'),
+  total_amazon_fees: numeric('total_amazon_fees'),
+  amazon_fee_pct: numeric('amazon_fee_pct'),
+  net_per_unit: numeric('net_per_unit'),
+  // Unit estimates
+  monthly_units_bsr: integer('monthly_units_bsr'),
+  monthly_units_review: integer('monthly_units_review'),
+  monthly_units: integer('monthly_units'),
+  // Demand signals pass-through
+  bought_past_month: integer('bought_past_month'),
+  // Revenue
+  monthly_revenue: numeric('monthly_revenue'),
+  monthly_net: numeric('monthly_net'),
+  daily_velocity: numeric('daily_velocity'),
+  // Blend weights (for tooltips)
+  w_bsr: real('w_bsr'),
+  w_review: real('w_review'),
+  // Confidence
+  confidence: text('confidence'),
+  // Data quality
+  product_type_mismatch: boolean('product_type_mismatch'),
+  // Meta
+  product_age_months: integer('product_age_months'),
+  listing_date: date('listing_date'),
+  review_rate_per_month: numeric('review_rate_per_month'),
+  // Dimensions
+  pkg_weight_kg: real('pkg_weight_kg'),
+  pkg_length_cm: real('pkg_length_cm'),
+  pkg_width_cm: real('pkg_width_cm'),
+  pkg_height_cm: real('pkg_height_cm'),
 }).as(sql`
 with base as (
   select
@@ -205,6 +209,7 @@ with base as (
     p.pkg_width_cm,
     p.pkg_height_cm,
     p.listing_date,
+    p.bought_past_month,
     case
       when p.listing_date is not null
         then greatest(
@@ -291,6 +296,8 @@ blended as (
       else                                     0.35
     end                                   as w_review,
     case
+      when e.bought_past_month is not null
+        then 'high'
       when e.fba_fee is not null
        and e.referral_fee is not null
        and e.review_count >= 100
@@ -326,26 +333,47 @@ select
   b.net_per_unit,
   b.monthly_units_bsr,
   b.monthly_units_review,
-  round(
-    b.w_bsr * b.monthly_units_bsr
-    + b.w_review * coalesce(b.monthly_units_review, 0)
-  )::integer                              as monthly_units,
-  round(
-    (b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))
-    * b.price
-  )::numeric(12,2)                        as monthly_revenue,
+  case
+    when b.bought_past_month is not null
+      then b.bought_past_month
+    else
+      round(
+        b.w_bsr * b.monthly_units_bsr
+        + b.w_review * coalesce(b.monthly_units_review, 0)
+      )::integer
+  end                                     as monthly_units,
+  b.bought_past_month,
+  case
+    when b.bought_past_month is not null
+      then round(b.bought_past_month * b.price)::numeric(12,2)
+    else
+      round(
+        (b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))
+        * b.price
+      )::numeric(12,2)
+  end                                     as monthly_revenue,
   case
     when b.net_per_unit is not null
-      then round(
-        (b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))
-        * b.net_per_unit
-      )::numeric(12,2)
+      then case
+        when b.bought_past_month is not null
+          then round(b.bought_past_month * b.net_per_unit)::numeric(12,2)
+        else
+          round(
+            (b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))
+            * b.net_per_unit
+          )::numeric(12,2)
+      end
     else null
   end                                     as monthly_net,
-  round(
-    (b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))
-    / 30.0
-  , 1)                                    as daily_velocity,
+  case
+    when b.bought_past_month is not null
+      then round(b.bought_past_month / 30.0, 1)
+    else
+      round(
+        (b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0))
+        / 30.0
+      , 1)
+  end                                     as daily_velocity,
   b.w_bsr,
   b.w_review,
   b.confidence,

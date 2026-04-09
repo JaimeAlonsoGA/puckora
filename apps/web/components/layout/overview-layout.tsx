@@ -69,7 +69,7 @@ export function OverviewSidebar({ children, className }: OverviewSidebarProps) {
     return (
         <aside
             className={cn(
-                'flex flex-col xl:overflow-y-auto space-y-4 pl-4 py-4',
+                'flex min-w-0 flex-col xl:overflow-y-auto space-y-4 pl-4 py-4',
                 className,
             )}
         >

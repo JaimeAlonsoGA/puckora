@@ -15,6 +15,7 @@ import {
     type ModuleId,
 } from '@/constants/app-state'
 import { ResearchGraphPanel } from './research-graph-panel'
+import { TutorialPanel } from './_components/tutorial-panel'
 import { AppRoute } from '@/constants/routes'
 
 // ---------------------------------------------------------------------------
@@ -147,12 +148,15 @@ export function Sidebar() {
             </div>
 
             {/* Research graph */}
-            <div className="flex min-h-0 flex-1 flex-col pb-3">
+            <div className="flex min-h-0 flex-1 flex-col">
                 <div className="px-3 pb-0.5 pt-2">
                     <Caption as="span" className="font-medium">{t('researchGraph')}</Caption>
                 </div>
                 <ResearchGraphPanel />
             </div>
+
+            {/* Tutorial — conditionally shown when tutorial mode is on */}
+            <TutorialPanel />
         </aside>
     )
 }

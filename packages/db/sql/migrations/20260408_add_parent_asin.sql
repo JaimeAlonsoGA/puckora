@@ -13,8 +13,8 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 
 alter table public.amazon_products
-    add column if not exists parent_asin text references public.amazon_products(asin) on delete set null;
+add column if not exists parent_asin text references public.amazon_products (asin) on delete set null;
 
-create index if not exists idx_amazon_products_parent_asin
-    on public.amazon_products (parent_asin)
-    where parent_asin is not null;
+create index if not exists idx_amazon_products_parent_asin on public.amazon_products (parent_asin)
+where
+    parent_asin is not null;

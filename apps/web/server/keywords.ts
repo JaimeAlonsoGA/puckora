@@ -9,7 +9,7 @@ import 'server-only'
 import { cache } from 'react'
 import { createFlyioDb } from '@/integrations/flyio/client'
 import { getKeyword, getProductsForKeyword } from '@/services/keywords'
-import type { ProductFinancial } from '@puckora/types'
+import type { AmazonKeyword, ProductFinancial } from '@puckora/types'
 
 /**
  * Return the ordered ProductFinancial list for the most recent search of
@@ -25,4 +25,18 @@ export const getCachedKeywordResults = cache(async (
     const keywordRow = await getKeyword(db, keyword, marketplace)
     if (!keywordRow) return []
     return getProductsForKeyword(db, keywordRow.id)
+})
+
+/**
+ * Return the keyword metadata row (including total_results from Amazon).
+ * Returns null when this keyword has never been searched.
+ *
+ * Deduplicated per request via React.cache().
+ */
+export const getCachedKeyword = cache(async (
+    keyword: string,
+    marketplace: string,
+): Promise<AmazonKeyword | null> => {
+    const db = createFlyioDb()
+    return getKeyword(db, keyword, marketplace)
 })

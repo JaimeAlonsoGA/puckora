@@ -23,6 +23,8 @@ export interface ScrapedListing {
     rating: number | null
     review_count: number | null
     product_url: string
+    /** "+1K+ bought in past month" → 1000. Null when the badge is absent. */
+    bought_past_month: number | null
 }
 
 // ─── RANK BADGE COUNT ─────────────────────────────────────────────────────────
@@ -94,6 +96,7 @@ export function parseProducts(html: string): ScrapedListing[] {
             rating: parseRating(block),
             review_count: parseReviewCount(block),
             product_url: `https://www.amazon.com/dp/${asin}`,
+            bought_past_month: parseBoughtPastMonth(block),
         })
     }
 
@@ -217,4 +220,23 @@ export function parseReviewCount(block: string): number | null {
     }
 
     return null
+}
+
+/**
+ * Parse the "+X bought in past month" demand-signal badge.
+ *
+ * Amazon renders this as e.g. "1K+ bought in past month", "500+ bought in past month",
+ * "+1K bought in past month". Converts "K" suffix to thousands.
+ * Returns an integer (floor of the stated amount) or null when absent.
+ */
+export function parseBoughtPastMonth(block: string): number | null {
+    const m = block.match(/\+?([\d,.]+)\s*[Kk]\+?\s+bought\s+in\s+(?:the\s+)?past\s+month/i)
+        ?? block.match(/\+?([\d,]+)\+?\s+bought\s+in\s+(?:the\s+)?past\s+month/i)
+    if (!m) return null
+    const raw = m[1].replace(/,/g, '')
+    // Check for K suffix from first branch (already checked in pattern)
+    const isK = /[Kk]/.test(m[0].slice(0, m[0].indexOf('bought')))
+    const n = parseFloat(raw)
+    if (!isFinite(n) || n <= 0) return null
+    return isK ? Math.round(n * 1_000) : Math.round(n)
 }

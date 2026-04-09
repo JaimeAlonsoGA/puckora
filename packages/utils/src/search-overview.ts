@@ -15,6 +15,21 @@ export interface WeightBucket {
     pct: number
 }
 
+export interface RatingBucket {
+    range: string
+    tier: string
+    count: number
+    pct: number
+    is_sweet: boolean
+}
+
+export interface ReviewBucket {
+    range: string
+    tier: string
+    count: number
+    pct: number
+}
+
 export interface BrandDistributionItem {
     name: string
     count: number
@@ -56,6 +71,7 @@ export interface SearchOverviewStats {
     price_range_max: number
     total_products: number
     avg_monthly_revenue: number
+    median_monthly_revenue: number
     avg_monthly_units: number
     avg_rating: number
     median_rating: number
@@ -79,6 +95,8 @@ export interface SearchOverviewStats {
     median_pkg_height_cm: number
     price_buckets: PriceBucket[]
     weight_buckets: WeightBucket[]
+    rating_buckets: RatingBucket[]
+    review_buckets: ReviewBucket[]
     brand_distribution: BrandDistributionItem[]
     listing_age_buckets: ListingAgeBucket[]
     top_categories: TopCategory[]
@@ -244,6 +262,58 @@ export function buildWeightBuckets(products: ProductFinancial[]): WeightBucket[]
     })
 }
 
+export function buildRatingBuckets(products: ProductFinancial[]): RatingBucket[] {
+    const rated = products.filter((p) => coerceNumber(p.rating) != null)
+    if (rated.length === 0) return []
+
+    const ranges = [
+        { label: '0–3', tier: 'Poor', min: 0, max: 3.0 },
+        { label: '3–4', tier: 'Weak', min: 3.0, max: 4.0 },
+        { label: '4–4.5', tier: 'Good', min: 4.0, max: 4.5 },
+        { label: '4.5–5', tier: 'Excellent', min: 4.5, max: Infinity },
+    ]
+
+    return ranges.map((range) => {
+        const count = rated.filter((p) => {
+            const r = coerceNumber(p.rating) ?? 0
+            return r >= range.min && r < range.max
+        }).length
+        return {
+            range: range.label,
+            tier: range.tier,
+            count,
+            pct: Math.round((count / rated.length) * 100),
+            is_sweet: range.label === '≥ 4.5',
+        }
+    })
+}
+
+export function buildReviewBuckets(products: ProductFinancial[]): ReviewBucket[] {
+    const reviewed = products.filter((p) => coerceNumber(p.review_count) != null)
+    if (reviewed.length === 0) return []
+
+    const ranges = [
+        { label: '0–100', tier: 'New', min: 0, max: 100 },
+        { label: '100–499', tier: 'Growing', min: 100, max: 500 },
+        { label: '500–999', tier: 'Established', min: 500, max: 1_000 },
+        { label: '1k–10k', tier: 'Leading', min: 1_000, max: 10_000 },
+        { label: '10k+', tier: 'Dominant', min: 10_000, max: Infinity },
+    ]
+
+    return ranges.map((range) => {
+        const count = reviewed.filter((p) => {
+            const rc = coerceNumber(p.review_count) ?? 0
+            return rc >= range.min && rc < range.max
+        }).length
+        return {
+            range: range.label,
+            tier: range.tier,
+            count,
+            pct: Math.round((count / reviewed.length) * 100),
+        }
+    })
+}
+
 export function buildBrandDistribution(
     products: ProductFinancial[],
     limit = 5,
@@ -348,6 +418,7 @@ export function computeOverviewStats(products: ProductFinancial[]): SearchOvervi
         price_range_min: getRange(products.map((product) => product.price)).min,
         price_range_max: getRange(products.map((product) => product.price)).max,
         avg_monthly_revenue: avg(products.map((product) => product.monthly_revenue)),
+        median_monthly_revenue: median(products.map((product) => product.monthly_revenue)),
         avg_monthly_units: avg(products.map((product) => product.monthly_units)),
         avg_rating: avg(products.map((product) => product.rating)),
         median_rating: median(products.map((product) => product.rating)),
@@ -371,6 +442,8 @@ export function computeOverviewStats(products: ProductFinancial[]): SearchOvervi
         median_pkg_height_cm: median(products.map((product) => product.pkg_height_cm)),
         price_buckets: buildPriceBuckets(products, rankedProducts.slice(0, 20)),
         weight_buckets: buildWeightBuckets(products),
+        rating_buckets: buildRatingBuckets(products),
+        review_buckets: buildReviewBuckets(products),
         brand_distribution: buildBrandDistribution(products),
         listing_age_buckets: listingAgeBuckets,
         top_categories: buildTopCategories(products),

@@ -44,3 +44,14 @@ export const amazonProductKeys = {
         [...amazonProductKeys.all, 'detail', asin, marketplace] as const,
 }
 
+export const researchKeys = {
+    all: ['research'] as const,
+    relatedSuggestions: (query: string) =>
+        [...researchKeys.all, 'suggestions', query] as const,
+}
+
+export const keywordSuggestionKeys = {
+    all: ['keyword-suggestions'] as const,
+    list: (query: string) => [...keywordSuggestionKeys.all, query] as const,
+}
+

@@ -43,6 +43,7 @@ export function enrichAsin(
         rating: scraped.rating,
         review_count: scraped.review_count,
         product_url: scraped.product_url,
+        bought_past_month: scraped.bought_past_month ?? null,
 
         // From SP-API catalog (null if enrichment failed)
         title: catalog?.title ?? scraped.name,         // fallback to scraped name

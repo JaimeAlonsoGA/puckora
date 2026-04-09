@@ -12,7 +12,7 @@ import {
 export type FeeEstimateMap = Awaited<ReturnType<typeof getFeesEstimatesBatch>>
 
 export function buildPreviewListing(
-    listing: Pick<SearchListingSnapshot, 'asin' | 'rank' | 'name' | 'price' | 'rating' | 'review_count' | 'product_url'>,
+    listing: Pick<SearchListingSnapshot, 'asin' | 'rank' | 'name' | 'price' | 'rating' | 'review_count' | 'product_url' | 'bought_past_month'>,
 ): ScrapedListing {
     return {
         asin: listing.asin,
@@ -22,6 +22,7 @@ export function buildPreviewListing(
         rating: listing.rating,
         review_count: listing.review_count,
         product_url: listing.product_url,
+        bought_past_month: listing.bought_past_month ?? null,
     }
 }
 
@@ -41,6 +42,7 @@ export function mergePreviewListing(
         review_count: scraped?.review_count ?? null,
         product_url: scraped?.product_url ?? buildAmazonProductUrl(marketplace, asin),
         main_image_url: parsed?.main_image_url ?? scraped?.main_image_url ?? null,
+        bought_past_month: scraped?.bought_past_month ?? null,
     })
 }
 
@@ -53,6 +55,7 @@ export function buildScrapedProductInsert(listing: SearchListingSnapshot): Amazo
         review_count: listing.review_count ?? null,
         main_image_url: listing.main_image_url,
         product_url: listing.product_url,
+        bought_past_month: listing.bought_past_month ?? null,
         bullet_points: [],
         scrape_status: SCRAPE_PRODUCT_STATUS.SCRAPED,
         updated_at: new Date().toISOString(),

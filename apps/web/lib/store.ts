@@ -9,6 +9,7 @@ import {
     PUCKORA_STORE_NAME,
     type ModuleId,
 } from '@/constants/app-state'
+import type { TutorialKey } from '@/constants/tutorial'
 import {
     MarkedProductSchema,
     PersistedAppStoreSchema,
@@ -25,7 +26,11 @@ export type MarkedProduct = StoreMarkedProduct
 
 export type PuckiContext = StorePuckiContext
 
-type PersistedAppStoreShape = Pick<AppStore, 'activeModule' | 'markedProducts' | 'puckiContext'>
+export type TutorialItem = {
+    key: TutorialKey
+}
+
+type PersistedAppStoreShape = Pick<AppStore, 'activeModule' | 'markedProducts' | 'puckiContext' | 'tutorialEnabled'>
 
 function parsePersistedAppStore(persisted: unknown): Partial<PersistedAppStoreShape> {
     const persistedState =
@@ -53,6 +58,12 @@ interface AppStore extends ResearchGraphSlice {
 
     puckiContext: PuckiContext
     setPuckiContext: (ctx: Partial<PuckiContext>) => void
+
+    // Tutorial panel
+    tutorialEnabled: boolean
+    toggleTutorial: () => void
+    activeTutorial: TutorialItem | null
+    setTutorial: (item: TutorialItem | null) => void
 }
 
 export const useAppStore = create<AppStore>()(
@@ -80,6 +91,11 @@ export const useAppStore = create<AppStore>()(
             setPuckiContext: (context) => set((state) => ({
                 puckiContext: PuckiContextSchema.parse({ ...state.puckiContext, ...context }),
             })),
+
+            tutorialEnabled: false,
+            toggleTutorial: () => set((state) => ({ tutorialEnabled: !state.tutorialEnabled, activeTutorial: null })),
+            activeTutorial: null,
+            setTutorial: (item) => set((state) => state.tutorialEnabled ? { activeTutorial: item } : {}),
         }),
         {
             name: PUCKORA_STORE_NAME,
@@ -87,6 +103,7 @@ export const useAppStore = create<AppStore>()(
                 activeModule: state.activeModule,
                 markedProducts: state.markedProducts,
                 puckiContext: state.puckiContext,
+                tutorialEnabled: state.tutorialEnabled,
             }),
             merge: (persisted, current) => ({
                 ...current,

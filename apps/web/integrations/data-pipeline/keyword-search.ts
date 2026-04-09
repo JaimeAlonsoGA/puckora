@@ -7,30 +7,30 @@
  * What this does per search:
  *  1. Scrapes the live Amazon HTML search page for immediate listing discovery.
  *  2. Calls searchCatalogItems(keyword) for aggregate keyword stats and top-result supplementation.
- *  3. Calls getCatalogItemParsed(asin) for each discovered ASIN to fetch the full
- *     catalog payload the scraper path depends on.
- *  4. Calls getFeesEstimatesBatch for every priced ASIN in the discovered set.
- *  5. Upserts amazon_products with catalog + fee data for all discovered ASINs.
- *  6. Links each ASIN to the keyword via amazon_keyword_products (idempotent).
- *  7. Persists organic category-rank rows when the category already exists in Fly.
+ *     parseCatalogItem() on each result pre-populates the catalogMap — no per-ASIN API calls.
+ *  3. Calls getFeesEstimatesBatch for every priced ASIN in the discovered set.
+ *  4. Upserts amazon_products with catalog + fee data for all discovered ASINs,
+ *     at most 5 concurrent writes (pooled) to stay within pg connection limits.
+ *  5. Links each ASIN to the keyword via amazon_keyword_products (idempotent).
+ *  6. Persists organic category-rank rows when the category already exists in Fly.
  *
  * This keeps the server-first path self-sufficient for immediate search UX.
  */
 
 import {
     enrichAsin,
-    getCatalogItemParsed,
     searchCatalogItems,
     parseCatalogItem,
 } from '@puckora/sp-api'
 import { SCRAPE_EXECUTOR, SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
+import { pooled } from '@puckora/utils'
 import {
     getKnownAmazonCategoryIds,
     upsertAmazonProduct,
     upsertProductCategoryRanks,
 } from '@/services/products'
 import { updateScrapeJob } from '@/services/scrape'
-import { clearKeywordProducts, updateKeyword, upsertKeywordProduct } from '@/services/keywords'
+import { deleteStaleKeywordProducts, updateKeyword, upsertKeywordProduct } from '@/services/keywords'
 import type { PgDb } from '@puckora/db'
 import type { CatalogItemResult } from '@puckora/sp-api'
 import type { Json } from '@puckora/types'
@@ -95,11 +95,15 @@ export async function runKeywordSearch(
     })
 
     try {
-        // A new run should reflect the current search snapshot, not every ASIN
-        // historically linked to this canonical keyword row.
-        await clearKeywordProducts(db, keywordId)
+        const _t0 = Date.now()
+        const _elapsed = () => `+${((Date.now() - _t0) / 1000).toFixed(2)}s`
+        console.log(`[pipeline:${keyword}] START`)
 
         const itemErrors: string[] = []
+        // Track every ASIN we write so stale links from previous runs can be
+        // removed atomically at the end — keeps existing products visible during
+        // the search instead of clearing them upfront (avoids blank-slate UX).
+        const discoveredAsinSet = new Set<string>()
         let scrapedListings: SearchListingSnapshot[] = []
 
         try {
@@ -126,6 +130,9 @@ export async function runKeywordSearch(
                 console.error(`[keyword-search] failed to persist HTML listing ${scrapedListings[idx].asin}:`, result.reason)
             }
         })
+        // HTML listings are now in the DB; track their ASINs.
+        for (const listing of scrapedListings) discoveredAsinSet.add(listing.asin)
+        console.log(`[pipeline:${keyword}] HTML_DONE ${_elapsed()} — ${scrapedListings.length} listings scraped`)
 
         const previewListingsByAsin = new Map<string, SearchListingSnapshot>()
         for (const listing of scrapedListings) {
@@ -146,6 +153,7 @@ export async function runKeywordSearch(
                 unique_brands: response.refinements?.brands?.length ?? null,
             })
         }
+        console.log(`[pipeline:${keyword}] SPAPI_SEARCH_DONE ${_elapsed()} — ${response?.items.length ?? 0} SP-API items, totalResults=${response?.numberOfResults ?? 'n/a'}`)
 
         const parsedItems = response?.items.map((item, idx) => ({
             item,
@@ -168,18 +176,27 @@ export async function runKeywordSearch(
         const previewListingsForEnrichment = [...previewListingsByAsin.values()]
             .sort((left, right) => (left.rank ?? Number.MAX_SAFE_INTEGER) - (right.rank ?? Number.MAX_SAFE_INTEGER))
 
+        // Build catalogMap exclusively from searchCatalogItems summary data.
+        // parseCatalogItem() returns the same CatalogItemResult type as
+        // getCatalogItemParsed(), with no additional API calls needed.
+        //
+        // HTML-only ASINs (not in the SP-API top-20) get catalog = null.
+        // enrichAsin handles null gracefully: price/rating/title/image come
+        // from the HTML scrape; FBA fees are still estimated from price;
+        // scrape_status = ENRICHMENT_FAILED, which triggers the per-ASIN
+        // enrich route to fill in brand/dimensions later.
+        //
+        // Removing per-ASIN getCatalogItemParsed calls eliminates the source
+        // of real Amazon 429s that previously stalled the pipeline for 60 s+.
         const catalogMap = new Map<string, CatalogItemResult | null>()
-        for (const listing of previewListingsForEnrichment) {
-            try {
-                const catalog = await getCatalogItemParsed(listing.asin, { marketplaceId })
-                catalogMap.set(listing.asin, catalog)
-            } catch (err) {
-                const message = getKeywordSearchItemErrorMessage(err, KEYWORD_SEARCH_ERROR_MESSAGE.CATALOG_FETCH_FAILED)
-                itemErrors.push(`${listing.asin}: ${message}`)
-                catalogMap.set(listing.asin, null)
-                console.error(`[keyword-search] catalog fetch failed for ${listing.asin}:`, err)
-            }
+        for (const { item, parsed } of parsedItems) {
+            catalogMap.set(item.asin, parsed)
+            discoveredAsinSet.add(item.asin)
         }
+
+        const catalogHits = [...catalogMap.entries()].filter(([, v]) => v !== null).length
+        const catalogMisses = [...catalogMap.entries()].filter(([, v]) => v === null).length
+        console.log(`[pipeline:${keyword}] CATALOG_DONE ${_elapsed()} — ${catalogHits} hits, ${catalogMisses} misses, ${previewListingsForEnrichment.length} total ASINs`)
 
         const [knownCategoryIds, feeEstimateMap] = await Promise.all([
             getKnownAmazonCategoryIds(
@@ -192,49 +209,71 @@ export async function runKeywordSearch(
             getFeeEstimateMap(previewListingsForEnrichment, catalogMap, marketplaceId),
         ])
 
-        // Enrich + upsert all ASINs concurrently. The three DB writes per ASIN
-        // are independent of each other — run them in parallel too. SP-API
-        // catalog fetches above remain sequential (rate-limit protection).
-        const enrichSettled = await Promise.allSettled(
-            previewListingsForEnrichment.map(async (listing) => {
-                const catalog = catalogMap.get(listing.asin) ?? null
+        // Enrich + upsert all ASINs with bounded concurrency.
+        // Running all 30 in parallel with Promise.allSettled creates ~90 concurrent
+        // PG queries against the same pool and reliably triggers OOM / connection
+        // exhaustion on constrained Fly.io instances. pooled(items, 5, ...) caps
+        // concurrent enrichments at 5, which keeps the PG pool well within limits
+        // while still being much faster than sequential processing.
+        const enrichResults = await pooled(
+            previewListingsForEnrichment,
+            5,
+            async (listing) => {
+                try {
+                    const catalog = catalogMap.get(listing.asin) ?? null
 
-                const { product, ranks } = enrichAsin(
-                    listing.asin,
-                    {
-                        asin: listing.asin,
-                        rank: listing.rank ?? 0,
-                        name: listing.name,
-                        price: listing.price,
-                        rating: listing.rating,
-                        review_count: listing.review_count,
-                        product_url: listing.product_url,
-                    },
-                    catalog,
-                    feeEstimateMap.get(listing.asin) ?? null,
-                )
+                    const { product, ranks } = enrichAsin(
+                        listing.asin,
+                        {
+                            asin: listing.asin,
+                            rank: listing.rank ?? 0,
+                            name: listing.name,
+                            price: listing.price,
+                            rating: listing.rating,
+                            review_count: listing.review_count,
+                            product_url: listing.product_url,
+                            bought_past_month: listing.bought_past_month ?? null,
+                        },
+                        catalog,
+                        feeEstimateMap.get(listing.asin) ?? null,
+                    )
 
-                const categoryRanks = ranks.filter((r) => knownCategoryIds.has(r.category_id))
+                    const categoryRanks = ranks.filter((r) => knownCategoryIds.has(r.category_id))
 
-                // upsertAmazonProduct must complete first — both FK-dependent
-                // writes (category ranks + keyword link) reference amazon_products.asin.
-                await upsertAmazonProduct(db, {
-                    ...product,
-                    main_image_url: product.main_image_url ?? listing.main_image_url,
-                })
-                await Promise.all([
-                    upsertProductCategoryRanks(db, categoryRanks),
-                    upsertKeywordProduct(db, { keyword_id: keywordId, asin: listing.asin }),
-                ])
-            }),
+                    // upsertAmazonProduct must complete first — both FK-dependent
+                    // writes (category ranks + keyword link) reference amazon_products.asin.
+                    await upsertAmazonProduct(db, {
+                        ...product,
+                        main_image_url: product.main_image_url ?? listing.main_image_url,
+                    })
+                    await Promise.all([
+                        upsertProductCategoryRanks(db, categoryRanks),
+                        upsertKeywordProduct(db, { keyword_id: keywordId, asin: listing.asin }),
+                    ])
+                    discoveredAsinSet.add(listing.asin)
+                    return { ok: true as const, asin: listing.asin }
+                } catch (err) {
+                    return { ok: false as const, asin: listing.asin, error: err }
+                }
+            },
         )
-        enrichSettled.forEach((result, idx) => {
-            if (result.status === 'rejected') {
-                const message = getKeywordSearchItemErrorMessage(result.reason, KEYWORD_SEARCH_ERROR_MESSAGE.WRITE_FAILED)
-                itemErrors.push(`${previewListingsForEnrichment[idx].asin}: ${message}`)
-                console.error(`[keyword-search] failed for ASIN ${previewListingsForEnrichment[idx].asin}:`, result.reason)
+        for (const result of enrichResults) {
+            if (!result.ok) {
+                const message = getKeywordSearchItemErrorMessage(result.error, KEYWORD_SEARCH_ERROR_MESSAGE.WRITE_FAILED)
+                itemErrors.push(`${result.asin}: ${message}`)
+                console.error(`[keyword-search] failed for ASIN ${result.asin}:`, result.error)
             }
-        })
+        }
+
+        const enrichOk = enrichResults.filter((r) => r.ok).length
+        const enrichFail = enrichResults.filter((r) => !r.ok).length
+        console.log(`[pipeline:${keyword}] ENRICH_DONE ${_elapsed()} — ${enrichOk} ok, ${enrichFail} failed, ${discoveredAsinSet.size} total ASINs tracked`)
+
+        // Remove links that belonged to previous runs but weren't found in this
+        // search — old results stayed visible during the run so UX is seamless.
+        if (discoveredAsinSet.size > 0) {
+            await deleteStaleKeywordProducts(db, keywordId, [...discoveredAsinSet])
+        }
 
         if (!response) {
             itemErrors.push(KEYWORD_SEARCH_ERROR_MESSAGE.ENRICHMENT_UNAVAILABLE)
@@ -248,12 +287,18 @@ export async function runKeywordSearch(
             .sort((left, right) => (left.rank ?? Number.MAX_SAFE_INTEGER) - (right.rank ?? Number.MAX_SAFE_INTEGER))
             .map((listing) => buildPreviewListing(listing))
 
+        console.log(`[pipeline:${keyword}] JOB_DONE ${_elapsed()} — marking DONE, ${previewListings.length} listings in result`)
         await updateScrapeJob(supabase, jobId, {
             status: SCRAPE_JOB_STATUS.DONE,
             executor: SCRAPE_EXECUTOR.AGENT,
             error: itemErrors.length > 0 ? itemErrors.slice(0, 3).join('; ') : null,
             completed_at: new Date().toISOString(),
-            result: toKeywordSearchResultJson(previewListings),
+            result: {
+                ...(toKeywordSearchResultJson(previewListings) as object),
+                // Tell the client enrichment is done — stops the isEnriching
+                // polling window that would otherwise run for ENRICHMENT_TIMEOUT_MS.
+                enriched_at: new Date().toISOString(),
+            },
         })
     } catch (err) {
         await updateScrapeJob(supabase, jobId, {

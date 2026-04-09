@@ -25,10 +25,12 @@ type BarChartRowProps = {
     highlight?: boolean
     /** Optional badge label shown after the percentage (e.g. "sweet spot") */
     badge?: string
+    /** Tailwind classes applied to the badge chip; defaults to muted style */
+    badgeClassName?: string
     className?: string
 }
 
-export function BarChartRow({ label, value, highlight = false, badge, className }: BarChartRowProps) {
+export function BarChartRow({ label, value, highlight = false, badge, badgeClassName, className }: BarChartRowProps) {
     const clamped = Math.min(100, Math.max(0, value))
 
     return (
@@ -55,9 +57,12 @@ export function BarChartRow({ label, value, highlight = false, badge, className 
                 {Math.round(clamped)}%
             </Caption>
 
-            {/* Sweet-spot chip — tiny inline annotation matching ValueChip style */}
+            {/* Sweet-spot chip — tiny inline annotation; color driven by badgeClassName */}
             {badge && (
-                <span className="inline-flex items-center rounded-sm bg-brand-subtle px-1.5 py-0.5 text-xs font-semibold leading-none text-primary whitespace-nowrap">
+                <span className={cn(
+                    'inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs font-semibold leading-none whitespace-nowrap',
+                    badgeClassName ?? 'bg-muted/60 text-muted-foreground',
+                )}>
                     {badge}
                 </span>
             )}

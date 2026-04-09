@@ -6,4 +6,4 @@
 -- regardless of whether the parent row exists in the table.
 
 alter table public.amazon_products
-    drop constraint if exists amazon_products_parent_asin_fkey;
+drop constraint if exists amazon_products_parent_asin_fkey;

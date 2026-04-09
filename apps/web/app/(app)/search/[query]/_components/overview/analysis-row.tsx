@@ -1,26 +1,41 @@
 'use client'
 
+import type { ProductFinancial } from '@puckora/types'
 import type { SearchOverviewStats } from '@puckora/utils'
 import type { SearchDataAvailability } from '@/types/search'
-import { BrandDistCard } from './cards/brand-dist-card'
+import { ProductsCard } from './cards/products-card'
 import { PriceDistCard } from './cards/price-dist-card'
-import { TopProductsCard } from './cards/top-products-card'
-import { WeightDistCard } from './cards/weight-dist-card'
+import { MarketShareCard } from './cards/market-share-card'
 
 interface AnalysisRowProps {
+    products: ProductFinancial[]
     stats: SearchOverviewStats
+    query: string
+    marketplace: string
     availability: SearchDataAvailability
 }
 
-export function AnalysisRow({ stats, availability }: AnalysisRowProps) {
+export function AnalysisRow({ products, stats, query, marketplace, availability }: AnalysisRowProps) {
     return (
-        <div className="grid grid-cols-1 gap-2 xl:grid-cols-[0.92fr_1.08fr] xl:flex-1 xl:min-h-0">
-            <TopProductsCard stats={stats} availability={availability} />
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:h-full xl:content-start xl:items-start xl:overflow-hidden">
-                {/*                 <PriceDistCard stats={stats} availability={availability} /> */}
-                {/*                 <WeightDistCard stats={stats} availability={availability} /> */}
-                <BrandDistCard className="md:col-span-2" stats={stats} availability={availability} />
+        <div className="flex flex-row gap-2">
+            {/* Left ~60% — product image rail */}
+            <div className="flex-3 min-w-0">
+                <ProductsCard
+                    products={products}
+                    query={query}
+                    marketplace={marketplace}
+                    availability={availability}
+                />
+            </div>
+            {/* Right ~40% — price distribution + market share */}
+            <div className="flex-2 min-w-0 flex flex-col gap-2">
+                <PriceDistCard stats={stats} availability={availability} />
+                <MarketShareCard
+                    products={products}
+                    availability={availability}
+                />
             </div>
         </div>
     )
 }
+

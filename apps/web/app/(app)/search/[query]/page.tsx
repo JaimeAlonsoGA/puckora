@@ -1,7 +1,8 @@
 import { Suspense } from 'react'
 import { getCachedUser } from '@/server/users'
-import { getCachedKeywordResults } from '@/server/keywords'
+import { getCachedKeyword, getCachedKeywordResults } from '@/server/keywords'
 import { getCachedScrapeJob } from '@/server/scrape'
+import { fromSearchSlug } from '@/constants/routes'
 import { SearchView } from './_components/search-view'
 import { SearchResultsSkeleton } from '@/app/(app)/search/_skeletons/search-results-skeleton'
 
@@ -19,7 +20,7 @@ interface SearchQueryPageProps {
  */
 export default async function SearchQueryPage({ params, searchParams }: SearchQueryPageProps) {
     const [{ query }, { view, job }] = await Promise.all([params, searchParams])
-    const decodedQuery = decodeURIComponent(query)
+    const decodedQuery = fromSearchSlug(query)
 
     return (
         <Suspense fallback={<SearchResultsSkeleton view={view === 'products' ? 'products' : 'overview'} />}>
@@ -42,9 +43,10 @@ async function SearchQueryContent({
     view: 'overview' | 'products'
 }) {
     const user = await getCachedUser()
-    const [products, initialJob] = await Promise.all([
+    const [products, initialJob, keyword] = await Promise.all([
         getCachedKeywordResults(query, user.marketplace),
         jobId ? getCachedScrapeJob(jobId) : Promise.resolve(null),
+        getCachedKeyword(query, user.marketplace),
     ])
 
     return (
@@ -55,6 +57,7 @@ async function SearchQueryContent({
             marketplace={user.marketplace}
             jobId={jobId}
             initialJob={initialJob}
+            totalResults={keyword?.total_results ?? null}
         />
     )
 }
