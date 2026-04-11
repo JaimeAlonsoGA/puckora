@@ -324,6 +324,21 @@
         },
         "relatedKeywords": {
             "context": "Búsquedas relacionadas"
+        },
+        "discover": {
+            "title": "Discover",
+            "subtitle": "Explora el catálogo de Puckora con filtros",
+            "filtersLabel": "Filtros",
+            "clearFilters": "Limpiar filtros",
+            "minPrice": "Precio mínimo",
+            "maxPrice": "Precio máximo",
+            "minRating": "Valoración mínima",
+            "minRevenue": "Ingreso mensual mínimo",
+            "minReviews": "Reseñas mínimas",
+            "apply": "Aplicar",
+            "resultsCount": "{count} productos",
+            "noResults": "Ningún producto coincide con tus filtros. Prueba a relajar los criterios.",
+            "emptyState": "Define filtros para explorar productos del catálogo."
         }
     }
 }

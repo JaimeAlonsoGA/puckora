@@ -98,36 +98,36 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
         after(async () => {
             try {
-            // ── 1. SP-API enrichment for enrichment_failed products ─────────────
-            // Sequential to respect rate limits inside getCatalogItemParsed.
-            if (enrichRepairProducts.length > 0) {
-                console.log(`[repair] Starting SP-API enrichment for ${enrichRepairProducts.length} enrichment_failed products`)
-                try {
-                    const { repairKeywordProductBatch } = await import(
-                        '@/integrations/data-pipeline/enrich'
-                    )
-                    await repairKeywordProductBatch(db, enrichRepairProducts)
-                    console.log(`[repair] SP-API enrichment done: ${enrichRepairProducts.length} products`)
-                } catch (err) {
-                    console.error('[repair] SP-API enrichment batch failed:', err)
+                // ── 1. SP-API enrichment for enrichment_failed products ─────────────
+                // Sequential to respect rate limits inside getCatalogItemParsed.
+                if (enrichRepairProducts.length > 0) {
+                    console.log(`[repair] Starting SP-API enrichment for ${enrichRepairProducts.length} enrichment_failed products`)
+                    try {
+                        const { repairKeywordProductBatch } = await import(
+                            '@/integrations/data-pipeline/enrich'
+                        )
+                        await repairKeywordProductBatch(db, enrichRepairProducts)
+                        console.log(`[repair] SP-API enrichment done: ${enrichRepairProducts.length} products`)
+                    } catch (err) {
+                        console.error('[repair] SP-API enrichment batch failed:', err)
+                    }
                 }
-            }
 
-            // ── 2. BPM repair via product page scraping ─────────────────────────
-            // Concurrent in batches of 5, 300ms delay between batches.
-            if (bpmRepairProducts.length > 0) {
-                console.log(`[repair] Starting BPM repair for ${bpmRepairProducts.length} products`)
-                try {
-                    const { repairBpmBatch } = await import('@/integrations/data-pipeline/bpm-repair')
-                    await repairBpmBatch(
-                        db,
-                        bpmRepairProducts.map((r) => r.asin),
-                    )
-                    console.log(`[repair] BPM repair done`)
-                } catch (err) {
-                    console.error('[repair] BPM scrape batch failed:', err)
+                // ── 2. BPM repair via product page scraping ─────────────────────────
+                // Concurrent in batches of 5, 300ms delay between batches.
+                if (bpmRepairProducts.length > 0) {
+                    console.log(`[repair] Starting BPM repair for ${bpmRepairProducts.length} products`)
+                    try {
+                        const { repairBpmBatch } = await import('@/integrations/data-pipeline/bpm-repair')
+                        await repairBpmBatch(
+                            db,
+                            bpmRepairProducts.map((r) => r.asin),
+                        )
+                        console.log(`[repair] BPM repair done`)
+                    } catch (err) {
+                        console.error('[repair] BPM scrape batch failed:', err)
+                    }
                 }
-            }
             } finally {
                 repairRunning = false
             }

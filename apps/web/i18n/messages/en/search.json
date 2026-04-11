@@ -323,6 +323,21 @@
         },
         "relatedKeywords": {
             "context": "Related searches"
+        },
+        "discover": {
+            "title": "Discover",
+            "subtitle": "Browse Puckora's catalog with filters",
+            "filtersLabel": "Filters",
+            "clearFilters": "Clear filters",
+            "minPrice": "Min price",
+            "maxPrice": "Max price",
+            "minRating": "Min rating",
+            "minRevenue": "Min monthly revenue",
+            "minReviews": "Min reviews",
+            "apply": "Apply",
+            "resultsCount": "{count} products",
+            "noResults": "No products match your filters. Try relaxing the constraints.",
+            "emptyState": "Set filters above to browse catalog products."
         }
     }
 }

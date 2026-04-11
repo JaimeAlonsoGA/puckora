@@ -60,12 +60,12 @@ function mapViewRowToFinancial(
 ): ProductFinancial {
     return {
         ...row,
-        total_amazon_fees:     parseNum(row.total_amazon_fees),
-        amazon_fee_pct:        parseNum(row.amazon_fee_pct),
-        net_per_unit:          parseNum(row.net_per_unit),
-        monthly_revenue:       parseNum(row.monthly_revenue),
-        monthly_net:           parseNum(row.monthly_net),
-        daily_velocity:        parseNum(row.daily_velocity),
+        total_amazon_fees: parseNum(row.total_amazon_fees),
+        amazon_fee_pct: parseNum(row.amazon_fee_pct),
+        net_per_unit: parseNum(row.net_per_unit),
+        monthly_revenue: parseNum(row.monthly_revenue),
+        monthly_net: parseNum(row.monthly_net),
+        daily_velocity: parseNum(row.daily_velocity),
         review_rate_per_month: parseNum(row.review_rate_per_month),
     }
 }

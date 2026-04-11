@@ -5,13 +5,15 @@
  * Route Handlers, and background jobs with a shared singleton.
  */
 
-import { and, eq, inArray, isNull, isNotNull, notExists, or, asc, desc, sql } from 'drizzle-orm'
+import { and, eq, gte, inArray, isNull, isNotNull, lte, notExists, or, asc, desc, sql } from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
 import {
     type PgDb,
     amazonCategories,
     amazonKeywordProducts,
     amazonProducts,
     productCategoryRanks,
+    productFinancialsView,
 } from '@puckora/db'
 import type {
     AmazonProduct,
@@ -19,8 +21,10 @@ import type {
     AmazonProductUpdate,
     ProductCategoryRank,
     ProductCategoryRankInsert,
+    ProductFinancial,
 } from '@puckora/types'
 import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
+import type { DiscoverFilters } from '@/schemas/discover'
 
 type AmazonProductColumnName = keyof typeof amazonProducts['_']['columns']
 
@@ -317,4 +321,59 @@ export async function getProductCategoryRanks(
         .where(eq(productCategoryRanks.asin, asin))
         .orderBy(desc(productCategoryRanks.observed_at))
     return rows as ProductCategoryRank[]
+}
+
+// ---------------------------------------------------------------------------
+// Discover
+// ---------------------------------------------------------------------------
+
+/** Parse a Postgres NUMERIC value (Drizzle returns it as a string) to number | null. */
+function parseNum(val: string | null | undefined): number | null {
+    if (val == null) return null
+    const n = parseFloat(val)
+    return Number.isFinite(n) ? n : null
+}
+
+function mapViewRowToFinancial(
+    row: typeof productFinancialsView.$inferSelect,
+): ProductFinancial {
+    return {
+        ...row,
+        total_amazon_fees: parseNum(row.total_amazon_fees),
+        amazon_fee_pct: parseNum(row.amazon_fee_pct),
+        net_per_unit: parseNum(row.net_per_unit),
+        monthly_revenue: parseNum(row.monthly_revenue),
+        monthly_net: parseNum(row.monthly_net),
+        daily_velocity: parseNum(row.daily_velocity),
+        review_rate_per_month: parseNum(row.review_rate_per_month),
+    }
+}
+
+/**
+ * Return products from the product_financials view matching the given filters.
+ * Used by /search/discover.
+ */
+export async function discoverProducts(
+    db: PgDb,
+    filters: DiscoverFilters,
+): Promise<ProductFinancial[]> {
+    const conditions: SQL[] = []
+
+    if (filters.minPrice != null) conditions.push(gte(productFinancialsView.price, filters.minPrice))
+    if (filters.maxPrice != null) conditions.push(lte(productFinancialsView.price, filters.maxPrice))
+    if (filters.minRating != null) conditions.push(gte(productFinancialsView.rating, filters.minRating))
+    if (filters.minReviews != null) conditions.push(gte(productFinancialsView.review_count, filters.minReviews))
+    // monthly_revenue is a numeric column — Drizzle infers it as string | null, compare as string
+    if (filters.minRevenue != null) {
+        conditions.push(gte(productFinancialsView.monthly_revenue, String(filters.minRevenue)))
+    }
+
+    const rows = await db
+        .select()
+        .from(productFinancialsView)
+        .where(conditions.length > 0 ? and(...conditions) : undefined)
+        .orderBy(desc(productFinancialsView.monthly_revenue))
+        .limit(filters.limit)
+
+    return rows.map(mapViewRowToFinancial)
 }

@@ -11,7 +11,9 @@ import { createFlyioDb } from '@/integrations/flyio/client'
 import {
     getAmazonProductByAsin,
     getProductsNeedingEnrichment,
+    discoverProducts,
 } from '@/services/products'
+import type { DiscoverFilters } from '@/schemas/discover'
 
 /**
  * Fetch a product by ASIN. Deduplicated per request.
@@ -19,6 +21,15 @@ import {
 export const cachedGetProductByAsin = cache(async (asin: string) => {
     const db = createFlyioDb()
     return getAmazonProductByAsin(db, asin)
+})
+
+/**
+ * Fetch products from the product_financials view matching filters.
+ * Used by /search/discover. Deduplicated per request.
+ */
+export const getCachedDiscoverProducts = cache(async (filters: DiscoverFilters) => {
+    const db = createFlyioDb()
+    return discoverProducts(db, filters)
 })
 
 /**
