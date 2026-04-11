@@ -3,7 +3,7 @@ import { getCachedUser } from '@/server/users'
 import { getCachedProductByAsin } from '@/server/amazon-product'
 import { cachedGetProductByAsin } from '@/server/products'
 import { SearchResultsSkeleton } from '../../_skeletons/search-results-skeleton'
-import { ProductShell } from '../../[asin]/_components/product-shell'
+import { ProductShell } from './_components/product-shell'
 
 interface SearchAsinPageProps {
     params: Promise<{ asin: string }>

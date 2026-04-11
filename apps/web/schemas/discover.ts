@@ -11,7 +11,7 @@ export const DiscoverFiltersSchema = z.object({
     minRating: z.coerce.number().min(0).max(5).optional(),
     minRevenue: z.coerce.number().nonnegative().optional(),
     minReviews: z.coerce.number().int().nonnegative().optional(),
-    limit: z.coerce.number().int().min(1).max(100).default(50),
+    limit: z.coerce.number().int().min(1).max(100).default(100),
 })
 
 export type DiscoverFilters = z.infer<typeof DiscoverFiltersSchema>

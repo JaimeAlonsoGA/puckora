@@ -3,7 +3,7 @@ import { getCachedUser } from '@/server/users'
 import { getCachedKeyword, getCachedKeywordResults } from '@/server/keywords'
 import { getCachedScrapeJob } from '@/server/scrape'
 import { fromSearchSlug } from '@/constants/routes'
-import { SearchOverviewShell } from '../../[query]/_components/search-overview-shell'
+import { SearchOverviewShell } from './_components/search-overview-shell'
 import { SearchResultsSkeleton } from '../../_skeletons/search-results-skeleton'
 
 interface SearchKeywordPageProps {
