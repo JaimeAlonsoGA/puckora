@@ -74,66 +74,25 @@ export function SearchActionPillsSkeleton() {
     )
 }
 
-export function SearchToolbarSkeleton() {
-    return (
-        <div className="flex shrink-0 flex-wrap items-center gap-2 border-b-hairline bg-background px-4 py-2">
-            <SkeletonBlock className="h-4 w-16" />
-            <SkeletonBlock className="h-4 w-3" />
-            <SkeletonBlock className="h-4 w-28" />
-            <SkeletonBlock className="h-8 w-20 rounded-md" />
-            <SkeletonBlock className="ml-auto h-4 w-24" />
-        </div>
-    )
-}
-
-export function SearchTableHeaderSkeleton() {
-    return (
-        <div className="grid shrink-0 product-row-grid gap-1.5 border-b-hairline-default bg-background px-4 py-1.75">
-            {Array.from({ length: 7 }).map((_, index) => (
-                <SkeletonBlock key={index} className="h-4 w-full" />
-            ))}
-        </div>
-    )
-}
-
-export function SearchTableRowsSkeleton({ rows = 8 }: { rows?: number }) {
-    return (
-        <div className="flex-1 overflow-hidden bg-background">
-            {Array.from({ length: rows }).map((_, index) => (
-                <div key={index} className="grid product-row-grid gap-1.5 border-b-hairline px-4 py-2">
-                    <div className="space-y-1">
-                        <SkeletonBlock className="h-4 w-[82%]" />
-                        <SkeletonBlock className="h-3.5 w-28" />
-                    </div>
-                    <SkeletonBlock className="h-4 w-12" />
-                    <SkeletonBlock className="h-4 w-14" />
-                    <SkeletonBlock className="h-4 w-16" />
-                    <SkeletonBlock className="h-4 w-14" />
-                    <SkeletonBlock className="h-4 w-14" />
-                    <SkeletonPill className="h-7 w-20 justify-self-end" />
-                </div>
-            ))}
-        </div>
-    )
-}
-
 export function SearchOverviewSkeleton() {
     return (
         <OverviewLayout>
             <OverviewSidebar>
-                <div className="bg-dark-panel rounded-xl px-4 py-4.5 flex flex-col gap-3 animate-pulse">
-                    <SkeletonBlock className="h-3 w-24 bg-white/10" />
-                    <SkeletonBlock className="h-6 w-40 bg-white/10" />
-                    <SkeletonBlock className="h-3 w-28 bg-white/10" />
-                    <div className="mt-2 flex flex-col gap-2">
-                        {Array.from({ length: 4 }).map((_, index) => (
-                            <div key={index} className="flex items-center justify-between">
-                                <SkeletonBlock className="h-3.5 w-28 bg-white/10" />
-                                <SkeletonBlock className="h-5 w-16 rounded-sm bg-white/10" />
-                            </div>
-                        ))}
+                <SkeletonPanel className="px-4 py-4.5">
+                    <div className="flex flex-col gap-3">
+                        <SkeletonBlock className="h-3 w-24" />
+                        <SkeletonBlock className="h-6 w-40" />
+                        <SkeletonBlock className="h-3 w-28" />
+                        <div className="mt-2 flex flex-col gap-2">
+                            {Array.from({ length: 4 }).map((_, index) => (
+                                <div key={index} className="flex items-center justify-between">
+                                    <SkeletonBlock className="h-3.5 w-28" />
+                                    <SkeletonBlock className="h-5 w-16 rounded-sm" />
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                </SkeletonPanel>
             </OverviewSidebar>
 
             <OverviewMain>
@@ -170,25 +129,6 @@ export function SearchOverviewSkeleton() {
     )
 }
 
-export function SearchProductsSkeleton({ rows = 8 }: { rows?: number }) {
-    return (
-        <>
-            <SearchToolbarSkeleton />
-            <SearchTableHeaderSkeleton />
-            <SearchTableRowsSkeleton rows={rows} />
-        </>
-    )
-}
-
-interface SearchResultsSkeletonProps {
-    view?: 'overview' | 'products'
-    rows?: number
-}
-
-export function SearchResultsSkeleton({ view = 'overview', rows = 8 }: SearchResultsSkeletonProps) {
-    if (view === 'products') {
-        return <SearchProductsSkeleton rows={rows} />
-    }
-
+export function SearchResultsSkeleton() {
     return <SearchOverviewSkeleton />
 }

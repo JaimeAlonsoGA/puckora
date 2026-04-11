@@ -11,13 +11,14 @@ import {
 } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 import { LayoutList, PieChart } from 'lucide-react'
-import { Button, Caption, DataCard } from '@puckora/ui'
-import { cn, formatMoney } from '@puckora/utils'
+import { Caption, DataCard } from '@puckora/ui'
+import { formatMoney } from '@puckora/utils'
 import type { ProductFinancial } from '@puckora/types'
 import type { SearchDataAvailability } from '@/types/search'
 import { SearchDataCardSkeleton } from '@/app/(app)/search/_skeletons/search-results-skeleton'
 import { useHoverTutorial } from '@/hooks/use-hover-tutorial'
 import { TUTORIAL_KEYS } from '@/constants/tutorial'
+import { CardViewToggle } from './card-view-toggle'
 
 ChartJS.register(ArcElement, Tooltip)
 
@@ -58,14 +59,14 @@ interface BrandEntry {
     products: ProductFinancial[]
 }
 
-function buildBrandEntries(products: ProductFinancial[]): BrandEntry[] {
+function buildBrandEntries(products: ProductFinancial[], unbrandedLabel: string): BrandEntry[] {
     const map = new Map<string, BrandEntry>()
 
     // Count ALL products per brand; only accumulate revenue + push to products[] when revenue > 0
     for (const product of products) {
         const raw = product.brand?.trim()
         const key = raw || '__unbranded__'
-        const name = raw || 'Unbranded'
+        const name = raw || unbrandedLabel
         if (!map.has(key)) {
             map.set(key, { key, name, totalRevenue: 0, count: 0, color: PALETTE[6], products: [] })
         }
@@ -120,15 +121,33 @@ interface MarketShareCardProps {
     className?: string
 }
 
+const MARKET_SHARE_VIEW_IDS = {
+    DONUT: 'donut',
+    TABLE: 'table',
+} as const
+
+type MarketShareViewId = (typeof MARKET_SHARE_VIEW_IDS)[keyof typeof MARKET_SHARE_VIEW_IDS]
+
+const MARKET_SHARE_VIEW_OPTIONS = [
+    {
+        value: MARKET_SHARE_VIEW_IDS.DONUT,
+        icon: <PieChart aria-hidden="true" className="size-3.5" />,
+    },
+    {
+        value: MARKET_SHARE_VIEW_IDS.TABLE,
+        icon: <LayoutList aria-hidden="true" className="size-3.5" />,
+    },
+] as const
+
 export function MarketShareCard({ products, availability, className }: MarketShareCardProps) {
     const t = useTranslations('search')
     const tutorial = useHoverTutorial(TUTORIAL_KEYS.MARKET_SHARE)
-    const [view, setView] = useState<'donut' | 'table'>('donut')
+    const [view, setView] = useState<MarketShareViewId>(MARKET_SHARE_VIEW_IDS.DONUT)
 
-    const { chartData, legendItems, outerProducts, innerBrands } = useMemo(() => {
-        const entries = buildBrandEntries(products)
+    const { chartData, outerProducts, innerBrands } = useMemo(() => {
+        const entries = buildBrandEntries(products, t('brands.unbranded'))
         if (entries.length === 0) {
-            return { chartData: null as ChartData<'doughnut'> | null, legendItems: [], outerProducts: [] as OuterProduct[], innerBrands: [] as InnerBrand[] }
+            return { chartData: null as ChartData<'doughnut'> | null, outerProducts: [] as OuterProduct[], innerBrands: [] as InnerBrand[] }
         }
 
         // Donut only shows brands with actual revenue — zero-revenue brands stay in table only
@@ -178,13 +197,6 @@ export function MarketShareCard({ products, availability, className }: MarketSha
             ],
         }
 
-        // Legend uses all entries (including zero-revenue), table view uses innerBrands = all entries
-        const legendItems = entries.map((b) => ({
-            name: b.name,
-            count: b.count,
-            color: b.color,
-        }))
-
         // Brands table shows all entries sorted correctly (revenue desc, zero-rev last)
         const allBrandEntries: InnerBrand[] = entries.map((e) => ({
             name: e.name,
@@ -193,8 +205,8 @@ export function MarketShareCard({ products, availability, className }: MarketSha
             color: e.color,
         }))
 
-        return { chartData, legendItems, outerProducts, innerBrands: allBrandEntries }
-    }, [products])
+        return { chartData, outerProducts, innerBrands: allBrandEntries }
+    }, [products, t])
 
     const options = useMemo((): ChartOptions<'doughnut'> => ({
         responsive: true,
@@ -225,37 +237,24 @@ export function MarketShareCard({ products, availability, className }: MarketSha
     }), [outerProducts, innerBrands])
 
     if (!availability.hasFinancials) return <SearchDataCardSkeleton rows={3} />
-    if (!chartData || legendItems.length === 0) return null
+    if (!chartData || innerBrands.length === 0) return null
 
     return (
         <DataCard
             className={className}
             title={t('brands.marketShare')}
             headerAction={
-                <div className="flex items-center gap-0.5">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn('h-6 w-6 p-0', view === 'donut' && 'bg-accent text-accent-foreground')}
-                        onClick={() => setView('donut')}
-                    >
-                        <PieChart aria-hidden="true" className="size-3.5" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn('h-6 w-6 p-0', view === 'table' && 'bg-accent text-accent-foreground')}
-                        onClick={() => setView('table')}
-                    >
-                        <LayoutList aria-hidden="true" className="size-3.5" />
-                    </Button>
-                </div>
+                <CardViewToggle
+                    options={MARKET_SHARE_VIEW_OPTIONS}
+                    value={view}
+                    onChange={setView}
+                />
             }
             {...tutorial}
         >
             {/* Fixed-height wrapper — both views occupy identical vertical space */}
             <div className="h-60">
-                {view === 'donut' ? (
+                {view === MARKET_SHARE_VIEW_IDS.DONUT ? (
                     /* Doughnut — centered in fixed height; canvas is a square inside max-w-60 */
                     <div className="flex h-full items-center justify-center">
                         <div className="relative w-full max-w-60 overflow-visible">

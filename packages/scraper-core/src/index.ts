@@ -43,6 +43,7 @@ export type {
 // ─── PARSERS (HTML string-based) ──────────────────────────────────────────────
 export {
     parseProducts,
+    parseBoughtPastMonth,
     countBadges,
     parsePrice,
     parseRating,

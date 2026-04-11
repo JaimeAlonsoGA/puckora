@@ -13,7 +13,7 @@
  * Supabase instance (scrape_jobs stays on Supabase). Callers must provide both.
  */
 
-import { eq, and, inArray, notInArray, sql } from 'drizzle-orm'
+import { eq, and, asc, inArray, isNull, notInArray, or, sql } from 'drizzle-orm'
 import { type PgDb, amazonKeywords, amazonKeywordProducts, amazonProducts, productFinancialsView } from '@puckora/db'
 import type {
     AmazonProduct,
@@ -23,6 +23,8 @@ import type {
     AmazonKeywordProductInsert,
     ProductFinancial,
 } from '@puckora/types'
+import { SEARCH_RESULT_REPAIR_FIELDS } from '@/constants/search'
+import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
 import { parseAmazonSearchJobPayload } from '@/schemas/scrape'
 import { getScrapeJob } from '@/services/scrape'
 import type { SupabaseDatabaseClient } from '@/integrations/supabase/types'
@@ -221,6 +223,75 @@ export async function deleteStaleKeywordProducts(
                 notInArray(amazonKeywordProducts.asin, discoveredAsins),
             ),
         )
+}
+
+/**
+ * Return linked amazon_products rows whose current DB state still looks
+ * incomplete for the search UI and should be retried via SP-API enrichment.
+ */
+export async function listKeywordProductsNeedingRepair(
+    db: PgDb,
+    keywordId: string,
+    limit: number,
+): Promise<AmazonProduct[]> {
+    try {
+        const rows = await db
+            .select({
+                asin: amazonProducts.asin,
+                title: amazonProducts.title,
+                brand: amazonProducts.brand,
+                manufacturer: amazonProducts.manufacturer,
+                price: amazonProducts.price,
+                rating: amazonProducts.rating,
+                review_count: amazonProducts.review_count,
+                main_image_url: amazonProducts.main_image_url,
+                product_url: amazonProducts.product_url,
+                product_type: amazonProducts.product_type,
+                color: amazonProducts.color,
+                model_number: amazonProducts.model_number,
+                package_quantity: amazonProducts.package_quantity,
+                bullet_points: amazonProducts.bullet_points,
+                browse_node_id: amazonProducts.browse_node_id,
+                listing_date: amazonProducts.listing_date,
+                item_length_cm: amazonProducts.item_length_cm,
+                item_width_cm: amazonProducts.item_width_cm,
+                item_height_cm: amazonProducts.item_height_cm,
+                item_weight_kg: amazonProducts.item_weight_kg,
+                pkg_length_cm: amazonProducts.pkg_length_cm,
+                pkg_width_cm: amazonProducts.pkg_width_cm,
+                pkg_height_cm: amazonProducts.pkg_height_cm,
+                pkg_weight_kg: amazonProducts.pkg_weight_kg,
+                parent_asin: amazonProducts.parent_asin,
+                bought_past_month: amazonProducts.bought_past_month,
+                fba_fee: amazonProducts.fba_fee,
+                referral_fee: amazonProducts.referral_fee,
+                embedding: amazonProducts.embedding,
+                scrape_status: amazonProducts.scrape_status,
+                enriched_at: amazonProducts.enriched_at,
+                created_at: amazonProducts.created_at,
+                updated_at: amazonProducts.updated_at,
+            })
+            .from(amazonKeywordProducts)
+            .innerJoin(amazonProducts, eq(amazonKeywordProducts.asin, amazonProducts.asin))
+            .where(
+                and(
+                    eq(amazonKeywordProducts.keyword_id, keywordId),
+                    or(
+                        eq(amazonProducts.scrape_status, 'scraped'),
+                        eq(amazonProducts.scrape_status, 'enrichment_failed'),
+                        isNull(amazonProducts.enriched_at),
+                        ...SEARCH_RESULT_REPAIR_FIELDS.map((field) => isNull(amazonProducts[field])),
+                    ),
+                ),
+            )
+            .orderBy(asc(amazonProducts.updated_at))
+            .limit(limit)
+
+        return rows as AmazonProduct[]
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error'
+        throw new Error(`${SERVICE_ERROR_PREFIXES.LIST_KEYWORD_PRODUCTS_NEEDING_REPAIR_FAILED}: ${message}`)
+    }
 }
 
 /**

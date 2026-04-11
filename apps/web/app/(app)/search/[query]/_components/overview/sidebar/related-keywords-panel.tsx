@@ -3,12 +3,20 @@
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
-import { DarkPanel } from '@puckora/ui'
+import { Caption, DarkPanel } from '@puckora/ui'
 import { cn } from '@puckora/utils'
 import { keywordSuggestionsQueryOptions } from '@/queries'
-import { AppRoute } from '@/constants/routes'
+import { searchQueryRoute } from '@/constants/routes'
 import { useHoverTutorial } from '@/hooks/use-hover-tutorial'
 import { TUTORIAL_KEYS } from '@/constants/tutorial'
+
+const RELATED_KEYWORD_SKELETON_COUNT = 4
+const RELATED_KEYWORD_LINK_CLASS_NAME = cn(
+    'flex items-center gap-2 rounded-md px-3 py-1.5 transition-colors',
+    'bg-white/8 hover:bg-white/14',
+    'text-sm text-white/70 hover:text-white/95',
+    'leading-snug truncate',
+)
 
 interface RelatedKeywordsPanelProps {
     query: string
@@ -31,7 +39,7 @@ export function RelatedKeywordsPanel({ query }: RelatedKeywordsPanelProps) {
             >
                 <div className="mt-4 flex flex-col gap-2">
                     {isPending
-                        ? Array.from({ length: 4 }).map((_, i) => (
+                        ? Array.from({ length: RELATED_KEYWORD_SKELETON_COUNT }).map((_, i) => (
                             <div
                                 key={i}
                                 className="h-8 w-full animate-pulse rounded-md bg-white/10"
@@ -44,16 +52,11 @@ export function RelatedKeywordsPanel({ query }: RelatedKeywordsPanelProps) {
                             return (
                                 <Link
                                     key={keyword}
-                                    href={`${AppRoute.search}/${encodeURIComponent(label.trim())}`}
-                                    className={cn(
-                                        'flex items-center gap-2 rounded-md px-3 py-1.5',
-                                        'bg-white/8 hover:bg-white/14 transition-colors',
-                                        'text-sm text-white/70 hover:text-white/95',
-                                        'leading-snug truncate',
-                                    )}
+                                    href={searchQueryRoute(label)}
+                                    className={RELATED_KEYWORD_LINK_CLASS_NAME}
                                 >
-                                    <span className="shrink-0 text-xs text-white/30">→</span>
-                                    <span className="truncate">{label}</span>
+                                    <Caption as="span" className="shrink-0 text-white/30">→</Caption>
+                                    <Caption as="span" className="truncate text-white/70">{label}</Caption>
                                 </Link>
                             )
                         })

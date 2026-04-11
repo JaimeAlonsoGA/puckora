@@ -8,7 +8,7 @@ import { ResearchGraph, useResearchGraph } from '@puckora/research-graph'
 import { Caption } from '@puckora/ui'
 import { MODULE_IDS } from '@/constants/app-state'
 import { useAppStore } from '@/lib/store'
-import { AppRoute, searchQueryRoute } from '@/constants/routes'
+import { AppRoute, searchProductRoute, searchQueryRoute } from '@/constants/routes'
 
 function getNodeById(session: ResearchSession, nodeId: string | null | undefined): ResearchNode | null {
     if (!nodeId) return null
@@ -24,10 +24,6 @@ function resolveNearestQuery(session: ResearchSession, nodeId: string | null | u
     }
 
     return null
-}
-
-function buildSearchProductsHref(query: string): Route {
-    return `${searchQueryRoute(query)}?view=products` as Route
 }
 
 export function ResearchGraphPanel() {
@@ -58,9 +54,7 @@ export function ResearchGraphPanel() {
         if (node.type === 'product' && node.meta.asin) {
             const query = node.meta.query ?? resolveNearestQuery(session, node.id)
             setPuckiContext({ currentAsin: node.meta.asin, currentQuery: query ?? undefined, currentModule: MODULE_IDS.SEARCH })
-            if (query) {
-                router.push(buildSearchProductsHref(query))
-            }
+            router.push(searchProductRoute(node.meta.asin) as Route)
         }
     }
 
@@ -78,9 +72,7 @@ export function ResearchGraphPanel() {
         if (suggestion.type === 'product' && suggestion.meta.asin) {
             const query = suggestion.meta.query ?? resolveNearestQuery(session, suggestion.parentId)
             setPuckiContext({ currentAsin: suggestion.meta.asin, currentQuery: query ?? undefined, currentModule: MODULE_IDS.SEARCH })
-            if (query) {
-                router.push(buildSearchProductsHref(query))
-            }
+            router.push(searchProductRoute(suggestion.meta.asin) as Route)
         }
     }
 

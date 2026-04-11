@@ -7,7 +7,16 @@
             "fallbackDisplayName": "there",
             "subtitle": "Where do you want to start today?",
             "placeholder": "e.g. ceramic pet bowl, cat toys or B0FHQVRKL2…",
-            "searchButton": "Search"
+            "placeholderKeyword": "e.g. ceramic pet bowl, cat toys…",
+            "placeholderAsin": "Paste one Amazon ASIN or product URL…",
+            "searchButton": "Search",
+            "keywordHint": "Run a competitive keyword search and open the overview when results land.",
+            "asinHint": "Paste one ASIN or a product URL. We will normalize it and open the product view directly.",
+            "asinReady": "Ready to open product {asin}.",
+            "asinSingleOnly": "ASIN mode accepts one product only.",
+            "asinInvalid": "Enter one valid Amazon ASIN or product URL.",
+            "pendingLabel": "Launching search",
+            "keywordLaunchFailed": "Failed to launch keyword search"
         },
         "tabs": {
             "keyword": "Keyword",
@@ -17,10 +26,13 @@
             "filter": "Filter"
         },
         "inputMode": {
-            "text": "Text Search",
-            "textDesc": "Search by keyword or Amazon ASIN",
-            "constraints": "Explore",
-            "constraintsDesc": "Browse the Puckora database by product constraints"
+            "keyword": "Keyword",
+            "keywordDesc": "Run a competitive keyword search on Amazon",
+            "asin": "ASIN",
+            "asinDesc": "Open one product directly from an ASIN or product URL",
+            "discover": "Discover",
+            "discoverDesc": "Browse Puckora's catalog with product filters",
+            "soon": "Soon"
         },
         "actions": {
             "addPucki": "With Pucki",
@@ -178,16 +190,23 @@
             "tooltipTitle": "Brand concentration",
             "tooltip": "Shows how much of the market each leading brand controls. Fewer dominant brands usually means a tighter competitive moat.",
             "summary": "Top brand share across {count} competing brands",
-            "marketShare": "Market Share"
+            "marketShare": "Market Share",
+            "unbranded": "Unbranded"
         },
         "products": {
             "colProduct": "Product",
             "colPrice": "Price",
+            "colSalesPerDay": "Sales/day",
             "colUnits": "Mo. units",
             "colRevenue": "Mo. revenue",
             "colNet": "Net/unit",
             "colFee": "FBA fee",
             "colMark": "Mark",
+            "metaBrand": "Brand",
+            "metaWeight": "Weight",
+            "metaFba": "FBA",
+            "metaReferral": "Referral",
+            "viewProduct": "View product",
             "notePlaceholder": "Add a note about this product…"
         },
         "productStats": {

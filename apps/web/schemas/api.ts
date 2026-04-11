@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { WEB_MARKETPLACE_IDS, DEFAULT_WEB_MARKETPLACE } from '@/constants/amazon-marketplace'
+import { SEARCH_QUERY_LENGTH } from '@/constants/search'
 
 export const MarketplaceSearchParamsSchema = z.object({
     marketplace: z.enum(WEB_MARKETPLACE_IDS).default(DEFAULT_WEB_MARKETPLACE),
@@ -15,6 +16,17 @@ export const ProductSearchParamsSchema = z.object({
     marketplace: z.enum(WEB_MARKETPLACE_IDS).default(DEFAULT_WEB_MARKETPLACE),
 })
 
+export const KeywordSuggestionsBodySchema = z.object({
+    query: z.string().trim().min(SEARCH_QUERY_LENGTH.MIN).max(SEARCH_QUERY_LENGTH.MAX),
+})
+
+export const KeywordResultsRepairBodySchema = z.object({
+    keyword: z.string().trim().min(SEARCH_QUERY_LENGTH.MIN).max(SEARCH_QUERY_LENGTH.MAX),
+    marketplace: z.enum(WEB_MARKETPLACE_IDS).default(DEFAULT_WEB_MARKETPLACE),
+})
+
 export type MarketplaceSearchParams = z.infer<typeof MarketplaceSearchParamsSchema>
 export type KeywordResultsSearchParams = z.infer<typeof KeywordResultsSearchParamsSchema>
 export type ProductSearchParams = z.infer<typeof ProductSearchParamsSchema>
+export type KeywordSuggestionsBody = z.infer<typeof KeywordSuggestionsBodySchema>
+export type KeywordResultsRepairBody = z.infer<typeof KeywordResultsRepairBodySchema>

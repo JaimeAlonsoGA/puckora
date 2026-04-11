@@ -12,6 +12,9 @@ export const AppRoute = {
     signup: '/signup',
     /** Module routes */
     search: '/search',
+    searchKeyword: '/search/keyword',
+    searchAsin: '/search/asin',
+    searchDiscover: '/search/discover',
     suppliers: '/suppliers',
     notebook: '/notebook',
     tools: '/tools',
@@ -60,12 +63,21 @@ export function fromSearchSlug(slug: string): string {
     return decoded.replace(/--/g, '\x00').replace(/-/g, ' ').replace(/\x00/g, '-')
 }
 
-/** Dynamic route to a specific product within a keyword search context. */
-export const searchProductRoute = (query: string, asin: string | null | undefined): string => {
+/** Dynamic route to a product detail page. URL: /search/asin/[asin]. */
+export const searchAsinRoute = (asin: string | null | undefined): string => {
     if (!asin) return AppRoute.search
-    return `/search/${toSearchSlug(query)}/product/${asin}`
+    return `${AppRoute.searchAsin}/${asin}`
 }
 
-/** Dynamic route to keyword search results page. */
-export const searchQueryRoute = (keyword: string): string =>
-    `${AppRoute.search}/${toSearchSlug(keyword)}`
+/** Dynamic route to keyword search results page. URL: /search/keyword/[query]. */
+export const searchKeywordRoute = (keyword: string): string =>
+    `${AppRoute.searchKeyword}/${toSearchSlug(keyword)}`
+
+/** Discover results root. Search params will provide filters when enabled. */
+export const searchDiscoverRoute = (): string => AppRoute.searchDiscover
+
+/** Backward-compatible alias for keyword route generation. */
+export const searchQueryRoute = (keyword: string): string => searchKeywordRoute(keyword)
+
+/** Backward-compatible alias for ASIN route generation. */
+export const searchProductRoute = (asin: string | null | undefined): string => searchAsinRoute(asin)

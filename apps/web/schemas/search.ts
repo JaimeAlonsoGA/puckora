@@ -5,6 +5,7 @@ import { z } from 'zod'
 import {
     BUDGET_RANGE_VALUES,
     PRICE_RANGE_VALUES,
+    SEARCH_QUERY_LENGTH,
     SEARCH_MARK_STATE_VALUES,
     SEARCH_MODE_VALUES,
     WEIGHT_RANGE_VALUES,
@@ -12,7 +13,7 @@ import {
 import { WEB_MARKETPLACE_IDS } from '@/constants/amazon-marketplace'
 
 export const SearchQuerySchema = z.object({
-    q: z.string().min(1).max(200),
+    q: z.string().min(SEARCH_QUERY_LENGTH.MIN).max(SEARCH_QUERY_LENGTH.MAX),
     mode: z.enum(SEARCH_MODE_VALUES).optional(),
     categoryId: z.string().optional(),
     page: z.coerce.number().int().min(1).default(1),

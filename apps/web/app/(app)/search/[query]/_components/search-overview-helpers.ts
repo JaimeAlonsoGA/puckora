@@ -1,25 +1,19 @@
-import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
 import type { ProductFinancial } from '@puckora/types'
-import { buildAmazonProductUrl } from '@/constants/amazon-marketplace'
+import {
+    SEARCH_FINANCIAL_AVAILABILITY_FIELDS,
+    SEARCH_POLL_INTERVAL_MS,
+} from '@/constants/search'
 import type { SearchDataAvailability } from '@/types/search'
-
-export const ACTIVE_JOB_STATUSES = new Set<string>([
-    SCRAPE_JOB_STATUS.PENDING,
-    SCRAPE_JOB_STATUS.CLAIMED,
-    SCRAPE_JOB_STATUS.RUNNING,
-])
 
 /**
  * Fallback polling cutoff for SP-API enrichment.
  * If a completed job has no `enriched_at` after this window (e.g. the after()
  * background task failed silently), polling stops automatically.
  */
-export const ENRICHMENT_TIMEOUT_MS = 5 * 60_000
+export const ENRICHMENT_TIMEOUT_MS = SEARCH_POLL_INTERVAL_MS.ENRICHMENT_TIMEOUT
 
-export function getMarketplaceProductUrl(marketplace: string, asin: string | null | undefined): string {
-    if (!asin) return '#'
-
-    return buildAmazonProductUrl(marketplace, asin)
+export function getSearchProductRowKey(product: Pick<ProductFinancial, 'asin' | 'title'>, index: number): string {
+    return product.asin ?? `${product.title ?? 'product'}-${index}`
 }
 
 export function getDataAvailability(products: ProductFinancial[]): SearchDataAvailability {
@@ -28,13 +22,8 @@ export function getDataAvailability(products: ProductFinancial[]): SearchDataAva
         hasSignals: products.some(
             (product) => product.price != null || product.rating != null || product.review_count != null,
         ),
-        hasFinancials: products.some(
-            (product) =>
-                product.monthly_revenue != null
-                || product.monthly_units != null
-                || product.net_per_unit != null
-                || product.fba_fee != null
-                || product.referral_fee != null,
+        hasFinancials: products.some((product) =>
+            SEARCH_FINANCIAL_AVAILABILITY_FIELDS.some((field) => product[field] != null),
         ),
         hasCategories: products.some((product) => Boolean(product.category_path)),
         hasImages: products.some((product) => Boolean(product.main_image_url)),

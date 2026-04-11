@@ -8,7 +8,6 @@
  * (caller handles router.refresh() via useFormAction onSuccess callback).
  */
 
-import { redirect } from 'next/navigation'
 import { after } from 'next/server'
 import { createAdminClient } from '@/integrations/supabase/admin'
 import { createServerClient } from '@/integrations/supabase/server'
@@ -23,8 +22,9 @@ import type { ActionResult } from '@/hooks/use-form-action'
 import { SettingsUpdateSchema, type SettingsUpdateInput } from '@puckora/types/schemas'
 import { AmazonSearchInputSchema, type AmazonSearchInput } from '@/schemas/scrape'
 import { getAuthUser } from '@/server/auth'
-import { AppRoute } from '@/constants/routes'
 import { SCRAPE_JOB_TYPE, SCRAPE_JOB_STATUS, SCRAPE_EXECUTOR } from '@puckora/scraper-core'
+
+type KeywordSearchLaunchResult = ActionResult | { jobId: string; keyword: string }
 
 // ---------------------------------------------------------------------------
 // Profile update
@@ -62,15 +62,13 @@ export async function updateProfileAction(data: SettingsUpdateInput): Promise<Ac
 // ---------------------------------------------------------------------------
 
 /**
- * Create an amazon_search scrape job and redirect to /search/[query]?job=<id>.
- *
- * The redirect lands directly on the search results route. That page reads the
- * job ID from searchParams, renders a stable shell immediately, and then fills
- * in sections as listing data and enrichment data arrive.
- *
- * Never redirects on error — returns { error } so the form stays visible.
+ * Create an amazon_search scrape job and return the launch payload for the
+ * keyword results route. The client owns navigation so all search intents can
+ * launch from the same entry surface without mixed redirect semantics.
  */
-export async function createScrapeJobAction(data: AmazonSearchInput): Promise<ActionResult> {
+export async function createKeywordSearchJobAction(
+    data: AmazonSearchInput,
+): Promise<KeywordSearchLaunchResult> {
     const parsed = AmazonSearchInputSchema.safeParse(data)
     if (!parsed.success) {
         return { error: API_ERROR_MESSAGES.INVALID_SEARCH_INPUT }
@@ -139,10 +137,11 @@ export async function createScrapeJobAction(data: AmazonSearchInput): Promise<Ac
             }
         })
 
-        redirect(`${AppRoute.search}/${encodeURIComponent(parsed.data.keyword)}?job=${job.id}`)
+        return {
+            jobId: job.id,
+            keyword: parsed.data.keyword,
+        }
     } catch (err) {
-        // redirect() throws a special Next.js error — do NOT catch it
-        if ((err as { digest?: string })?.digest?.startsWith('NEXT_REDIRECT')) throw err
         const message = err instanceof Error ? err.message : API_ERROR_MESSAGES.SEARCH_JOB_CREATE_FAILED
         return { error: message }
     }

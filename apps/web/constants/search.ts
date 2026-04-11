@@ -10,6 +10,69 @@
 
 import { WEB_MARKETPLACE_IDS } from '@/constants/amazon-marketplace'
 import { MARK_STATE_VALUES } from '@/constants/app-state'
+import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
+
+export const SEARCH_QUERY_LENGTH = {
+    MIN: 1,
+    MAX: 200,
+} as const
+
+export const SEARCH_POLL_INTERVAL_MS = {
+    SCRAPE_JOB: 3_000,
+    ENRICHMENT_RESULTS: 5_000,
+    ENRICHMENT_TIMEOUT: 5 * 60_000,
+} as const
+
+export const ACTIVE_SEARCH_JOB_STATUSES = new Set<string>([
+    SCRAPE_JOB_STATUS.PENDING,
+    SCRAPE_JOB_STATUS.CLAIMED,
+    SCRAPE_JOB_STATUS.RUNNING,
+])
+
+export function isActiveSearchJobStatus(status: string | null | undefined): boolean {
+    return status != null && ACTIVE_SEARCH_JOB_STATUSES.has(status)
+}
+
+export const SEARCH_FINANCIAL_AVAILABILITY_FIELDS = [
+    'monthly_revenue',
+    'monthly_units',
+    'net_per_unit',
+    'fba_fee',
+    'referral_fee',
+] as const
+
+export const SEARCH_RESULT_REPAIR_FIELDS = [
+    'brand',
+    'main_image_url',
+    'product_type',
+    'price',
+    'fba_fee',
+    'referral_fee',
+    'pkg_weight_kg',
+    'pkg_length_cm',
+    'pkg_width_cm',
+    'pkg_height_cm',
+    'listing_date',
+] as const
+
+export type SearchResultRepairField = (typeof SEARCH_RESULT_REPAIR_FIELDS)[number]
+
+type SearchRepairableRecord = Partial<Record<SearchResultRepairField, number | string | null | undefined>>
+
+export function hasSearchRepairableGap(record: SearchRepairableRecord): boolean {
+    return SEARCH_RESULT_REPAIR_FIELDS.some((field) => record[field] == null)
+}
+
+export const KEYWORD_SUGGESTIONS_REQUEST = {
+    FETCH_LIMIT: 15,
+    SIMILARITY_THRESHOLD: 0.3,
+} as const
+
+export const SEARCH_RESULT_REPAIR = {
+    // Cover the full 60-product search result page so a single trigger repairs everything.
+    BATCH_LIMIT: 60,
+    POLL_TIMEOUT_MS: 60_000,
+} as const
 
 // ---------------------------------------------------------------------------
 // Tab const-as-enum (single source of truth)
@@ -29,7 +92,19 @@ export const TAB_ID_VALUES = [
 
 export type Tab = (typeof TAB_ID_VALUES)[number]
 
-export const SEARCH_MODE_VALUES = ['keyword', 'category', 'constraints'] as const
+export const SEARCH_VIEW_IDS = {
+    OVERVIEW: 'overview',
+    PRODUCTS: 'products',
+} as const
+
+export const SEARCH_VIEW_ID_VALUES = [
+    SEARCH_VIEW_IDS.OVERVIEW,
+    SEARCH_VIEW_IDS.PRODUCTS,
+] as const
+
+export type SearchViewId = (typeof SEARCH_VIEW_ID_VALUES)[number]
+
+export const SEARCH_MODE_VALUES = ['keyword', 'asin', 'discover'] as const
 
 // ---------------------------------------------------------------------------
 // Keyword suggestions (EN examples — not localised, Amazon US product terms)
@@ -49,24 +124,53 @@ export const KEYWORD_SUGGESTIONS = [
 // ---------------------------------------------------------------------------
 
 export const SEARCH_INPUT_MODE_IDS = {
-    TEXT: 'text',
-    CONSTRAINTS: 'constraints',
+    KEYWORD: 'keyword',
+    ASIN: 'asin',
+    DISCOVER: 'discover',
 } as const
 
 export const SEARCH_INPUT_MODE_VALUES = [
-    SEARCH_INPUT_MODE_IDS.TEXT,
-    SEARCH_INPUT_MODE_IDS.CONSTRAINTS,
+    SEARCH_INPUT_MODE_IDS.KEYWORD,
+    SEARCH_INPUT_MODE_IDS.ASIN,
+    SEARCH_INPUT_MODE_IDS.DISCOVER,
 ] as const
 
 export type SearchInputMode = (typeof SEARCH_INPUT_MODE_VALUES)[number]
 
+export const SEARCH_AVAILABLE_INPUT_MODE_VALUES = [
+    SEARCH_INPUT_MODE_IDS.KEYWORD,
+    SEARCH_INPUT_MODE_IDS.ASIN,
+    SEARCH_INPUT_MODE_IDS.DISCOVER,
+] as const
+
+export function isSearchInputModeAvailable(mode: SearchInputMode): boolean {
+    return (SEARCH_AVAILABLE_INPUT_MODE_VALUES as readonly SearchInputMode[]).includes(mode)
+}
+
 export const SEARCH_INPUT_MODES: {
     id: SearchInputMode
-    labelKey: 'inputMode.text' | 'inputMode.constraints'
-    descKey: 'inputMode.textDesc' | 'inputMode.constraintsDesc'
+    labelKey: 'inputMode.keyword' | 'inputMode.asin' | 'inputMode.discover'
+    descKey: 'inputMode.keywordDesc' | 'inputMode.asinDesc' | 'inputMode.discoverDesc'
+    available: boolean
 }[] = [
-        { id: 'text', labelKey: 'inputMode.text', descKey: 'inputMode.textDesc' },
-        { id: 'constraints', labelKey: 'inputMode.constraints', descKey: 'inputMode.constraintsDesc' },
+        {
+            id: SEARCH_INPUT_MODE_IDS.KEYWORD,
+            labelKey: 'inputMode.keyword',
+            descKey: 'inputMode.keywordDesc',
+            available: true,
+        },
+        {
+            id: SEARCH_INPUT_MODE_IDS.ASIN,
+            labelKey: 'inputMode.asin',
+            descKey: 'inputMode.asinDesc',
+            available: true,
+        },
+        {
+            id: SEARCH_INPUT_MODE_IDS.DISCOVER,
+            labelKey: 'inputMode.discover',
+            descKey: 'inputMode.discoverDesc',
+            available: true,
+        },
     ]
 
 // ---------------------------------------------------------------------------

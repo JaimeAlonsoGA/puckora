@@ -53,6 +53,8 @@ import {
     getKeywordSearchItemErrorMessage,
     mergePreviewListing,
 } from './keyword-search/preview-builders'
+import { repairBpmBatch } from './bpm-repair'
+import { enrichAsinBatch } from './enrich'
 
 function toScrapedListingJson(listing: ReturnType<typeof buildPreviewListing>): Json {
     return {
@@ -300,6 +302,32 @@ export async function runKeywordSearch(
                 enriched_at: new Date().toISOString(),
             },
         })
+
+        // Fire-and-forget: scrape individual product pages for ASINs where the
+        // search-page HTML didn't include a "bought in past month" badge.
+        // Runs after job is marked DONE so it never delays the user-visible result.
+        const nullBpmAsins = previewListingsForEnrichment
+            .filter((l) => l.bought_past_month === null || l.bought_past_month === undefined)
+            .map((l) => l.asin)
+        if (nullBpmAsins.length > 0) {
+            repairBpmBatch(db, nullBpmAsins, marketplace).catch((err) =>
+                console.error('[bpm-repair] batch failed:', err),
+            )
+        }
+
+        // Fire-and-forget: per-ASIN SP-API enrichment for products not covered by
+        // searchCatalogItems (positions 21-60 that had catalog = null).
+        // These have scrape_status = ENRICHMENT_FAILED and are missing brand,
+        // listing_date, dimensions, and category ranks — all needed for the view.
+        // Runs sequentially (rate-limit-safe) after job is DONE.
+        const enrichFailedListings = previewListingsForEnrichment.filter(
+            (l) => !catalogMap.has(l.asin),
+        )
+        if (enrichFailedListings.length > 0) {
+            enrichAsinBatch(db, enrichFailedListings, marketplace).catch((err) =>
+                console.error('[enrich-repair] background batch failed:', err),
+            )
+        }
     } catch (err) {
         await updateScrapeJob(supabase, jobId, {
             status: SCRAPE_JOB_STATUS.FAILED,

@@ -10,20 +10,16 @@ import { MarketShareCard } from './cards/market-share-card'
 interface AnalysisRowProps {
     products: ProductFinancial[]
     stats: SearchOverviewStats
-    query: string
-    marketplace: string
     availability: SearchDataAvailability
 }
 
-export function AnalysisRow({ products, stats, query, marketplace, availability }: AnalysisRowProps) {
+export function AnalysisRow({ products, stats, availability }: AnalysisRowProps) {
     return (
         <div className="flex flex-row gap-2">
             {/* Left ~60% — product image rail */}
             <div className="flex-3 min-w-0">
                 <ProductsCard
                     products={products}
-                    query={query}
-                    marketplace={marketplace}
                     availability={availability}
                 />
             </div>

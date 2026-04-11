@@ -12,21 +12,28 @@
         },
         "hero": {
             "price": "Precio",
+            "rating": "Valoración",
+            "reviews": "Reseñas",
+            "dailySales": "Ventas / día",
             "revenue": "Ingresos mensuales",
             "net": "Ganancia neta / u.",
             "fbaFee": "Tarifa FBA"
         },
         "economics": {
             "title": "Economía de Amazon",
+            "price": "Precio de lista",
             "fbaFee": "Tarifa FBA",
             "referralFee": "Comisión de referido",
-            "amazonTakes": "Amazon se lleva"
+            "amazonTakes": "Amazon se lleva",
+            "netPerUnit": "Neto / unidad"
         },
         "position": {
             "title": "Posición en el mercado",
             "bsrRank": "Ranking BSR",
             "dailyVelocity": "Vel. diaria",
             "velocityUnits": "{count} / día",
+            "monthlyRevenue": "Ingresos mensuales",
+            "bought": "Comprado el último mes",
             "rating": "Valoración",
             "reviewCount": "Reseñas"
         },
@@ -35,13 +42,23 @@
             "weight": "Peso",
             "dims": "Dimensiones",
             "dimsValue": "{l} × {w} × {h} cm",
+            "fulfilment": "Envío",
+            "fulfilmentFba": "FBA",
+            "fulfilmentFbm": "FBM",
             "listingAge": "Antigüedad",
             "listingAgeMonths": "{months} meses",
             "listingAgeMonthsLong": "{months} meses"
         },
         "meta": {
             "asin": "ASIN",
-            "marketplace": "Marketplace"
+            "marketplace": "Marketplace",
+            "manufacturer": "Fabricante"
+        },
+        "certifications": {
+            "title": "Certificaciones y cumplimiento"
+        },
+        "bullets": {
+            "title": "Detalles del producto"
         },
         "research": {
             "section": "Estado de investigación",

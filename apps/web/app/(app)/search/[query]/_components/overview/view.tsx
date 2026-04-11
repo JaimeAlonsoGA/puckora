@@ -9,7 +9,7 @@ import {
     OverviewMainContent,
     OverviewSidebar,
 } from '@/components/layout/overview-layout'
-import { getDataAvailability } from '../search-view-helpers'
+import { getDataAvailability } from '../search-overview-helpers'
 import { CategoryPortal } from './sidebar/category-portal'
 import { RelatedKeywordsPanel } from './sidebar/related-keywords-panel'
 import { StatusBar } from './status-bar'
@@ -21,14 +21,13 @@ interface OverviewViewProps {
     products: ProductFinancial[]
     query: string
     job: ScrapeJob | null
-    marketplace: string
     isJobActive: boolean
     isRefreshing: boolean
     totalResults: number | null
 }
 
 export function OverviewView({
-    products, query, job, marketplace, isJobActive, isRefreshing, totalResults,
+    products, query, job, isJobActive, isRefreshing, totalResults,
 }: OverviewViewProps) {
     const stats = useMemo(() => computeOverviewStats(products), [products])
     const availability = useMemo(() => getDataAvailability(products), [products])
@@ -59,11 +58,8 @@ export function OverviewView({
                     <AnalysisRow
                         products={products}
                         stats={stats}
-                        query={query}
-                        marketplace={marketplace}
                         availability={availability}
                     />
-                    {/* TODO: <PuckiInsightCard /> — coming soon */}
                 </OverviewMainContent>
             </OverviewMain>
         </OverviewLayout>

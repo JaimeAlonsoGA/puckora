@@ -1,11 +1,11 @@
 // Re-export from constants — Tab and the enum both live in constants/search.ts now.
-// Keeping this file for any consumers that may still import from '@/types/search'.
+// Keeping this file for any consumers that still import from '@/types/search'.
 export type { Tab } from '@/constants/search'
 export { TAB_IDS as TabEnum } from '@/constants/search'
 
 /**
  * Data availability flags for a set of scraped ProductFinancial rows.
- * Source of truth: defined here, re-exported from search-view-helpers for backwards compat.
+ * Source of truth for search-result completeness checks.
  */
 export interface SearchDataAvailability {
     hasListings: boolean

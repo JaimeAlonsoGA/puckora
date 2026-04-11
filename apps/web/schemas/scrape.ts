@@ -6,6 +6,7 @@
  */
 import { DEFAULT_WEB_MARKETPLACE } from '@/constants/amazon-marketplace'
 import { SCRAPE_VALIDATION_MESSAGES } from '@/constants/validation'
+import { parseAsin } from '@puckora/utils'
 import {
     SCRAPE_JOB_TYPE,
     ScrapeJobPayloadSchema,
@@ -48,6 +49,44 @@ export const AmazonProductInputSchema = z.object({
 })
 
 export type AmazonProductInput = z.infer<typeof AmazonProductInputSchema>
+
+export const SEARCH_ASIN_INPUT_STATUS = {
+    EMPTY: 'empty',
+    VALID: 'valid',
+    INVALID: 'invalid',
+    MULTIPLE: 'multiple',
+} as const
+
+export type SearchAsinInputStatus = (typeof SEARCH_ASIN_INPUT_STATUS)[keyof typeof SEARCH_ASIN_INPUT_STATUS]
+
+interface ResolvedSearchAsinInput {
+    asin: string | null
+    status: SearchAsinInputStatus
+}
+
+const ASIN_INPUT_SEPARATOR_REGEX = /[\s,;]+/
+
+export function resolveSearchAsinInput(input: string): ResolvedSearchAsinInput {
+    const trimmedInput = input.trim()
+
+    if (trimmedInput.length === 0) {
+        return { asin: null, status: SEARCH_ASIN_INPUT_STATUS.EMPTY }
+    }
+
+    const tokens = trimmedInput.split(ASIN_INPUT_SEPARATOR_REGEX).filter(Boolean)
+
+    if (tokens.length > 1) {
+        return { asin: null, status: SEARCH_ASIN_INPUT_STATUS.MULTIPLE }
+    }
+
+    const asin = parseAsin(trimmedInput)
+
+    if (!asin) {
+        return { asin: null, status: SEARCH_ASIN_INPUT_STATUS.INVALID }
+    }
+
+    return { asin, status: SEARCH_ASIN_INPUT_STATUS.VALID }
+}
 
 type AmazonSearchJobPayload = Extract<ScrapeJobPayload, { type: typeof SCRAPE_JOB_TYPE.AMAZON_SEARCH }>
 

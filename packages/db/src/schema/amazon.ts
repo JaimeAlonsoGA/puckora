@@ -248,18 +248,7 @@ with base as (
       when ac.depth <= 8 then 0.84
       else                    0.80
     end                                   as bsr_b,
-    (
-      p.product_type in (
-        'SHIRT', 'APPAREL', 'TOPS', 'BLOUSE', 'SWEATER',
-        'JACKET', 'COAT', 'DRESS', 'PANTS', 'SKIRT'
-      )
-      and (
-        ac.full_path ilike '%swimwear%'
-        or ac.full_path ilike '%bikini%'
-        or ac.full_path ilike '%swimsuit%'
-        or ac.full_path ilike '%swim%'
-      )
-    )                                     as product_type_mismatch
+    false                                 as product_type_mismatch
   from amazon_products p
   join product_category_ranks pcr on pcr.asin = p.asin
   join amazon_categories ac       on ac.id = pcr.category_id

@@ -5,10 +5,11 @@
  * Route Handlers, and background jobs with a shared singleton.
  */
 
-import { and, eq, inArray, isNull, asc, desc, sql } from 'drizzle-orm'
+import { and, eq, inArray, isNull, isNotNull, notExists, or, asc, desc, sql } from 'drizzle-orm'
 import {
     type PgDb,
     amazonCategories,
+    amazonKeywordProducts,
     amazonProducts,
     productCategoryRanks,
 } from '@puckora/db'
@@ -84,6 +85,7 @@ function buildAmazonProductMergeSet() {
         pkg_width_cm: preferExcludedValue('pkg_width_cm'),
         pkg_height_cm: preferExcludedValue('pkg_height_cm'),
         pkg_weight_kg: preferExcludedValue('pkg_weight_kg'),
+        bought_past_month: preferExcludedValue('bought_past_month'),
         fba_fee: preferExcludedValue('fba_fee'),
         referral_fee: preferExcludedValue('referral_fee'),
         scrape_status: mergeScrapeStatus(),
@@ -170,6 +172,75 @@ export async function getProductsNeedingEnrichment(
         .orderBy(asc(amazonProducts.created_at))
         .limit(limit)
     return rows as AmazonProduct[]
+}
+
+/**
+ * Returns keyword-linked products that need SP-API enrichment repair:
+ *  - `enrichment_failed`: enrichment was attempted but SP-API returned an error/404.
+ *  - `scraped`: product was stored from the HTML scraper but the enrichment step
+ *    was never attempted (e.g. product appeared before the enrichment pipeline existed).
+ *
+ * Only returns products that have no category ranks yet — products with ranks
+ * were partially enriched and are lower priority.
+ *
+ * Used by the repair job to back-fill brand, listing_date, dimensions, and
+ * category ranks for positions 21-60 and any pre-pipeline products.
+ */
+export async function getKeywordProductsNeedingEnrichmentRepair(
+    db: PgDb,
+    limit = 500,
+): Promise<AmazonProduct[]> {
+    const rows = await db
+        .select({ product: amazonProducts })
+        .from(amazonProducts)
+        .innerJoin(amazonKeywordProducts, eq(amazonKeywordProducts.asin, amazonProducts.asin))
+        .where(
+            and(
+                or(
+                    eq(amazonProducts.scrape_status, 'enrichment_failed'),
+                    eq(amazonProducts.scrape_status, 'scraped'),
+                ),
+                notExists(
+                    db
+                        .select({ one: sql`1` })
+                        .from(productCategoryRanks)
+                        .where(eq(productCategoryRanks.asin, amazonProducts.asin)),
+                ),
+            ),
+        )
+        .orderBy(desc(amazonProducts.review_count))
+        .limit(limit)
+    // Deduplicate (same ASIN linked to multiple keywords → multiple join rows)
+    const seen = new Set<string>()
+    const unique: AmazonProduct[] = []
+    for (const r of rows) {
+        if (!seen.has(r.product.asin)) {
+            seen.add(r.product.asin)
+            unique.push(r.product as AmazonProduct)
+        }
+    }
+    return unique
+}
+
+/**
+ * Returns keyword-linked products that have null bought_past_month.
+ * Ordered by review_count DESC so high-demand products repair first.
+ *
+ * Used by the repair job to back-fill bought_past_month for all existing keywords
+ * that were scraped before bpm-repair was introduced.
+ */
+export async function getKeywordProductsNeedingBpmRepair(
+    db: PgDb,
+    limit = 500,
+): Promise<Array<{ asin: string; product_url: string | null }>> {
+    const rows = await db
+        .selectDistinct({ asin: amazonProducts.asin, product_url: amazonProducts.product_url })
+        .from(amazonProducts)
+        .innerJoin(amazonKeywordProducts, eq(amazonKeywordProducts.asin, amazonProducts.asin))
+        .where(isNull(amazonProducts.bought_past_month))
+        .orderBy(desc(amazonProducts.review_count))
+        .limit(limit)
+    return rows
 }
 
 // ---------------------------------------------------------------------------

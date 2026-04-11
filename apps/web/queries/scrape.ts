@@ -10,10 +10,10 @@
 
 import { queryOptions, useQueryClient } from '@tanstack/react-query'
 import { QUERY_ERROR_MESSAGES } from '@/constants/api'
+import { SEARCH_POLL_INTERVAL_MS, isActiveSearchJobStatus } from '@/constants/search'
 import { createClient } from '@/integrations/supabase/client'
 import { scrapeKeys } from './_keys'
 import type { ScrapeJob } from '@puckora/types'
-import { SCRAPE_JOB_STATUS } from '@puckora/scraper-core'
 
 // ---------------------------------------------------------------------------
 // Query options
@@ -44,7 +44,7 @@ export const scrapeJobQueryOptions = (jobId: string | null) =>
         // The search shell also uses Realtime, so this is just a safety net.
         refetchInterval: (query) => {
             const status = query.state.data?.status
-            return status === SCRAPE_JOB_STATUS.PENDING || status === SCRAPE_JOB_STATUS.CLAIMED || status === SCRAPE_JOB_STATUS.RUNNING ? 3_000 : false
+            return isActiveSearchJobStatus(status) ? SEARCH_POLL_INTERVAL_MS.SCRAPE_JOB : false
         },
         staleTime: 0,
     })

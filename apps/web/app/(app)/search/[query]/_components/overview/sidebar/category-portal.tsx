@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import type { Route } from 'next'
-import { Caption, DataCard, RankedList, RankedListItem, Stack } from '@puckora/ui'
+import { DataCard, RankedList, RankedListItem } from '@puckora/ui'
 import { formatCount, shortenCategoryPath } from '@puckora/utils'
 import type { TopCategory } from '@puckora/utils'
 import { searchQueryRoute } from '@/constants/routes'
@@ -25,7 +25,7 @@ export function CategoryPortal({ categories }: CategoryPortalProps) {
                     <Link
                         key={cat.name}
                         href={searchQueryRoute(cat.name) as Route}
-                        className="block hover:bg-muted/40 transition-colors"
+                        className="block transition-colors hover:bg-muted/40"
                     >
                         <RankedListItem
                             rank={index + 1}

@@ -1,11 +1,11 @@
 'use client'
 
-import { startTransition, useRef, useState } from 'react'
+import { startTransition, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { ArrowUp } from 'lucide-react'
 import { Button, Stack, Surface } from '@puckora/ui'
 import {
-    CONSTRAINT_FIELD_VALUES,
+    SEARCH_AVAILABLE_INPUT_MODE_VALUES,
     SEARCH_INPUT_MODE_IDS,
     type ConstraintFieldId,
     type SearchInputMode,
@@ -14,6 +14,10 @@ import {
     AMAZON_CATEGORY_VALUES,
     type AmazonCategoryId,
 } from '@/constants/amazon-categories'
+import {
+    SEARCH_ASIN_INPUT_STATUS,
+    resolveSearchAsinInput,
+} from '@/schemas/scrape'
 import { AsinTokenInput } from './_composer/asin-token-input'
 import { InputModeMenu } from './_composer/input-mode-menu'
 import { ConstraintBadgesInput } from './_composer/constraint-badges-input'
@@ -22,26 +26,36 @@ import { type ConstraintEntry } from './_composer/constraint-badge'
 // ─── SearchComposer ───────────────────────────────────────────────────────────
 
 export interface SearchComposerProps {
-    onSearch: (query: string) => void
+    onSubmit: (payload: SearchComposerSubmitPayload) => void
     isPending?: boolean
 }
 
-export function SearchComposer({ onSearch, isPending }: SearchComposerProps) {
+export type SearchComposerSubmitPayload =
+    | { type: 'keyword'; keyword: string }
+    | { type: 'asin'; asin: string }
+    | { type: 'discover'; constraints: Partial<Record<ConstraintFieldId, ConstraintEntry>>; categories: AmazonCategoryId[] }
+
+export function SearchComposer({ onSubmit, isPending }: SearchComposerProps) {
     const [value, setValue] = useState('')
-    const [inputMode, setInputMode] = useState<SearchInputMode>(SEARCH_INPUT_MODE_IDS.TEXT)
+    const [inputMode, setInputMode] = useState<SearchInputMode>(SEARCH_INPUT_MODE_IDS.KEYWORD)
     const [constraints, setConstraints] = useState<Partial<Record<ConstraintFieldId, ConstraintEntry>>>({})
     const [categories, setCategories] = useState<Set<AmazonCategoryId>>(new Set())
     const editorRef = useRef<HTMLDivElement>(null)
     const t = useTranslations('search')
+    const availableModeSet = useMemo(
+        () => new Set<SearchInputMode>(SEARCH_AVAILABLE_INPUT_MODE_VALUES),
+        [],
+    )
 
-    const isTextMode = inputMode === SEARCH_INPUT_MODE_IDS.TEXT
-    const hasTextValue = value.trim().length > 0
-    const hasConstraints =
-        CONSTRAINT_FIELD_VALUES.some(id => {
-            const v = constraints[id]
-            return v ? v.min.trim() !== '' || v.max.trim() !== '' : false
-        }) || categories.size > 0
-    const canSubmit = isTextMode ? hasTextValue : hasConstraints
+    const trimmedValue = value.trim()
+    const asinResolution = useMemo(() => resolveSearchAsinInput(value), [value])
+
+    const canSubmit = (() => {
+        if (inputMode === SEARCH_INPUT_MODE_IDS.KEYWORD) return trimmedValue.length > 0
+        if (inputMode === SEARCH_INPUT_MODE_IDS.ASIN) return asinResolution.status === SEARCH_ASIN_INPUT_STATUS.VALID
+        if (inputMode === SEARCH_INPUT_MODE_IDS.DISCOVER) return Object.keys(constraints).length > 0 || categories.size > 0
+        return false
+    })()
 
     function updateConstraint(id: ConstraintFieldId, val: ConstraintEntry) {
         setConstraints(cur => ({ ...cur, [id]: val }))
@@ -65,48 +79,43 @@ export function SearchComposer({ onSearch, isPending }: SearchComposerProps) {
     }
 
     function submit() {
-        if (isTextMode) {
-            const q = value.trim()
-            if (!q) return
-            onSearch(q)
-        } else {
-            if (!hasConstraints) return
-            const parts: string[] = []
-            for (const id of CONSTRAINT_FIELD_VALUES) {
-                const v = constraints[id]
-                if (!v) continue
-                if (v.min.trim()) parts.push(`${id}_min:${v.min.trim()}`)
-                if (v.max.trim()) parts.push(`${id}_max:${v.max.trim()}`)
-            }
-            if (categories.size > 0 && categories.size < AMAZON_CATEGORY_VALUES.length) {
-                parts.push(`categories:${[...categories].join(',')}`)
-            }
-            onSearch(parts.join(' '))
+        if (inputMode === SEARCH_INPUT_MODE_IDS.KEYWORD) {
+            if (!trimmedValue) return
+            onSubmit({ type: 'keyword', keyword: trimmedValue })
+            return
+        }
+
+        if (inputMode === SEARCH_INPUT_MODE_IDS.ASIN && asinResolution.asin) {
+            onSubmit({ type: 'asin', asin: asinResolution.asin })
+            return
+        }
+
+        if (inputMode === SEARCH_INPUT_MODE_IDS.DISCOVER) {
+            onSubmit({ type: 'discover', constraints, categories: Array.from(categories) })
         }
     }
 
     function handleModeChange(m: SearchInputMode) {
-        startTransition(() => { setInputMode(m) })
-        if (m === SEARCH_INPUT_MODE_IDS.TEXT) {
+        if (!availableModeSet.has(m)) return
+        startTransition(() => {
+            setInputMode(m)
+            setValue('')
+        })
+        if (m === SEARCH_INPUT_MODE_IDS.KEYWORD || m === SEARCH_INPUT_MODE_IDS.ASIN) {
             requestAnimationFrame(() => editorRef.current?.focus())
         }
     }
+
+    const isConstraintMode = inputMode === SEARCH_INPUT_MODE_IDS.DISCOVER
+    const placeholder = inputMode === SEARCH_INPUT_MODE_IDS.ASIN
+        ? t('entry.placeholderAsin')
+        : t('entry.placeholderKeyword')
 
     return (
         <Surface variant="card" padding="md" className="w-full shadow-sm">
             {/* Input area — switches between text and constraint modes */}
             <div className="mb-3">
-                {isTextMode ? (
-                    <AsinTokenInput
-                        value={value}
-                        onValueChange={setValue}
-                        onSubmit={submit}
-                        placeholder={t('entry.placeholder')}
-                        disabled={isPending}
-                        autoFocus
-                        editorRef={editorRef}
-                    />
-                ) : (
+                {isConstraintMode ? (
                     <ConstraintBadgesInput
                         constraints={constraints}
                         onUpdate={updateConstraint}
@@ -114,7 +123,17 @@ export function SearchComposer({ onSearch, isPending }: SearchComposerProps) {
                         onToggleCategory={toggleCategory}
                         onSelectAllCategories={selectAllCategories}
                         onResetCategories={resetCategories}
+                    />
+                ) : (
+                    <AsinTokenInput
+                        value={value}
+                        onValueChange={setValue}
+                        onSubmit={submit}
+                        placeholder={placeholder}
+                        tokenMode={inputMode === SEARCH_INPUT_MODE_IDS.ASIN ? 'single-asin' : 'amazon-search'}
                         disabled={isPending}
+                        autoFocus
+                        editorRef={editorRef}
                     />
                 )}
             </div>

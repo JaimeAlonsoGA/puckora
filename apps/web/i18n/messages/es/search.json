@@ -7,7 +7,17 @@
             "fallbackDisplayName": "equipo",
             "subtitle": "¿Por dónde quieres empezar hoy?",
             "placeholder": "ej. cuenco cerámico para mascotas, escritorio plegable…",
-            "searchButton": "Buscar"
+            "placeholderKeyword": "ej. cuenco cerámico para mascotas, juguetes para gato…",
+            "placeholderAsin": "Pega un ASIN de Amazon o una URL de producto…",
+            "searchButton": "Buscar",
+            "keywordHint": "Lanza una búsqueda competitiva por palabra clave y abre el resumen cuando lleguen los resultados.",
+            "asinHint": "Pega un solo ASIN o una URL de producto. Lo normalizaremos y abriremos la vista del producto directamente.",
+            "asinReady": "Listo para abrir el producto {asin}.",
+            "asinSingleOnly": "El modo ASIN solo acepta un producto.",
+            "asinInvalid": "Introduce un único ASIN válido de Amazon o una URL de producto.",
+            "discoverSoon": "El modo Discover ya está planteado, pero todavía no está activo.",
+            "pendingLabel": "Lanzando búsqueda",
+            "keywordLaunchFailed": "No se pudo lanzar la búsqueda por palabra clave"
         },
         "tabs": {
             "keyword": "Palabra clave",
@@ -17,10 +27,13 @@
             "filter": "Filtrar"
         },
         "inputMode": {
-            "text": "Búsqueda por texto",
-            "textDesc": "Busca por palabra clave o ASIN de Amazon",
-            "constraints": "Explorar",
-            "constraintsDesc": "Navega la base de datos de Puckora por filtros de producto"
+            "keyword": "Keyword",
+            "keywordDesc": "Lanza una búsqueda competitiva por palabra clave en Amazon",
+            "asin": "ASIN",
+            "asinDesc": "Abre un producto directamente desde un ASIN o URL de producto",
+            "discover": "Discover",
+            "discoverDesc": "Explora el catálogo de Puckora con filtros de producto",
+            "soon": "Pronto"
         },
         "actions": {
             "addPucki": "Con Pucki",
@@ -178,16 +191,23 @@
             "tooltipTitle": "Concentración de marcas",
             "tooltip": "Muestra cuánto mercado controlan las marcas principales. Menos marcas dominantes suele significar un moat competitivo más estrecho.",
             "summary": "Cuota de las principales marcas entre {count} marcas competidoras",
-            "marketShare": "Cuota de mercado"
+            "marketShare": "Cuota de mercado",
+            "unbranded": "Sin marca"
         },
         "products": {
             "colProduct": "Producto",
             "colPrice": "Precio",
+            "colSalesPerDay": "Ventas/día",
             "colUnits": "Uds/mes",
             "colRevenue": "Ingreso/mes",
             "colNet": "Neto/ud",
             "colFee": "Tarifa FBA",
             "colMark": "Marcar",
+            "metaBrand": "Marca",
+            "metaWeight": "Peso",
+            "metaFba": "FBA",
+            "metaReferral": "Referido",
+            "viewProduct": "Ver producto",
             "notePlaceholder": "Añade una nota sobre este producto…"
         },
         "productStats": {

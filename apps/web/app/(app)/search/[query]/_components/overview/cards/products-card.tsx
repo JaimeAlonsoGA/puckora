@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Bookmark, ChevronDown, ChevronRight, ImageIcon, LayoutGrid, LayoutList, Star } from 'lucide-react'
-import { Button, Caption, DataCard, TableHeader, TableHeaderCell } from '@puckora/ui'
+import { Button, Caption, DataCard, TableHeader, TableHeaderCell, TextLink } from '@puckora/ui'
 import {
     cn,
     formatCount,
@@ -20,40 +20,57 @@ import { MARK_STATES } from '@/constants/app-state'
 import { useAppStore } from '@/lib/store'
 import { useHoverTutorial } from '@/hooks/use-hover-tutorial'
 import { TUTORIAL_KEYS } from '@/constants/tutorial'
+import { getSearchProductRowKey } from '../../search-overview-helpers'
+import { CardViewToggle } from './card-view-toggle'
 
 const SKELETON_COUNT = 9
 // Shared grid template — header + rows must match
 const ROW_GRID = 'grid-cols-[14px_1fr_68px_100px_52px_88px_64px]'
 
+const PRODUCTS_CARD_VIEW_IDS = {
+    GRID: 'grid',
+    TABLE: 'table',
+} as const
+
+type ProductsCardViewId = (typeof PRODUCTS_CARD_VIEW_IDS)[keyof typeof PRODUCTS_CARD_VIEW_IDS]
+
+const PRODUCTS_CARD_VIEW_OPTIONS = [
+    {
+        value: PRODUCTS_CARD_VIEW_IDS.GRID,
+        icon: <LayoutGrid aria-hidden="true" className="size-3.5" />,
+    },
+    {
+        value: PRODUCTS_CARD_VIEW_IDS.TABLE,
+        icon: <LayoutList aria-hidden="true" className="size-3.5" />,
+    },
+] as const
+
 interface TopProductsCardProps {
     products: ProductFinancial[]
-    query: string
-    marketplace: string
     availability: SearchDataAvailability
 }
 
 interface ProductRowProps {
+    rowKey: string
     product: ProductFinancial
-    query: string
-    marketplace: string
     isExpanded: boolean
-    onToggle: (asin: string) => void
+    onToggle: (rowKey: string) => void
     onBookmark: (asin: string, title: string) => void
 }
 
 const ProductRow = memo(function ProductRow({
+    rowKey,
     product,
-    query,
-    marketplace: _marketplace,
     isExpanded,
     onToggle,
     onBookmark,
 }: ProductRowProps) {
-    const asin = product.asin ?? ''
+    const t = useTranslations('search')
+    const asin = product.asin
     const rev = Number(product.monthly_revenue ?? 0)
     const net = Number(product.net_per_unit ?? 0)
     const vel = Number(product.daily_velocity ?? 0)
-    const isBookmarked = useAppStore((state) => Boolean(state.markedProducts[asin]))
+    const isBookmarked = useAppStore((state) => (asin ? Boolean(state.markedProducts[asin]) : false))
 
     return (
         <>
@@ -61,13 +78,14 @@ const ProductRow = memo(function ProductRow({
             <div
                 role="button"
                 tabIndex={0}
-                onClick={() => onToggle(asin)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onToggle(asin) }}
+                onClick={() => onToggle(rowKey)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onToggle(rowKey) }}
                 className={cn(
                     'grid items-center gap-2 px-3 py-1.5 cursor-pointer select-none transition-colors',
-                    'border-b border-border/50 hover:bg-accent/50',
+                    'border-b-hairline hover:bg-card',
                     ROW_GRID,
-                    isExpanded && 'bg-accent/30',
+                    isExpanded && 'bg-card',
+
                 )}
             >
                 {isExpanded
@@ -116,7 +134,7 @@ const ProductRow = memo(function ProductRow({
                 {/* Net/unit */}
                 <Caption className={cn(
                     'tabular-nums text-right',
-                    net > 0 ? 'text-emerald-500' : net < 0 ? 'text-destructive' : 'text-muted-foreground',
+                    net > 0 ? 'text-success-fg' : net < 0 ? 'text-error-fg' : 'text-muted-foreground',
                 )}>
                     {net !== 0 ? formatMoney(net) : '—'}
                 </Caption>
@@ -124,54 +142,56 @@ const ProductRow = memo(function ProductRow({
 
             {/* Layer 2 — expanded detail */}
             {isExpanded && (
-                <div className="bg-accent/20 px-8 py-2 grid grid-flow-col-dense items-center gap-y-1 border-b border-border">
+                <div className="bg-muted px-8 py-2 grid grid-flow-col-dense items-center gap-y-1 border-b-hairline">
                     {product.brand && (
                         <span className="flex items-center gap-1.5">
-                            <Caption className="text-muted-foreground">Brand</Caption>
+                            <Caption className="text-muted-foreground">{t('products.metaBrand')}</Caption>
                             <Caption className="text-foreground">{product.brand}</Caption>
                         </span>
                     )}
                     {product.pkg_weight_kg != null && (
                         <span className="flex items-center gap-1.5">
-                            <Caption className="text-muted-foreground">Weight</Caption>
+                            <Caption className="text-muted-foreground">{t('products.metaWeight')}</Caption>
                             <Caption>{formatWeight(product.pkg_weight_kg)}</Caption>
                         </span>
                     )}
                     {product.fba_fee != null && (
                         <span className="flex items-center gap-1.5">
-                            <Caption className="text-muted-foreground">FBA</Caption>
+                            <Caption className="text-muted-foreground">{t('products.metaFba')}</Caption>
                             <Caption>{formatMoney(product.fba_fee)}</Caption>
                         </span>
                     )}
                     {product.referral_fee != null && (
                         <span className="flex items-center gap-1.5">
-                            <Caption className="text-muted-foreground">Referral</Caption>
+                            <Caption className="text-muted-foreground">{t('products.metaReferral')}</Caption>
                             <Caption>{formatMoney(product.referral_fee)}</Caption>
                         </span>
                     )}
                     <span className="flex items-center gap-1.5">
                         {asin && (
-                            <Link
-                                href={searchProductRoute(query, asin)}
-                                className="text-xs text-primary underline-offset-2 hover:underline"
+                            <TextLink
+                                href={searchProductRoute(asin)}
+                                underline="hover"
                             >
-                                View product
-                            </Link>
+                                {t('products.viewProduct')}
+                            </TextLink>
                         )}
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                                'h-6 w-6 p-0 shrink-0',
-                                isBookmarked && 'text-primary',
-                            )}
-                            onClick={() => onBookmark(asin, product.title ?? asin)}
-                        >
-                            <Bookmark
-                                aria-hidden="true"
-                                className={cn('size-3.5', isBookmarked && 'fill-primary')}
-                            />
-                        </Button>
+                        {asin ? (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    'h-6 w-6 p-0 shrink-0',
+                                    isBookmarked && 'text-primary',
+                                )}
+                                onClick={() => onBookmark(asin, product.title ?? asin)}
+                            >
+                                <Bookmark
+                                    aria-hidden="true"
+                                    className={cn('size-3.5', isBookmarked && 'fill-primary')}
+                                />
+                            </Button>
+                        ) : null}
                     </span>
                 </div>
             )}
@@ -179,15 +199,15 @@ const ProductRow = memo(function ProductRow({
     )
 })
 
-export function ProductsCard({ products, query, marketplace, availability }: TopProductsCardProps) {
+export function ProductsCard({ products, availability }: TopProductsCardProps) {
     const t = useTranslations('search')
     const tutorial = useHoverTutorial(TUTORIAL_KEYS.PRODUCT_IMAGES)
-    const [view, setView] = useState<'grid' | 'table'>('grid')
-    const [expandedAsin, setExpandedAsin] = useState<string | null>(null)
+    const [view, setView] = useState<ProductsCardViewId>(PRODUCTS_CARD_VIEW_IDS.GRID)
+    const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null)
 
     // Stable handler — functional update, no deps
-    const handleToggle = useCallback((asin: string) => {
-        setExpandedAsin((prev) => (prev === asin ? null : asin))
+    const handleToggle = useCallback((rowKey: string) => {
+        setExpandedRowKey((prev) => (prev === rowKey ? null : rowKey))
     }, [])
 
     // Stable bookmark toggle — reads store state at call time, never stale
@@ -222,42 +242,29 @@ export function ProductsCard({ products, query, marketplace, availability }: Top
         (a, b) => Number(b.monthly_revenue ?? 0) - Number(a.monthly_revenue ?? 0),
     )
 
-    if (view === 'grid' && withImages.length === 0) return null
+    if (view === PRODUCTS_CARD_VIEW_IDS.GRID && withImages.length === 0) return null
 
     return (
         <DataCard
             title={t('images.card')}
             className="flex-1 min-h-0"
             headerAction={
-                <div className="flex items-center gap-0.5">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn('h-6 w-6 p-0', view === 'grid' && 'bg-accent text-accent-foreground')}
-                        onClick={() => setView('grid')}
-                    >
-                        <LayoutGrid aria-hidden="true" className="size-3.5" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn('h-6 w-6 p-0', view === 'table' && 'bg-accent text-accent-foreground')}
-                        onClick={() => setView('table')}
-                    >
-                        <LayoutList aria-hidden="true" className="size-3.5" />
-                    </Button>
-                </div>
+                <CardViewToggle
+                    options={PRODUCTS_CARD_VIEW_OPTIONS}
+                    value={view}
+                    onChange={setView}
+                />
             }
             {...tutorial}
         >
             <div className="flex flex-col gap-2">
-                {view === 'grid' ? (
+                {view === PRODUCTS_CARD_VIEW_IDS.GRID ? (
                     /* Grid view — image rail */
                     <div className="grid grid-rows-3 grid-flow-col auto-cols-[155px] gap-1.5 overflow-x-auto pb-1">
                         {withImages.map((product) => (
                             <Link
                                 key={product.asin}
-                                href={searchProductRoute(query, product.asin)}
+                                href={searchProductRoute(product.asin)}
                                 className="group relative h-36 overflow-hidden rounded-sm bg-muted"
                                 aria-label={product.title ?? product.asin}
                             >
@@ -276,25 +283,28 @@ export function ProductsCard({ products, query, marketplace, availability }: Top
                     <div className="flex flex-col overflow-x-auto">
                         <TableHeader gridClassName={ROW_GRID}>
                             <div />
-                            <TableHeaderCell>Product</TableHeaderCell>
-                            <TableHeaderCell className="justify-end">Price</TableHeaderCell>
-                            <TableHeaderCell>Rating</TableHeaderCell>
-                            <TableHeaderCell className="justify-end">Sales/d</TableHeaderCell>
-                            <TableHeaderCell className="justify-end">Rev/mo</TableHeaderCell>
-                            <TableHeaderCell className="justify-end">Net/unit</TableHeaderCell>
+                            <TableHeaderCell>{t('products.colProduct')}</TableHeaderCell>
+                            <TableHeaderCell className="justify-end">{t('products.colPrice')}</TableHeaderCell>
+                            <TableHeaderCell>{t('rating.card')}</TableHeaderCell>
+                            <TableHeaderCell className="justify-end">{t('products.colSalesPerDay')}</TableHeaderCell>
+                            <TableHeaderCell className="justify-end">{t('products.colRevenue')}</TableHeaderCell>
+                            <TableHeaderCell className="justify-end">{t('products.colNet')}</TableHeaderCell>
                         </TableHeader>
-                        <div className="flex flex-col overflow-y-auto max-h-100">
-                            {sortedProducts.map((product) => (
-                                <ProductRow
-                                    key={product.asin ?? product.title ?? String(Math.random())}
-                                    product={product}
-                                    query={query}
-                                    marketplace={marketplace}
-                                    isExpanded={expandedAsin === product.asin}
-                                    onToggle={handleToggle}
-                                    onBookmark={handleBookmark}
-                                />
-                            ))}
+                        <div className="flex flex-col overflow-y-auto max-h-96">
+                            {sortedProducts.map((product, index) => {
+                                const rowKey = getSearchProductRowKey(product, index)
+
+                                return (
+                                    <ProductRow
+                                        key={rowKey}
+                                        rowKey={rowKey}
+                                        product={product}
+                                        isExpanded={expandedRowKey === rowKey}
+                                        onToggle={handleToggle}
+                                        onBookmark={handleBookmark}
+                                    />
+                                )
+                            })}
                         </div>
                     </div>
                 )}

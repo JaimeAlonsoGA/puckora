@@ -1,13 +1,15 @@
 'use client'
 
 import { useCallback, useEffect, useState, useTransition } from 'react'
+import type { Route } from 'next'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import { Alert, Caption, Display, Body, Mono, Stack } from '@puckora/ui'
 import { MODULE_IDS } from '@/constants/app-state'
-import { createScrapeJobAction } from '@/app/(app)/actions'
+import { createKeywordSearchJobAction } from '@/app/(app)/actions'
+import { searchKeywordRoute, searchProductRoute } from '@/constants/routes'
 import { useAppStore } from '@/lib/store'
-import { AmazonSearchInputSchema } from '@/schemas/scrape'
-import { SearchComposer } from './search-composer'
+import { SearchComposer, type SearchComposerSubmitPayload } from './search-composer'
 
 
 // ---------------------------------------------------------------------------
@@ -21,9 +23,10 @@ interface SearchEntryProps {
 
 export function SearchEntry({ displayName, marketplace }: SearchEntryProps) {
     const [serverError, setServerError] = useState<string | null>(null)
-    const [pendingQuery, setPendingQuery] = useState('')
+    const [pendingLabel, setPendingLabel] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
     const t = useTranslations('search')
+    const router = useRouter()
     const resetSession = useAppStore((state) => state.resetSession)
     const setPuckiContext = useAppStore((state) => state.setPuckiContext)
 
@@ -37,23 +40,44 @@ export function SearchEntry({ displayName, marketplace }: SearchEntryProps) {
         return hour < 12 ? t('entry.greetingMorning') : hour < 18 ? t('entry.greetingAfternoon') : t('entry.greetingEvening')
     })
 
-    const handleSearch = useCallback((q: string) => {
+    const handleSubmit = useCallback((payload: SearchComposerSubmitPayload) => {
         setServerError(null)
-        setPendingQuery(q)
 
-        const parsedInput = AmazonSearchInputSchema.safeParse({ keyword: q, marketplace })
-        if (!parsedInput.success) {
-            setServerError(parsedInput.error.issues[0]?.message ?? null)
+        if (payload.type === 'asin') {
+            setPendingLabel(payload.asin)
+            startTransition(() => {
+                router.push(searchProductRoute(payload.asin) as Route)
+            })
             return
         }
 
+        if (payload.type === 'discover') {
+            // Discover mode is UI-complete but route navigation is not yet wired
+            setServerError(t('entry.discoverSoon'))
+            return
+        }
+
+        setPendingLabel(payload.keyword)
+
         startTransition(async () => {
-            const result = await createScrapeJobAction(parsedInput.data)
-            if (result?.error) {
+            const result = await createKeywordSearchJobAction({
+                keyword: payload.keyword,
+                marketplace,
+            })
+
+            if (result && 'error' in result) {
                 setServerError(result.error)
+                return
             }
+
+            if (!result) {
+                setServerError(t('entry.keywordLaunchFailed'))
+                return
+            }
+
+            router.push(`${searchKeywordRoute(result.keyword)}?job=${result.jobId}` as Route)
         })
-    }, [marketplace])
+    }, [marketplace, router, t])
 
     return (
         <div className="relative flex flex-1 flex-col">
@@ -67,11 +91,11 @@ export function SearchEntry({ displayName, marketplace }: SearchEntryProps) {
                         </span>
                         <Stack direction="column" gap="3" align="center">
                             <Caption className="font-mono uppercase tracking-[0.2em] text-brand-500 animate-pulse">
-                                {t('shell.jobInProgress')}
+                                {t('entry.pendingLabel')}
                             </Caption>
-                            {pendingQuery && (
+                            {pendingLabel && (
                                 <Mono as="p" className="text-xl text-foreground/80">
-                                    &ldquo;{pendingQuery}&rdquo;
+                                    &ldquo;{pendingLabel}&rdquo;
                                 </Mono>
                             )}
                         </Stack>
@@ -89,7 +113,7 @@ export function SearchEntry({ displayName, marketplace }: SearchEntryProps) {
 
                     {serverError && <Alert variant="error" className="mb-4">{serverError}</Alert>}
 
-                    <SearchComposer onSearch={handleSearch} isPending={isPending} />
+                    <SearchComposer onSubmit={handleSubmit} isPending={isPending} />
                 </div>
             </div>
         </div>

@@ -12,21 +12,28 @@
         },
         "hero": {
             "price": "Price",
+            "rating": "Rating",
+            "reviews": "Reviews",
+            "dailySales": "Sales / day",
             "revenue": "Monthly revenue",
             "net": "Net / unit",
             "fbaFee": "FBA fee"
         },
         "economics": {
             "title": "Amazon economics",
+            "price": "List price",
             "fbaFee": "FBA fee",
             "referralFee": "Referral fee",
-            "amazonTakes": "Amazon takes"
+            "amazonTakes": "Amazon takes",
+            "netPerUnit": "Net / unit"
         },
         "position": {
             "title": "Market position",
             "bsrRank": "BSR rank",
             "dailyVelocity": "Daily velocity",
             "velocityUnits": "{count} / day",
+            "monthlyRevenue": "Monthly revenue",
+            "bought": "Bought last month",
             "rating": "Rating",
             "reviewCount": "Reviews"
         },
@@ -35,13 +42,23 @@
             "weight": "Weight",
             "dims": "Dimensions",
             "dimsValue": "{l} × {w} × {h} cm",
+            "fulfilment": "Fulfilment",
+            "fulfilmentFba": "FBA",
+            "fulfilmentFbm": "FBM",
             "listingAge": "Listing age",
             "listingAgeMonths": "{months} mo",
             "listingAgeMonthsLong": "{months} months"
         },
         "meta": {
             "asin": "ASIN",
-            "marketplace": "Marketplace"
+            "marketplace": "Marketplace",
+            "manufacturer": "Manufacturer"
+        },
+        "certifications": {
+            "title": "Certifications & compliance"
+        },
+        "bullets": {
+            "title": "Product details"
         },
         "research": {
             "section": "Research status",

@@ -109,8 +109,9 @@ drop function if exists public.extract_asin_age_months (text);
 --   default                         bsr=0.40  review=0.60  (matches Zoof/H10 better)
 --
 -- product_type_mismatch:
---   true when Amazon's organic rank has placed a non-swimwear product_type into
---   a swimwear/bikini category. Frontend should filter or visually flag these rows.
+--   reserved placeholder for a future classifier-backed mismatch signal.
+--   The previous swimwear/bikini heuristic was removed because it was a
+--   category-specific special case with poor generalization.
 
 drop view if exists public.product_financials;
 
@@ -143,6 +144,7 @@ with
             p.pkg_width_cm,
             p.pkg_height_cm,
             p.listing_date,
+            p.bought_past_month,
             case
                 when p.listing_date is not null then greatest(
                     extract(
@@ -243,26 +245,7 @@ with
                     else 0.80
                 end
             end as bsr_b,
-            (
-                p.product_type in (
-                    'SHIRT',
-                    'APPAREL',
-                    'TOPS',
-                    'BLOUSE',
-                    'SWEATER',
-                    'JACKET',
-                    'COAT',
-                    'DRESS',
-                    'PANTS',
-                    'SKIRT'
-                )
-                and (
-                    ac.full_path ilike '%swimwear%'
-                    or ac.full_path ilike '%bikini%'
-                    or ac.full_path ilike '%swimsuit%'
-                    or ac.full_path ilike '%swim%'
-                )
-            ) as product_type_mismatch
+            false as product_type_mismatch
         from
             public.amazon_products p
             join public.product_category_ranks pcr on pcr.asin = p.asin
@@ -291,15 +274,95 @@ with
             p.price is not null
             and p.price > 0
             and pcr.rank > 0
+
+        -- ── Fallback arm: products with NO category ranks but with bought_past_month
+        --    or sufficient review signal to produce a meaningful estimate.
+        --    These products are excluded from the JOIN arm above but still important:
+        --    enrichment_failed products (positions 21-60) often have bpm scraped.
+        --    Expose them as a single synthetic row with null rank/category metadata.
+        union all
+        select
+            p.asin,
+            null::uuid as category_id,
+            null::integer as rank,
+            null::text as rank_type,
+            null::timestamp as observed_at,
+            null::integer as category_depth,
+            null::text as category_path,
+            p.price,
+            p.fba_fee,
+            p.referral_fee,
+            p.review_count,
+            p.rating,
+            p.title,
+            p.brand,
+            p.product_type,
+            p.main_image_url,
+            p.pkg_weight_kg,
+            p.pkg_length_cm,
+            p.pkg_width_cm,
+            p.pkg_height_cm,
+            p.listing_date,
+            p.bought_past_month,
+            case
+                when p.listing_date is not null then greatest(
+                    extract(year from age(current_date, p.listing_date)) * 12 +
+                    extract(month from age(current_date, p.listing_date)),
+                    1
+                )::integer
+                else null
+            end as product_age_months,
+            case
+                when p.fba_fee is not null and p.referral_fee is not null
+                then round((p.price - p.fba_fee - p.referral_fee)::numeric, 2)
+                else null
+            end as net_per_unit,
+            case
+                when p.fba_fee is not null and p.referral_fee is not null
+                then round((p.fba_fee + p.referral_fee)::numeric, 2)
+                else null
+            end as total_amazon_fees,
+            case
+                when p.fba_fee is not null and p.referral_fee is not null and p.price > 0
+                then round(((p.fba_fee + p.referral_fee) / p.price * 100)::numeric, 1)
+                else null
+            end as amazon_fee_pct,
+            -- No BSR rank → all BSR fields are null for this arm
+            null::integer as bsr_rank,
+            null::float as bsr_a,
+            null::float as bsr_b,
+            false as product_type_mismatch
+        from
+            public.amazon_products p
+        where
+            p.price is not null
+            and p.price > 0
+            -- Only include products that have at least one meaningful demand signal:
+            -- bought_past_month is the strongest (from page scrape / bpm-repair).
+            -- Review velocity is the fallback (needs listing_date).
+            and (
+                p.bought_past_month is not null
+                or (p.review_count > 0 and p.listing_date is not null)
+            )
+            -- Exclude ASINs already covered by the rank JOIN arm above
+            and not exists (
+                select 1
+                from public.product_category_ranks pcr_x
+                where pcr_x.asin = p.asin
+                  and pcr_x.rank > 0
+            )
     ),
     estimates as (
         select
             b.*,
             -- Use canonical bsr_rank (not per-row rank) so every row for the same ASIN
             -- carries the same, more accurate monthly_units_bsr estimate.
-            round(
-                b.bsr_a * power(b.bsr_rank::float, - b.bsr_b)
-            )::integer as monthly_units_bsr,
+            -- For products without category ranks (union arm), bsr_rank is null → null estimate.
+            case
+                when b.bsr_rank is not null and b.bsr_a is not null
+                then round(b.bsr_a * power(b.bsr_rank::float, -b.bsr_b))::integer
+                else null
+            end as monthly_units_bsr,
             case
                 when b.product_age_months is not null
                 and b.review_count is not null
@@ -310,7 +373,9 @@ with
             end as monthly_units_review
         from base b
     ),
-    blended as (
+    weighted as (
+        -- Compute BSR/review blend weights from estimates.
+        -- These are only the signal weights; final_monthly_units is resolved in blended.
         select
             e.*,
             case
@@ -328,18 +393,36 @@ with
                 and e.product_age_months is not null then 0.65
                 when e.bsr_rank > 5000 then 0.70
                 else 0.45
-            end as w_review,
+            end as w_review
+        from estimates e
+    ),
+    blended as (
+        select
+            w.*,
+            -- bought_past_month is the authoritative signal — use it directly.
+            -- When absent: Amazon only surfaces the badge at ≥ 50 sales, so we cap
+            -- the BSR/review fallback at 49, reflecting "sold < 50 units last month".
             case
-                when e.fba_fee is not null
-                and e.referral_fee is not null
-                and e.review_count >= 100
-                and e.product_age_months is not null then 'high'
-                when e.fba_fee is not null
-                or e.referral_fee is not null
-                or coalesce(e.review_count, 0) >= 20 then 'medium'
+                when w.bought_past_month is not null then w.bought_past_month::integer
+                else least(
+                    round(
+                        w.w_bsr * w.monthly_units_bsr + w.w_review * coalesce(w.monthly_units_review, 0)
+                    )::integer,
+                    49
+                )
+            end as final_monthly_units,
+            -- Confidence: bought_past_month is the only path to 'high'.
+            -- Without it, sales are known to be ≤ 49; best achievable is 'medium'.
+            case
+                when w.bought_past_month is not null then 'high'
+                when (
+                    w.fba_fee is not null
+                    or w.referral_fee is not null
+                )
+                or coalesce(w.review_count, 0) >= 20 then 'medium'
                 else 'low'
             end as confidence
-        from estimates e
+        from weighted w
     )
 select
     b.asin,
@@ -363,26 +446,19 @@ select
     b.net_per_unit,
     b.monthly_units_bsr,
     b.monthly_units_review,
+    b.final_monthly_units as monthly_units,
+    b.bought_past_month,
     round(
-        b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0)
-    )::integer as monthly_units,
-    round(
-        (
-            b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0)
-        ) * b.price
+        b.final_monthly_units * b.price
     )::numeric(12, 2) as monthly_revenue,
     case
         when b.net_per_unit is not null then round(
-            (
-                b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0)
-            ) * b.net_per_unit
+            b.final_monthly_units * b.net_per_unit
         )::numeric(12, 2)
         else null
     end as monthly_net,
     round(
-        (
-            b.w_bsr * b.monthly_units_bsr + b.w_review * coalesce(b.monthly_units_review, 0)
-        ) / 30.0,
+        b.final_monthly_units / 30.0,
         1
     ) as daily_velocity,
     b.w_bsr,

@@ -61,6 +61,9 @@ Rules:
     - [New integration (vendor API)](#new-integration-vendor-api)
     - [New schema](#new-schema)
     - [New constant](#new-constant)
+  - [Module checklists](#module-checklists)
+    - [Generic app module checklist](#generic-app-module-checklist)
+    - [Search module checklist](#search-module-checklist)
   - [Pre-flight checklist](#pre-flight-checklist)
 
 ---
@@ -648,6 +651,34 @@ Use the `/new-module` and `/new-query-domain` prompt files in `.github/prompts/`
 ### New constant
 
 - `constants/{name}.ts` — no imports from `server/`, `services/`, or `queries/`. Pure values only.
+
+## Module checklists
+
+### Generic app module checklist
+
+- Keep the route entry (`app/**/page.tsx`) server-first and limit it to param parsing, parallel cached data reads, and shell composition.
+- Create exactly one client shell when browser state or TanStack Query is required; the shell must wire data only and avoid view markup or local copy.
+- Put every query key, query options factory, mutation, and invalidation helper in `queries/`; never inline query definitions in components.
+- Keep validation in `schemas/{domain}.ts` and derive exported types from Zod instead of mirroring unions or interfaces manually.
+- Move every route path, API message, view id, timeout, threshold, and repeated display mode into an existing `constants/` domain file.
+- Prefer deleting deprecated variants, files, and folders over preserving compatibility layers that no longer have a product use.
+- Use building-block UI components and shared layout primitives before introducing new wrapper markup or local spacing/color conventions.
+- Keep server/client boundaries clean: server files never import client modules, client files never re-fetch data the page already resolved on the server.
+- When a component repeats a local interaction pattern in two places, extract the pattern into one small shared module before adding a third copy.
+- Finish every module change with dead-code removal, barrel/export cleanup, typecheck, and targeted linting on the touched domain.
+
+### Search module checklist
+
+- `/search/[query]` is overview-first and overview-only; do not reintroduce route-level list/detail mode switching under the query page.
+- `/search/[asin]` owns product detail. Product-directed navigation from overview cards, the research graph, and related surfaces must link there directly.
+- The query page server component may resolve only three search concerns: current user, keyword results, and optional scrape job state.
+- Client polling on the query page must stay DB-backed through `keywordResultsQueryOptions()` and `scrapeJobQueryOptions()`; no direct browser fetches for search data.
+- Background repair or enrichment work must be triggered server-side and flow back through DB writes plus existing query polling, not ad hoc client refresh logic.
+- Overview sidebar and cards should reuse shared toggles, helpers, and layout blocks instead of embedding one-off view switchers or style pockets.
+- Product row identity must come from stable helpers; never key overview product content by array index alone.
+- Search availability logic, repair heuristics, polling windows, and query-length constraints belong in `constants/search.ts` and shared helpers, not in card components.
+- If a search subsection stops being part of the supported experience, delete its files, skeletons, route params, and navigation links in the same change.
+- Any future search expansion should add a new dedicated route or module shell instead of overloading `/search/[query]` with multiple page modes.
 
 ---
 
