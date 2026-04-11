@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import type { Route } from 'next'
 import { usePathname } from 'next/navigation'
@@ -7,7 +8,7 @@ import { useTranslations } from 'next-intl'
 import { Search, Package, AlignLeft, LayoutGrid, Plus, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge, Caption } from '@puckora/ui'
-import { useAppStore } from '@/lib/store'
+import { useAppStore, type MarkedProduct } from '@/lib/store'
 import {
     MARK_STATE_BADGE_VARIANTS,
     MARK_STATE_DOT_CLASS_NAMES,
@@ -55,6 +56,26 @@ const MODULES: { id: ModuleId; href: string; labelKey: string; icon: React.React
     },
 ]
 
+// ---------------------------------------------------------------------------
+// MarkedProductRow — memo'd to avoid re-renders when unrelated products change
+// ---------------------------------------------------------------------------
+
+const MarkedProductRow = memo(function MarkedProductRow({ p }: { p: MarkedProduct }) {
+    return (
+        <div
+            className="flex cursor-pointer items-center gap-1.25 rounded px-2 py-1 transition-colors hover:bg-card"
+        >
+            <div className={cn('size-1.5 shrink-0 rounded-full', MARK_STATE_DOT_CLASS_NAMES[p.markState])} />
+            <Caption as="span" className="flex-1 truncate text-sm text-foreground">
+                {p.name.split(' ').slice(0, 4).join(' ')}
+            </Caption>
+            <Badge variant={MARK_STATE_BADGE_VARIANTS[p.markState]} size="sm">
+                {p.markState}
+            </Badge>
+        </div>
+    )
+})
+
 function MarkedList() {
     const t = useTranslations('nav')
     const markedProducts = useAppStore((state) => state.markedProducts)
@@ -76,18 +97,7 @@ function MarkedList() {
                     </div>
                 ) : (
                     items.map((p) => (
-                        <div
-                            key={p.asin}
-                            className="flex cursor-pointer items-center gap-1.25 rounded px-2 py-1 transition-colors hover:bg-card"
-                        >
-                            <div className={cn('size-1.5 shrink-0 rounded-full', MARK_STATE_DOT_CLASS_NAMES[p.markState])} />
-                            <Caption as="span" className="flex-1 truncate text-sm text-foreground">
-                                {p.name.split(' ').slice(0, 4).join(' ')}
-                            </Caption>
-                            <Badge variant={MARK_STATE_BADGE_VARIANTS[p.markState]} size="sm">
-                                {p.markState}
-                            </Badge>
-                        </div>
+                        <MarkedProductRow key={p.asin} p={p} />
                     ))
                 )}
             </div>

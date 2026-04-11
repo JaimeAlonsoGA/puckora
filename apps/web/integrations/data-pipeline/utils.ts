@@ -3,28 +3,18 @@
  * No Apify / Supabase imports — pure transforms.
  */
 
-/** Amazon domain code (e.g. "com", "co_uk") → puckora marketplace code */
-export const DOMAIN_TO_MARKETPLACE: Record<string, string> = {
-    com: 'US',
-    ca: 'CA',
-    com_mx: 'MX',
-    co_uk: 'UK',
-    de: 'DE',
-    fr: 'FR',
-    it: 'IT',
-    es: 'ES',
-    nl: 'NL',
-    se: 'SE',
-    pl: 'PL',
-    com_tr: 'TR',
-    ae: 'AE',
-    sa: 'SA',
-    in: 'IN',
-    co_jp: 'JP',
-    com_au: 'AU',
-    com_sg: 'SG',
-    com_br: 'BR',
-}
+import { MARKETPLACES } from '@puckora/types'
+
+/**
+ * Amazon domain code (e.g. "com", "co_uk") → puckora marketplace code.
+ *
+ * Derived from the canonical MARKETPLACES list so it never drifts out of
+ * sync when new marketplaces are added. Domain key format: strip "amazon."
+ * prefix then replace dots with underscores (e.g. "amazon.co.uk" → "co_uk").
+ */
+export const DOMAIN_TO_MARKETPLACE: Record<string, string> = Object.fromEntries(
+    MARKETPLACES.map((m) => [m.domain.replace('amazon.', '').replace(/\./g, '_'), m.id]),
+)
 
 /** Normalise an Amazon domain code to a puckora marketplace code. */
 export function parseDomainToMarketplace(domainCode: string): string {
