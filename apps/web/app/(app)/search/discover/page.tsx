@@ -1,4 +1,3 @@
-import { getTranslations } from 'next-intl/server'
 import { getCachedUser } from '@/server/users'
 import { getCachedDiscoverProducts } from '@/server/products'
 import { DiscoverFiltersSchema } from '@/schemas/discover'
@@ -9,10 +8,9 @@ interface DiscoverPageProps {
 }
 
 export default async function DiscoverPage({ searchParams }: DiscoverPageProps) {
-    const [raw, user, t] = await Promise.all([
+    const [raw] = await Promise.all([
         searchParams,
-        getCachedUser(),
-        getTranslations('search'),
+        getCachedUser(), // auth guard
     ])
 
     const filtersResult = DiscoverFiltersSchema.safeParse({
@@ -39,7 +37,6 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
 
     return (
         <DiscoverShell
-            user={user}
             filters={filters}
             hasFilters={hasFilters}
             initialProducts={products}

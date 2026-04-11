@@ -1,13 +1,11 @@
 'use client'
 
-import type { User } from '@puckora/types'
 import type { DiscoverFilters } from '@/schemas/discover'
 import type { ProductFinancial } from '@puckora/types'
 import { DiscoverFiltersBar } from './discover-filters'
 import { DiscoverResults } from './discover-results'
 
 interface DiscoverShellProps {
-    user: User
     filters: DiscoverFilters
     hasFilters: boolean
     initialProducts: ProductFinancial[]

@@ -15,7 +15,7 @@
             "asinReady": "Listo para abrir el producto {asin}.",
             "asinSingleOnly": "El modo ASIN solo acepta un producto.",
             "asinInvalid": "Introduce un único ASIN válido de Amazon o una URL de producto.",
-            "discoverSoon": "El modo Discover ya está planteado, pero todavía no está activo.",
+            "discoverSoon": "Filtra el catálogo de Puckora por precio, valoración e ingresos.",
             "pendingLabel": "Lanzando búsqueda",
             "keywordLaunchFailed": "No se pudo lanzar la búsqueda por palabra clave"
         },

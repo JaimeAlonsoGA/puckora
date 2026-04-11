@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation'
 import { Alert, Caption, Display, Body, Mono, Stack } from '@puckora/ui'
 import { MODULE_IDS } from '@/constants/app-state'
 import { createKeywordSearchJobAction } from '@/app/(app)/actions'
-import { searchKeywordRoute, searchProductRoute } from '@/constants/routes'
+import { searchKeywordRoute, searchProductRoute, searchDiscoverRoute } from '@/constants/routes'
+import { CONSTRAINT_FIELD_IDS } from '@/constants/search'
 import { useAppStore } from '@/lib/store'
 import { SearchComposer, type SearchComposerSubmitPayload } from './search-composer'
 
@@ -52,8 +53,17 @@ export function SearchEntry({ displayName, marketplace }: SearchEntryProps) {
         }
 
         if (payload.type === 'discover') {
-            // Discover mode is UI-complete but route navigation is not yet wired
-            setServerError(t('entry.discoverSoon'))
+            const p = new URLSearchParams()
+            const price = payload.constraints[CONSTRAINT_FIELD_IDS.PRICE]
+            const rating = payload.constraints[CONSTRAINT_FIELD_IDS.RATING]
+            const reviews = payload.constraints[CONSTRAINT_FIELD_IDS.REVIEWS]
+            if (price?.min) p.set('minPrice', price.min)
+            if (price?.max) p.set('maxPrice', price.max)
+            if (rating?.min) p.set('minRating', rating.min)
+            if (reviews?.min) p.set('minReviews', reviews.min)
+            startTransition(() => {
+                router.push(searchDiscoverRoute(p) as Route)
+            })
             return
         }
 

@@ -73,8 +73,11 @@ export const searchAsinRoute = (asin: string | null | undefined): string => {
 export const searchKeywordRoute = (keyword: string): string =>
     `${AppRoute.searchKeyword}/${toSearchSlug(keyword)}`
 
-/** Discover results root. Search params will provide filters when enabled. */
-export const searchDiscoverRoute = (): string => AppRoute.searchDiscover
+/** Discover results root. Optionally accepts URL search params for filters. */
+export const searchDiscoverRoute = (params?: URLSearchParams): string => {
+    const qs = params?.toString()
+    return qs ? `${AppRoute.searchDiscover}?${qs}` : AppRoute.searchDiscover
+}
 
 /** Backward-compatible alias for keyword route generation. */
 export const searchQueryRoute = (keyword: string): string => searchKeywordRoute(keyword)

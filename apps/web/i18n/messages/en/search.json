@@ -16,7 +16,8 @@
             "asinSingleOnly": "ASIN mode accepts one product only.",
             "asinInvalid": "Enter one valid Amazon ASIN or product URL.",
             "pendingLabel": "Launching search",
-            "keywordLaunchFailed": "Failed to launch keyword search"
+            "keywordLaunchFailed": "Failed to launch keyword search",
+            "discoverSoon": "Browse Puckora's catalog by applying price, rating, and revenue filters."
         },
         "tabs": {
             "keyword": "Keyword",
