@@ -55,8 +55,10 @@ function isAuthorized(req: NextRequest): boolean {
 /**
  * Simple in-process concurrency lock: prevents two simultaneous repair runs
  * from firing the same SP-API calls and exhausting rate limits.
- * Note: in a multi-instance deployment each instance has its own flag.
- * For the current single-instance Fly.io setup this is perfectly sufficient.
+ * Note: Vercel may run multiple function instances; this flag is scoped to a
+ * single warm instance. Concurrent requests hitting different instances can
+ * both run repairs simultaneously — acceptable given the SP-API rate-limiter
+ * and idempotent upserts handle duplicated work safely.
  */
 let repairRunning = false
 

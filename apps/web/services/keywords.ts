@@ -155,11 +155,9 @@ export async function getKeyword(
 /**
  * Resolve the keyword row associated with a scrape job.
  * Looks up the job’s payload (keyword + marketplace) then delegates to getKeyword.
- * Returns null when the job has no keyword payload or no keyword row exists yet.
- */
-/**
  * scrape_jobs stays on Supabase — pass `supabase` for that lookup.
  * amazon_keywords lives on Fly.io — `db` is used for the keyword fetch.
+ * Returns null when the job has no keyword payload or no keyword row exists yet.
  */
 export async function getKeywordForJob(
     db: PgDb,
