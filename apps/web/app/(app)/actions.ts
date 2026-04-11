@@ -38,8 +38,7 @@ export async function updateProfileAction(data: SettingsUpdateInput): Promise<Ac
     }
 
     try {
-        const user = await getAuthUser()
-        const supabase = await createServerClient()
+        const [user, supabase] = await Promise.all([getAuthUser(), createServerClient()])
         await updateUser(supabase, user.id, parsed.data)
 
         // Keep NEXT_LOCALE cookie in sync when language changes
