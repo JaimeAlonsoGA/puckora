@@ -13,23 +13,18 @@
  *     product_financials view can compute estimates even without a BSR scrape.
  */
 
-import { getCatalogItemParsed, getFeesEstimatesBatch, SP_API_MARKETPLACE_ID } from '@puckora/sp-api'
+import { getCatalogItemParsed, getFeesEstimatesBatch } from '@puckora/sp-api'
 import { enrichAsin } from '@puckora/sp-api'
 import { upsertAmazonProduct, upsertProductCategoryRanks, getKnownAmazonCategoryIds } from '@/services/products'
 import type { AmazonProduct, AmazonProductInsert, ProductCategoryRankInsert } from '@puckora/types'
 import type { PgDb } from '@puckora/db'
 import { amazonCategories } from '@puckora/db'
 import type { ScrapedListing } from '@puckora/scraper-core'
+import { getMarketplaceId } from './keyword-search/amazon-html-source'
 
-// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-/** Map a puckora marketplace code ('US', 'UK', etc.) to an SP-API marketplace ID. */
-function getMarketplaceId(marketplace = 'US'): string {
-    return SP_API_MARKETPLACE_ID[marketplace.toUpperCase()] ?? SP_API_MARKETPLACE_ID['US']!
-}
 
 function toRepairListing(product: AmazonProduct): ScrapedListing {
     return {

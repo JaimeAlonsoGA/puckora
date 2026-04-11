@@ -20,9 +20,9 @@ export const getCachedScrapeJob = cache(async (jobId: string): Promise<ScrapeJob
 })
 
 /**
- * List pending/processing jobs for a user. Not deduplicated (always fresh).
+ * List pending/processing jobs for a user. Deduplicated per request via cache().
  */
-export async function getActiveScrapeJobs(userId: string): Promise<ScrapeJob[]> {
+export const getActiveScrapeJobs = cache(async (userId: string): Promise<ScrapeJob[]> => {
     const supabase = await createServerClient()
     return listPendingScrapeJobs(supabase, userId)
-}
+})
