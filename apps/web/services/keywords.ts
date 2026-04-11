@@ -42,6 +42,34 @@ function getProductAgeMonths(listingDate: string | null): number | null {
     return Math.max(1, months)
 }
 
+/** Parse a Postgres NUMERIC value (Drizzle returns it as a string) to number | null. */
+function parseNum(val: string | null | undefined): number | null {
+    if (val == null) return null
+    const n = parseFloat(val)
+    return Number.isFinite(n) ? n : null
+}
+
+/**
+ * Convert a raw Drizzle view row to ProductFinancial.
+ * Drizzle's `numeric()` column type infers to `string | null`; the 7 computed
+ * fields below are remapped here so callers receive the correct `number | null`
+ * type without any unsafe `as` casts.
+ */
+function mapViewRowToFinancial(
+    row: typeof productFinancialsView.$inferSelect,
+): ProductFinancial {
+    return {
+        ...row,
+        total_amazon_fees:     parseNum(row.total_amazon_fees),
+        amazon_fee_pct:        parseNum(row.amazon_fee_pct),
+        net_per_unit:          parseNum(row.net_per_unit),
+        monthly_revenue:       parseNum(row.monthly_revenue),
+        monthly_net:           parseNum(row.monthly_net),
+        daily_velocity:        parseNum(row.daily_velocity),
+        review_rate_per_month: parseNum(row.review_rate_per_month),
+    }
+}
+
 export function mapAmazonProductToFinancial(product: AmazonProduct): ProductFinancial {
     return {
         asin: product.asin,
@@ -349,6 +377,7 @@ export async function getProductsForKeyword(
                 monthly_units_bsr: productFinancialsView.monthly_units_bsr,
                 monthly_units_review: productFinancialsView.monthly_units_review,
                 monthly_units: productFinancialsView.monthly_units,
+                bought_past_month: productFinancialsView.bought_past_month,
                 monthly_revenue: productFinancialsView.monthly_revenue,
                 monthly_net: productFinancialsView.monthly_net,
                 daily_velocity: productFinancialsView.daily_velocity,
@@ -375,7 +404,7 @@ export async function getProductsForKeyword(
     const dedupedFinancialRows = new Map<string, ProductFinancial>()
     for (const row of viewRows) {
         if (row.asin && !dedupedFinancialRows.has(row.asin)) {
-            dedupedFinancialRows.set(row.asin, row as unknown as ProductFinancial)
+            dedupedFinancialRows.set(row.asin, mapViewRowToFinancial(row))
         }
     }
 
@@ -387,7 +416,7 @@ export async function getProductsForKeyword(
     // Step 3: Use the pre-fetched amazon_products rows (already in productRows).
     // Filter to ASINs not covered by the view, map to ProductFinancial shape.
     const fallbackAsinSet = new Set(fallbackAsins)
-    const fallbackRows = (productRows as AmazonProduct[]).filter((r) => fallbackAsinSet.has(r.asin))
+    const fallbackRows = productRows.filter((r) => fallbackAsinSet.has(r.asin))
 
     return [
         ...financialRows,
