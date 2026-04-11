@@ -28,7 +28,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     } catch (err) {
         console.error('[ResearchGraph API] Suggestions error:', err)
         return NextResponse.json(
-            { error: API_ERROR_MESSAGES.INTERNAL_ERROR },
+            { error: API_ERROR_MESSAGES.INTERNAL_SERVER_ERROR },
             { status: API_STATUS.INTERNAL_SERVER_ERROR },
         )
     }

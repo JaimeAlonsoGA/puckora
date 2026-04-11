@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
         const products = await getProductsForKeyword(db, keywordRow.id)
         return NextResponse.json(products, { headers: NO_STORE_HEADERS })
     } catch (err) {
-        const message = err instanceof Error ? err.message : API_ERROR_MESSAGES.INTERNAL_ERROR
+        const message = err instanceof Error ? err.message : API_ERROR_MESSAGES.INTERNAL_SERVER_ERROR
         return NextResponse.json({ error: message }, { status: API_STATUS.INTERNAL_SERVER_ERROR })
     }
 }

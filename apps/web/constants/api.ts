@@ -15,7 +15,6 @@ export const API_ERROR_MESSAGES = {
     INVALID_INPUT: 'Invalid input',
     INVALID_SEARCH_INPUT: 'Invalid search input',
     UNAUTHORIZED: 'Unauthorized',
-    INTERNAL_ERROR: 'Internal error',
     INTERNAL_SERVER_ERROR: 'Internal server error',
     INVALID_MARKETPLACE: 'Invalid marketplace',
     INVALID_JSON_BODY: 'Invalid JSON body',
