@@ -69,7 +69,7 @@ function getRawPool(): Pool {
     return rawPool
 }
 
-/** Simple count — avoids expensive product_financials view JOIN during write load */
+/** Simple count — avoids any expensive derived-data JOIN during write load */
 async function getPollCount(keywordId: string): Promise<number> {
     const res = await getRawPool().query(
         'SELECT count(*) FROM amazon_keyword_products WHERE keyword_id = $1',

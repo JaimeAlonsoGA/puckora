@@ -55,3 +55,8 @@ export const keywordSuggestionKeys = {
     list: (query: string) => [...keywordSuggestionKeys.all, query] as const,
 }
 
+export const discoverKeys = {
+    all: ['discover'] as const,
+    bpmRefresh: (asins: string[]) => [...discoverKeys.all, 'bpmRefresh', ...asins] as const,
+}
+

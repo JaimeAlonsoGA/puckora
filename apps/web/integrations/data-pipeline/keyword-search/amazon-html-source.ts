@@ -1,9 +1,9 @@
 import { SP_API_MARKETPLACE_ID } from '@puckora/sp-api'
 import { parseProducts, type ScrapedListing } from '@puckora/scraper-core'
 import { buildAmazonProductUrl, buildAmazonSearchUrl } from '@/constants/amazon-marketplace'
+import { KEYWORD_SEARCH_PIPELINE_ERRORS } from '@/constants/api'
+import { fetchAmazonPage, AmazonFetchError } from '../amazon-fetch'
 import {
-    KEYWORD_SEARCH_ERROR_MESSAGE,
-    KEYWORD_SEARCH_FETCH_HEADERS,
     SearchListingSnapshotSchema,
     type SearchListingSnapshot,
 } from './contracts'
@@ -16,17 +16,47 @@ export async function fetchSearchListings(
     keyword: string,
     marketplace: string,
 ): Promise<SearchListingSnapshot[]> {
-    const response = await fetch(buildAmazonSearchUrl(keyword, marketplace), {
-        headers: KEYWORD_SEARCH_FETCH_HEADERS,
-        cache: 'no-store',
-    })
+    // Fetch pages 1–3 in parallel. Pages 2 and 3 are optional: if either fails
+    // we continue with the pages that succeeded.  Page 1 is mandatory.
+    const [result1, result2, result3] = await Promise.allSettled([
+        fetchAmazonPage(buildAmazonSearchUrl(keyword, marketplace, 1)),
+        fetchAmazonPage(buildAmazonSearchUrl(keyword, marketplace, 2)),
+        fetchAmazonPage(buildAmazonSearchUrl(keyword, marketplace, 3)),
+    ])
 
-    if (!response.ok) {
-        throw new Error(`${KEYWORD_SEARCH_ERROR_MESSAGE.HTML_SEARCH_FAILED}: ${response.status}`)
+    // Page 1 is required — surface its error to the caller if it failed.
+    if (result1.status === 'rejected') {
+        const status = result1.reason instanceof AmazonFetchError ? result1.reason.status : null
+        throw new Error(`${KEYWORD_SEARCH_PIPELINE_ERRORS.HTML_SEARCH_FAILED}: ${status ?? 'network error'}`)
     }
 
-    const html = await response.text()
-    return parseProducts(html).map((listing) => buildSearchListingSnapshot(listing, html, marketplace))
+    if (result2.status === 'rejected') {
+        console.warn('[keyword-search] page 2 fetch failed (continuing without page 2):', result2.reason)
+    }
+    if (result3.status === 'rejected') {
+        console.warn('[keyword-search] page 3 fetch failed (continuing without page 3):', result3.reason)
+    }
+
+    const page1Listings = parseProducts(result1.value).map((l) => buildSearchListingSnapshot(l, result1.value, marketplace))
+    const page2Listings =
+        result2.status === 'fulfilled'
+            ? parseProducts(result2.value).map((l) => buildSearchListingSnapshot(l, result2.value, marketplace))
+            : []
+    const page3Listings =
+        result3.status === 'fulfilled'
+            ? parseProducts(result3.value).map((l) => buildSearchListingSnapshot(l, result3.value, marketplace))
+            : []
+
+    // Deduplicate by ASIN across all pages (sponsored products repeat across pages).
+    // BPM-bearing entry wins when multiple pages carry the same ASIN.
+    const byAsin = new Map<string, SearchListingSnapshot>()
+    for (const listing of [...page1Listings, ...page2Listings, ...page3Listings]) {
+        const existing = byAsin.get(listing.asin)
+        if (!existing || (listing.bought_past_month !== null && existing.bought_past_month === null)) {
+            byAsin.set(listing.asin, listing)
+        }
+    }
+    return [...byAsin.values()]
 }
 
 function buildSearchListingSnapshot(

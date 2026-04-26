@@ -39,8 +39,8 @@ import {
     fetchSearchListings,
     getMarketplaceId,
 } from './keyword-search/amazon-html-source'
+import { KEYWORD_SEARCH_PIPELINE_ERRORS } from '@/constants/api'
 import {
-    KEYWORD_SEARCH_ERROR_MESSAGE,
     RunKeywordSearchParamsSchema,
     type RunKeywordSearchParams,
     type SearchListingSnapshot,
@@ -111,7 +111,7 @@ export async function runKeywordSearch(
         try {
             scrapedListings = await fetchSearchListings(keyword, marketplace)
         } catch (err) {
-            const message = getKeywordSearchItemErrorMessage(err, KEYWORD_SEARCH_ERROR_MESSAGE.HTML_SEARCH_FAILED)
+            const message = getKeywordSearchItemErrorMessage(err, KEYWORD_SEARCH_PIPELINE_ERRORS.HTML_SEARCH_FAILED)
             itemErrors.push(`html-search: ${message}`)
             console.error('[keyword-search] HTML listing fetch failed:', err)
         }
@@ -127,7 +127,7 @@ export async function runKeywordSearch(
         )
         scrapeSettled.forEach((result, idx) => {
             if (result.status === 'rejected') {
-                const message = getKeywordSearchItemErrorMessage(result.reason, KEYWORD_SEARCH_ERROR_MESSAGE.WRITE_FAILED)
+                const message = getKeywordSearchItemErrorMessage(result.reason, KEYWORD_SEARCH_PIPELINE_ERRORS.WRITE_FAILED)
                 itemErrors.push(`${scrapedListings[idx].asin}: ${message}`)
                 console.error(`[keyword-search] failed to persist HTML listing ${scrapedListings[idx].asin}:`, result.reason)
             }
@@ -261,7 +261,7 @@ export async function runKeywordSearch(
         )
         for (const result of enrichResults) {
             if (!result.ok) {
-                const message = getKeywordSearchItemErrorMessage(result.error, KEYWORD_SEARCH_ERROR_MESSAGE.WRITE_FAILED)
+                const message = getKeywordSearchItemErrorMessage(result.error, KEYWORD_SEARCH_PIPELINE_ERRORS.WRITE_FAILED)
                 itemErrors.push(`${result.asin}: ${message}`)
                 console.error(`[keyword-search] failed for ASIN ${result.asin}:`, result.error)
             }
@@ -278,7 +278,7 @@ export async function runKeywordSearch(
         }
 
         if (!response) {
-            itemErrors.push(KEYWORD_SEARCH_ERROR_MESSAGE.ENRICHMENT_UNAVAILABLE)
+            itemErrors.push(KEYWORD_SEARCH_PIPELINE_ERRORS.ENRICHMENT_UNAVAILABLE)
         }
 
         if (!response && scrapedListings.length === 0) {
@@ -303,30 +303,35 @@ export async function runKeywordSearch(
             },
         })
 
-        // Fire-and-forget: scrape individual product pages for ASINs where the
-        // search-page HTML didn't include a "bought in past month" badge.
-        // Runs after job is marked DONE so it never delays the user-visible result.
+        // Background completion tasks — run after the job is DONE so they never
+        // delay the user-visible result. Both tasks are independent of each other and
+        // run in parallel. They are awaited (not fire-and-forget) so the enclosing
+        // after() callback keeps the Node.js runtime alive until both finish.
         const nullBpmAsins = previewListingsForEnrichment
             .filter((l) => l.bought_past_month === null || l.bought_past_month === undefined)
             .map((l) => l.asin)
-        if (nullBpmAsins.length > 0) {
-            repairBpmBatch(db, nullBpmAsins, marketplace).catch((err) =>
-                console.error('[bpm-repair] batch failed:', err),
-            )
-        }
 
-        // Fire-and-forget: per-ASIN SP-API enrichment for products not covered by
-        // searchCatalogItems (positions 21-60 that had catalog = null).
-        // These have scrape_status = ENRICHMENT_FAILED and are missing brand,
-        // listing_date, dimensions, and category ranks — all needed for the view.
-        // Runs sequentially (rate-limit-safe) after job is DONE.
+        // Per-ASIN SP-API enrichment for products not covered by searchCatalogItems
+        // (positions 21-60 that had catalog = null). These have scrape_status =
+        // ENRICHMENT_FAILED and are missing brand, listing_date, dimensions, and
+        // category ranks — all needed for the view.
         const enrichFailedListings = previewListingsForEnrichment.filter(
             (l) => !catalogMap.has(l.asin),
         )
-        if (enrichFailedListings.length > 0) {
-            enrichAsinBatch(db, enrichFailedListings, marketplace).catch((err) =>
-                console.error('[enrich-repair] background batch failed:', err),
-            )
+
+        const backgroundResults = await Promise.allSettled([
+            nullBpmAsins.length > 0
+                ? repairBpmBatch(db, nullBpmAsins, marketplace)
+                : Promise.resolve(),
+            enrichFailedListings.length > 0
+                ? enrichAsinBatch(db, enrichFailedListings, marketplace)
+                : Promise.resolve(),
+        ])
+        if (backgroundResults[0].status === 'rejected') {
+            console.error('[bpm-repair] batch failed:', backgroundResults[0].reason)
+        }
+        if (backgroundResults[1].status === 'rejected') {
+            console.error('[enrich-repair] background batch failed:', backgroundResults[1].reason)
         }
     } catch (err) {
         await updateScrapeJob(supabase, jobId, {

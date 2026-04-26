@@ -25,10 +25,13 @@ export const amazonProductVectorSource: VectorSourceAdapter<AmazonProductSourceR
                     p.updated_at::text as updated_at
                 from public.amazon_products p
                 left join lateral (
-                    select category_path
-                    from public.product_financials pf
-                    where pf.asin = p.asin
-                    order by pf.rank asc nulls last
+                                        select ac.full_path as category_path
+                                        from public.product_category_ranks pcr
+                                        join public.amazon_categories ac on ac.id = pcr.category_id
+                                        where pcr.asin = p.asin
+                                            and pcr.rank_type = 'best_seller'
+                                            and pcr.rank > 0
+                                        order by pcr.rank asc nulls last
                     limit 1
                 ) pf on true
                 where p.enriched_at is not null
@@ -49,10 +52,13 @@ export const amazonProductVectorSource: VectorSourceAdapter<AmazonProductSourceR
                     p.updated_at::text as updated_at
                 from public.amazon_products p
                 left join lateral (
-                    select category_path
-                    from public.product_financials pf
-                    where pf.asin = p.asin
-                    order by pf.rank asc nulls last
+                                        select ac.full_path as category_path
+                                        from public.product_category_ranks pcr
+                                        join public.amazon_categories ac on ac.id = pcr.category_id
+                                        where pcr.asin = p.asin
+                                            and pcr.rank_type = 'best_seller'
+                                            and pcr.rank > 0
+                                        order by pcr.rank asc nulls last
                     limit 1
                 ) pf on true
                 where p.enriched_at is not null

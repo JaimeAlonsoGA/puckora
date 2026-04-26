@@ -57,46 +57,90 @@ export function parseProducts(html: string): ScrapedListing[] {
         if (seen.has(asin)) continue
         seen.add(asin)
 
-        // Amazon injects the same ASIN into sponsored carousels / hero slots that
-        // appear BEFORE the ranked grid in the DOM.  Those slots use a different card
-        // template where parseName always fails.  We try every occurrence of
-        // data-asin="{asin}" until we find one whose block yields a parseable name.
-        let name = ''
-        let block = ''
-        let foundPos = 0
-        let searchFrom = 0
-
+        // Amazon list-view injects the same ASIN twice per card:
+        //   1st occurrence  → outer wrapper <div data-asin="…"> (left column: image + BPM badge)
+        //   2nd occurrence  → inner product card (right column: title, price, rating)
+        //
+        // Keyword search pages also inject ASINs into sponsored carousels that precede
+        // the organic grid by tens or hundreds of KB.  We must try ALL occurrences
+        // (no cutoff) to find the one where parseName succeeds, then anchor the
+        // card-local window to that position.
+        const allPos: number[] = []
+        let s = 0
         while (true) {
-            const pos = html.indexOf(`data-asin="${asin}"`, searchFrom)
-            if (pos === -1) break
-            const candidate = html.substring(pos, pos + 12_000)
-            const candidateName = parseName(candidate, asin)
-            if (candidateName) { name = candidateName; block = candidate; foundPos = pos; break }
-            searchFrom = pos + 1
+            const p = html.indexOf(`data-asin="${asin}"`, s)
+            if (p === -1) break
+            allPos.push(p)
+            s = p + 1
         }
 
+        // Step 1 — find namePos: iterate every occurrence until parseName works.
+        // No distance cutoff here because the organic occurrence can be 60 KB+
+        // after a sponsored occurrence.
+        let name = ''
+        let namePos = allPos[0]
+        for (const pos of allPos) {
+            const candidate = html.substring(pos, pos + 12_000)
+            const n = parseName(candidate, asin)
+            if (n) { name = n; namePos = pos; break }
+        }
         if (!name) continue
 
-        // Badge: look in a window that spans 4k BEFORE the data-asin as well as
-        // the block itself — on many category pages the #N badge element sits in
-        // an outer wrapper div that precedes the inner product-card data-asin.
-        const badgeWindow = html.substring(Math.max(0, foundPos - 4_000), foundPos + 12_000)
+        // Step 2 — card-local occurrences: keep only those within ±60 KB of namePos.
+        // For list-view cards this captures both the left-column wrapper (BPM badge)
+        // and the right-column inner card (title).  Occurrences further away are
+        // sponsored repeats or related-section carousels — exclude them.
+        const cardPos = allPos.filter((p) => Math.abs(p - namePos) < 60_000)
+        const firstPos = cardPos[0]
+        const lastPos = cardPos[cardPos.length - 1]
+
+        // cardSpan covers the entire product card from the earliest local occurrence
+        // to well past the latest.
+        //
+        // Why always lastPos + 28 KB (not a smaller "dual-occurrence" buffer):
+        //
+        //   Keyword search pages inject the same ASIN into a sponsored carousel that
+        //   appears BEFORE the organic grid section — often 30–60 KB earlier. Both
+        //   occurrences fall within the ±60 KB window, so cardPos always has 2 entries.
+        //   parseName succeeds on the SPONSORED block first (Amazon renders real title
+        //   spans there), so namePos = sponsoredPos and lastPos = organicPos.  The BPM
+        //   badge lives 18–25 KB INTO the organic card (past lastPos).  A small
+        //   "dual-occurrence" buffer of 12 KB would end at lastPos + 12 KB, cutting off
+        //   the badge.  Using a fixed 28 KB past lastPos guarantees full coverage for
+        //   every grid-view layout:
+        //
+        //   • sponsored-before-organic (dual):   window = [sponsoredPos .. organicPos+28K]
+        //   • sponsored-after-organic (dual):    window = [organicPos .. sponsoredPos+28K]
+        //   • single organic occurrence:         window = [organicPos .. organicPos+28K]
+        //   • list-view left+right columns:      BPM sits before lastPos → always captured
+        const cardSpan = html.substring(firstPos, lastPos + 28_000)
+
+        // BSR badge: look in window starting 4 KB before firstPos (badge may sit in
+        // an outer wrapper div that precedes the product card on Best Sellers pages).
+        const badgeWindow = html.substring(Math.max(0, firstPos - 4_000), lastPos + 28_000)
         const badgeMatch = badgeWindow.match(/class="zg-bdg-text[^"]*"[^>]*>#(\d+)</)
 
-        // On Best Sellers pages, skip non-ranked items (sponsored carousels, recommendation sections).
-        // On search pages there are no badges at all — all products are included.
+        // On Best Sellers pages skip non-ranked slots (sponsored carousels, etc).
+        // On keyword search pages there are no rank badges — all products pass.
         const rank = badgeMatch ? parseInt(badgeMatch[1]) : null
         if (!badgeMatch && html.includes('class="zg-bdg-text')) continue
+
+        // Price / rating / review count come from the name-bearing inner block.
+        const nameBlock = html.substring(namePos, namePos + 12_000)
+
+        // BPM is parsed from the full card span so it's always in window regardless
+        // of whether the card is single- or dual-occurrence.
+        const bought_past_month = parseBoughtPastMonth(cardSpan)
 
         products.push({
             asin,
             rank,
             name,
-            price: parsePrice(block),
-            rating: parseRating(block),
-            review_count: parseReviewCount(block),
+            price: parsePrice(nameBlock),
+            rating: parseRating(nameBlock),
+            review_count: parseReviewCount(nameBlock),
             product_url: `https://www.amazon.com/dp/${asin}`,
-            bought_past_month: parseBoughtPastMonth(block),
+            bought_past_month,
         })
     }
 
@@ -119,8 +163,10 @@ function parseName(block: string, asin?: string): string {
         /href="\/dp\/[A-Z0-9]{10}[^"]*"[^>]*title="([^"]{5,300})"/,
         /title="([^"]{5,300})"[^>]*href="\/dp\/[A-Z0-9]{10}/,
         // ── Keyword search result patterns ────────────────────────────────────────
-        // Primary: <h2><a ...><span class="a-size-medium a-color-base a-text-normal">Title</span>
+        // Primary: <span class="a-size-medium [a-spacing-none ]a-color-base a-text-normal">Title
+        // Covers both the version without and with the optional a-spacing-none spacing class.
         /class="a-size-medium a-color-base a-text-normal"[^>]*>([^<]{5,300})</,
+        /class="a-size-medium a-spacing-none a-color-base a-text-normal"[^>]*>([^<]{5,300})</,
         /class="a-size-base-plus a-color-base a-text-normal"[^>]*>([^<]{5,300})</,
         /class="a-size-base a-color-base a-text-normal"[^>]*>([^<]{5,300})</,
         // data-cy title attribute on the h2 anchor
@@ -138,8 +184,13 @@ function parseName(block: string, asin?: string): string {
     const nested: RegExp[] = [
         /class="[^"]*p13n-sc-css-line-clamp[^"]*"[^>]*>([\s\S]{5,600}?)<\/div>/,
         /class="p13n-sc-truncated[^"]*"[^>]*>([\s\S]{5,400}?)<\/span>/,
-        // Keyword search: s-line-clamp wrapper may contain a span inside the anchor
-        /class="[^"]*s-line-clamp-[^"]*"[^>]*>([\s\S]{5,400}?)<\/span>/,
+        // Keyword search: <h2 class="a-size-medium [a-spacing-none] a-color-base a-text-normal">
+        //   wraps an <a> which wraps a <span>Title</span>. Capture h2 content and strip tags.
+        //   The {5,800} limit handles deeply-indented HTML (80-space indent × multiple levels).
+        /class="a-size-medium[^"]*a-text-normal"[^>]*>([\s\S]{5,800}?)<\/h2>/,
+        // s-line-clamp anchor may contain an h2>span structure — use 800-char limit for
+        // the same reason (real-world Amazon search HTML is heavily indented).
+        /class="[^"]*s-line-clamp-[^"]*"[^>]*>([\s\S]{5,800}?)<\/a>/,
     ]
 
     for (const p of nested) {

@@ -60,7 +60,10 @@ export function SearchEntry({ displayName, marketplace }: SearchEntryProps) {
             if (price?.min) p.set('minPrice', price.min)
             if (price?.max) p.set('maxPrice', price.max)
             if (rating?.min) p.set('minRating', rating.min)
+            if (rating?.max) p.set('maxRating', rating.max)
             if (reviews?.min) p.set('minReviews', reviews.min)
+            if (reviews?.max) p.set('maxReviews', reviews.max)
+            if (payload.categories.length > 0) p.set('categories', payload.categories.join(','))
             startTransition(() => {
                 router.push(searchDiscoverRoute(p) as Route)
             })
@@ -117,7 +120,7 @@ export function SearchEntry({ displayName, marketplace }: SearchEntryProps) {
                 <div className="w-full max-w-3xl">
                     {/* Greeting */}
                     <Stack gap="4" className="mb-8 text-center">
-                        <Display as="h1" className='font-light'>{greeting}, {displayName}</Display>
+                        <Display as="h1" className='font-serif font-extralight'>{greeting}, {displayName}</Display>
                         <Body className="text-muted-foreground">{t('entry.subtitle')}</Body>
                     </Stack>
 

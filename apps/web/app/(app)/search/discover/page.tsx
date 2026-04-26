@@ -17,8 +17,10 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         minPrice: raw.minPrice,
         maxPrice: raw.maxPrice,
         minRating: raw.minRating,
-        minRevenue: raw.minRevenue,
+        maxRating: raw.maxRating,
         minReviews: raw.minReviews,
+        maxReviews: raw.maxReviews,
+        categories: raw.categories,
         limit: raw.limit,
     })
 
@@ -29,14 +31,25 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         filters.minPrice != null ||
         filters.maxPrice != null ||
         filters.minRating != null ||
-        filters.minRevenue != null ||
-        filters.minReviews != null
+        filters.maxRating != null ||
+        filters.minReviews != null ||
+        filters.maxReviews != null ||
+        filters.categories.length > 0
     )
 
     const products = hasFilters ? await getCachedDiscoverProducts(filters) : []
 
     return (
         <DiscoverShell
+            key={[
+                filters.minPrice ?? '',
+                filters.maxPrice ?? '',
+                filters.minRating ?? '',
+                filters.maxRating ?? '',
+                filters.minReviews ?? '',
+                filters.maxReviews ?? '',
+                filters.categories.join(','),
+            ].join('|')}
             filters={filters}
             hasFilters={hasFilters}
             initialProducts={products}

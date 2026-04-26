@@ -7,7 +7,7 @@ import type { ScrapeJob } from '@puckora/types'
 import type { SearchDataAvailability } from '@/types/search'
 import { SearchQueryIndicator } from '../search-query-indicator'
 import { SearchLiveStatus } from '../search-live-status'
-import { AnimatedSpanNumber } from '@/app/(app)/search/_components/animated-numbers'
+import { AnimatedSpanNumber } from '@/components/shared/animated-numbers'
 
 interface StatusBarProps {
     job: ScrapeJob | null

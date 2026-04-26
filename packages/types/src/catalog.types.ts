@@ -14,7 +14,6 @@ import type {
     gsProducts as flyGsProducts,
     gsSuppliers as flyGsSuppliers,
     productCategoryRanks as flyProductCategoryRanks,
-    productFinancialsView as flyProductFinancialsView,
 } from '@puckora/db'
 
 // Enum types
@@ -80,16 +79,56 @@ export type ProductCategoryRank = typeof flyProductCategoryRanks.$inferSelect
 export type ProductCategoryRankInsert = typeof flyProductCategoryRanks.$inferInsert
 export type ProductCategoryRankUpdate = Partial<ProductCategoryRankInsert>
 
-// Views
-type ProductFinancialBase = typeof flyProductFinancialsView.$inferSelect
-export type ProductFinancial = Omit<ProductFinancialBase, 'total_amazon_fees' | 'amazon_fee_pct' | 'net_per_unit' | 'monthly_revenue' | 'monthly_net' | 'daily_velocity' | 'review_rate_per_month'> & {
+// ProductFinancial — application-computed shape (bought_past_month primary, BSR fallback)
+export interface ProductFinancial {
+    // Identity
+    asin: string | null
+    category_id: string | null
+    rank: number | null
+    rank_type: string | null
+    category_depth: number | null
+    category_path: string | null
+    observed_at: string | null
+    // Product snapshot
+    title: string | null
+    brand: string | null
+    product_type: string | null
+    main_image_url: string | null
+    price: number | null
+    rating: number | null
+    review_count: number | null
+    // Fees
+    fba_fee: number | null
+    referral_fee: number | null
     total_amazon_fees: number | null
     amazon_fee_pct: number | null
     net_per_unit: number | null
+    // Unit estimates
+    monthly_units_bsr: number | null
+    monthly_units_review: number | null
+    monthly_units: number | null
+    // Demand signals
+    bought_past_month: number | null
+    // Revenue
     monthly_revenue: number | null
     monthly_net: number | null
     daily_velocity: number | null
+    // Blend weights (null — blending removed)
+    w_bsr: number | null
+    w_review: number | null
+    // Confidence
+    confidence: string | null
+    // Data quality
+    product_type_mismatch: boolean | null
+    // Meta
+    product_age_months: number | null
+    listing_date: string | null
     review_rate_per_month: number | null
+    // Dimensions
+    pkg_weight_kg: number | null
+    pkg_length_cm: number | null
+    pkg_width_cm: number | null
+    pkg_height_cm: number | null
 }
 
 export const EnumNames = {

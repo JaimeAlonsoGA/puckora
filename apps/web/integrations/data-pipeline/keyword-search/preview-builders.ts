@@ -3,8 +3,8 @@ import { getFeesEstimatesBatch } from '@puckora/sp-api'
 import { SCRAPE_PRODUCT_STATUS, type ScrapedListing } from '@puckora/scraper-core'
 import type { AmazonProductInsert } from '@puckora/types'
 import { buildAmazonProductUrl } from '@/constants/amazon-marketplace'
+import { KEYWORD_SEARCH_PIPELINE_ERRORS } from '@/constants/api'
 import {
-    KEYWORD_SEARCH_ERROR_MESSAGE,
     SearchListingSnapshotSchema,
     type SearchListingSnapshot,
 } from './contracts'
@@ -88,5 +88,5 @@ export function getKeywordSearchItemErrorMessage(error: unknown, fallbackMessage
 }
 
 export function getKeywordSearchFailureMessage(): string {
-    return KEYWORD_SEARCH_ERROR_MESSAGE.SEARCH_FAILED
+    return KEYWORD_SEARCH_PIPELINE_ERRORS.SEARCH_FAILED
 }

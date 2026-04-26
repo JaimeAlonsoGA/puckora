@@ -34,23 +34,31 @@ export type AmazonCategoryId = (typeof AMAZON_CATEGORY_VALUES)[number]
 
 export interface AmazonCategoryDef {
     id: AmazonCategoryId
-    /** Key in the `amazonCategories` i18n namespace */
+    /** Key in the `amazonCategories` i18n namespace (`t(\`amazonCategories.${labelKey}\`)`) */
     labelKey: string
     /** Lucide icon name — import as `import { iconName } from 'lucide-react'` */
     iconName: string
+    /**
+     * One or more canonical `amazon_categories.name` values (breadcrumb[1]) that
+     * map to this static category ID.  Array because some user-facing categories
+     * (e.g. Health & Beauty) span multiple Amazon root category names in the DB.
+     */
+    displayNames: string[]
 }
 
 export const AMAZON_CATEGORIES: AmazonCategoryDef[] = [
-    { id: AMAZON_CATEGORY_IDS.HOME_KITCHEN, labelKey: 'homeKitchen', iconName: 'UtensilsCrossed' },
-    { id: AMAZON_CATEGORY_IDS.SPORTS_OUTDOORS, labelKey: 'sportsOutdoors', iconName: 'Dumbbell' },
-    { id: AMAZON_CATEGORY_IDS.PET_SUPPLIES, labelKey: 'petSupplies', iconName: 'PawPrint' },
-    { id: AMAZON_CATEGORY_IDS.BABY, labelKey: 'baby', iconName: 'Baby' },
-    { id: AMAZON_CATEGORY_IDS.HEALTH_BEAUTY, labelKey: 'healthBeauty', iconName: 'HeartPulse' },
-    { id: AMAZON_CATEGORY_IDS.ELECTRONICS, labelKey: 'electronics', iconName: 'Cpu' },
-    { id: AMAZON_CATEGORY_IDS.CLOTHING, labelKey: 'clothing', iconName: 'Shirt' },
-    { id: AMAZON_CATEGORY_IDS.TOYS_GAMES, labelKey: 'toysGames', iconName: 'Gamepad2' },
-    { id: AMAZON_CATEGORY_IDS.OFFICE_PRODUCTS, labelKey: 'officeProducts', iconName: 'Briefcase' },
-    { id: AMAZON_CATEGORY_IDS.AUTOMOTIVE, labelKey: 'automotive', iconName: 'Car' },
+    { id: AMAZON_CATEGORY_IDS.HOME_KITCHEN, labelKey: 'homeKitchen', iconName: 'UtensilsCrossed', displayNames: ['Home & Kitchen'] },
+    { id: AMAZON_CATEGORY_IDS.SPORTS_OUTDOORS, labelKey: 'sportsOutdoors', iconName: 'Dumbbell', displayNames: ['Sports & Outdoors'] },
+    { id: AMAZON_CATEGORY_IDS.PET_SUPPLIES, labelKey: 'petSupplies', iconName: 'PawPrint', displayNames: ['Pet Supplies'] },
+    // 'Baby Products' is the exact root name in amazon_categories.name (breadcrumb[1])
+    { id: AMAZON_CATEGORY_IDS.BABY, labelKey: 'baby', iconName: 'Baby', displayNames: ['Baby Products'] },
+    // Amazon splits health/beauty into two separate root categories
+    { id: AMAZON_CATEGORY_IDS.HEALTH_BEAUTY, labelKey: 'healthBeauty', iconName: 'HeartPulse', displayNames: ['Beauty & Personal Care', 'Health & Household'] },
+    { id: AMAZON_CATEGORY_IDS.ELECTRONICS, labelKey: 'electronics', iconName: 'Cpu', displayNames: ['Electronics'] },
+    { id: AMAZON_CATEGORY_IDS.CLOTHING, labelKey: 'clothing', iconName: 'Shirt', displayNames: ['Clothing, Shoes & Jewelry'] },
+    { id: AMAZON_CATEGORY_IDS.TOYS_GAMES, labelKey: 'toysGames', iconName: 'Gamepad2', displayNames: ['Toys & Games'] },
+    { id: AMAZON_CATEGORY_IDS.OFFICE_PRODUCTS, labelKey: 'officeProducts', iconName: 'Briefcase', displayNames: ['Office Products'] },
+    { id: AMAZON_CATEGORY_IDS.AUTOMOTIVE, labelKey: 'automotive', iconName: 'Car', displayNames: ['Automotive'] },
 ]
 
 import type { LucideIcon } from 'lucide-react'

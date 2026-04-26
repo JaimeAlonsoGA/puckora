@@ -1,52 +1,46 @@
 /**
  * Single-product fetching from Fly.io Postgres.
  *
- * Tries the `product_financials` view first (enriched data).
- * Falls back to raw `amazon_products` if the ASIN has not yet been enriched.
+ * Runs product PK lookup + BSR rank lookup in parallel,
+ * then delegates financial computation to buildProductFinancial().
  */
 
-import { eq } from 'drizzle-orm'
-import { type PgDb, amazonProducts, productFinancialsView } from '@puckora/db'
+import { eq, sql } from 'drizzle-orm'
+import { type PgDb, amazonProducts } from '@puckora/db'
 import type { AmazonProduct, ProductFinancial } from '@puckora/types'
-import { mapAmazonProductToFinancial } from '@/services/keywords'
+import { buildProductFinancial, type BsrRow } from '@/lib/financials'
 
-/**
- * Drizzle returns Postgres `numeric` columns as strings.
- * The ProductFinancial type declares them as `number | null`, so we coerce here.
- */
-function normalizeViewRow(row: typeof productFinancialsView.$inferSelect): ProductFinancial {
-    const toNum = (v: unknown) => (v == null ? null : Number(v))
-    return {
-        ...row,
-        total_amazon_fees: toNum(row.total_amazon_fees),
-        amazon_fee_pct: toNum(row.amazon_fee_pct),
-        net_per_unit: toNum(row.net_per_unit),
-        monthly_revenue: toNum(row.monthly_revenue),
-        monthly_net: toNum(row.monthly_net),
-        daily_velocity: toNum(row.daily_velocity),
-        review_rate_per_month: toNum(row.review_rate_per_month),
-    } as ProductFinancial
+interface BsrQueryRow extends BsrRow {
+    asin: string
 }
 
 export async function getProductByAsin(
     db: PgDb,
     asin: string,
 ): Promise<ProductFinancial | null> {
-    const rows = await db
-        .select()
-        .from(productFinancialsView)
-        .where(eq(productFinancialsView.asin, asin))
-        .limit(1)
+    const [productRows, bsrResult] = await Promise.all([
+        db.select().from(amazonProducts).where(eq(amazonProducts.asin, asin)).limit(1),
+        db.execute(sql`
+            SELECT DISTINCT ON (pcr.asin)
+                pcr.asin,
+                pcr.category_id,
+                pcr.rank,
+                pcr.rank_type,
+                pcr.observed_at,
+                ac.depth       AS category_depth,
+                ac.full_path   AS category_path
+            FROM product_category_ranks pcr
+            JOIN amazon_categories ac ON ac.id = pcr.category_id
+            WHERE pcr.asin = ${asin}
+              AND pcr.rank_type = 'best_seller'
+            ORDER BY pcr.asin, pcr.rank ASC
+            LIMIT 1
+        `),
+    ])
 
-    if (rows.length > 0) return normalizeViewRow(rows[0])
+    if (productRows.length === 0) return null
 
-    // Fallback: product exists but hasn't hit the financials view yet
-    const raw = await db
-        .select()
-        .from(amazonProducts)
-        .where(eq(amazonProducts.asin, asin))
-        .limit(1)
-
-    if (raw.length === 0) return null
-    return mapAmazonProductToFinancial(raw[0] as AmazonProduct)
+    const product = productRows[0] as AmazonProduct
+    const bsr = (bsrResult.rows[0] as unknown as BsrQueryRow | undefined) ?? null
+    return buildProductFinancial(product, bsr)
 }

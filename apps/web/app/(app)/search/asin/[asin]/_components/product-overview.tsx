@@ -38,7 +38,7 @@ import {
 } from '@/constants/app-state'
 import { AppRoute, searchQueryRoute } from '@/constants/routes'
 import { buildAmazonProductUrl } from '@/constants/amazon-marketplace'
-import { AnimatedMonoNumber } from '@/app/(app)/search/_components/animated-numbers'
+import { AnimatedMonoNumber } from '@/components/shared/animated-numbers'
 import { FormTextarea } from '@/components/form'
 import {
     CertificationSignals,

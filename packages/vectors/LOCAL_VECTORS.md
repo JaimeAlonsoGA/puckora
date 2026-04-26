@@ -113,7 +113,7 @@ Practical uses in the project:
 - Product-to-product similarity (`show me products like this one`)
 - Smarter suggestion generation for research flows
 - Better matching between keywords, products, and supplier discovery flows
-- Later, hybrid ranking when combined with structured metrics from `product_financials`
+- Later, hybrid ranking when combined with structured metrics from the app-side financial builder
 
 For the web app specifically, the current integration point is `apps/web/app/api/research/suggestions/route.ts`, which already consumes vector search results.
 

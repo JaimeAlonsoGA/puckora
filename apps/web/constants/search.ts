@@ -179,14 +179,12 @@ export const SEARCH_INPUT_MODES: {
 
 export const CONSTRAINT_FIELD_IDS = {
     PRICE: 'price',
-    WEIGHT: 'weight',
     REVIEWS: 'reviews',
     RATING: 'rating',
 } as const
 
 export const CONSTRAINT_FIELD_VALUES = [
     CONSTRAINT_FIELD_IDS.PRICE,
-    CONSTRAINT_FIELD_IDS.WEIGHT,
     CONSTRAINT_FIELD_IDS.REVIEWS,
     CONSTRAINT_FIELD_IDS.RATING,
 ] as const
@@ -199,7 +197,7 @@ export interface ConstraintFieldDef {
     suffix?: string
     placeholderMin: string
     placeholderMax: string
-    ariaLabelKey: 'constraints.price.label' | 'constraints.weight.label' | 'constraints.reviews.label' | 'constraints.rating.label'
+    ariaLabelKey: 'constraints.price.label' | 'constraints.reviews.label' | 'constraints.rating.label'
 }
 
 export const CONSTRAINT_FIELDS: ConstraintFieldDef[] = [
@@ -209,13 +207,6 @@ export const CONSTRAINT_FIELDS: ConstraintFieldDef[] = [
         placeholderMin: '10',
         placeholderMax: '50',
         ariaLabelKey: 'constraints.price.label',
-    },
-    {
-        id: CONSTRAINT_FIELD_IDS.WEIGHT,
-        suffix: 'kg',
-        placeholderMin: '0.5',
-        placeholderMax: '2',
-        ariaLabelKey: 'constraints.weight.label',
     },
     {
         id: CONSTRAINT_FIELD_IDS.REVIEWS,
@@ -401,3 +392,14 @@ export const DEFAULT_CONSTRAINTS: Constraints = {
     weightKg: WEIGHT_RANGE_VALUES[0],
     marketplace: WEB_MARKETPLACE_IDS[0],
 }
+
+// ---------------------------------------------------------------------------
+// Discover filter bounds — used as placeholder hints in the filter UI
+// ---------------------------------------------------------------------------
+
+export const DISCOVER_FILTER_BOUNDS = {
+    PRICE: { MIN: 0, MAX: 10_000 },
+    RATING: { MIN: 0, MAX: 5 },
+    REVIEWS: { MIN: 0, MAX: 1_000_000 },
+    REVENUE: { MIN: 0, MAX: 10_000_000 },
+} as const

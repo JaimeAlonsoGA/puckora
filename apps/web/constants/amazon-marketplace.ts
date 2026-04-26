@@ -38,8 +38,9 @@ export function buildAmazonProductUrl(marketplace: string | null | undefined, as
     return `https://${resolveMarketplaceDomain(marketplace)}${AMAZON_PRODUCT_PATH_PREFIX}${asin}`
 }
 
-export function buildAmazonSearchUrl(keyword: string, marketplace?: string | null): string {
+export function buildAmazonSearchUrl(keyword: string, marketplace?: string | null, page?: number): string {
     const url = new URL(`https://${resolveMarketplaceDomain(marketplace)}${AMAZON_SEARCH_PATH}`)
     url.searchParams.set('k', keyword)
+    if (page !== undefined && page > 1) url.searchParams.set('page', String(page))
     return url.toString()
 }

@@ -5,7 +5,7 @@ import { DataCard, HeroStat } from '@puckora/ui'
 import { formatMoney, type SearchOverviewStats } from '@puckora/utils'
 import type { SearchDataAvailability } from '@/types/search'
 import { SearchDataCardSkeleton } from '@/app/(app)/search/_skeletons/search-results-skeleton'
-import { AnimatedMonoNumber } from '@/app/(app)/search/_components/animated-numbers'
+import { AnimatedMonoNumber } from '@/components/shared/animated-numbers'
 import { useHoverTutorial } from '@/hooks/use-hover-tutorial'
 import { TUTORIAL_KEYS } from '@/constants/tutorial'
 

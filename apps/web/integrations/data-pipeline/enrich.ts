@@ -10,7 +10,7 @@
  *  3. enrichAsin            — pure data merge → ProductRow + CategoryRankRow[].
  *  4. upsertAmazonProduct   — write full row, upgrades scrape_status to 'enriched'.
  *  5. ensureOrganicRanks    — write SP-API organic category ranks so the
- *     product_financials view can compute estimates even without a BSR scrape.
+ *     app-side financial builder has rank context even without a scraper BSR row.
  */
 
 import { getCatalogItemParsed, getFeesEstimatesBatch } from '@puckora/sp-api'
@@ -43,8 +43,8 @@ function toRepairListing(product: AmazonProduct): ScrapedListing {
  * Upsert organic category ranks for a batch of enriched ASINs.
  *
  * Only writes ranks for category IDs that already exist in amazon_categories.
- * For unknown IDs, inserts a minimal placeholder row so the product_financials
- * view can pick up the organic rank immediately — matching the scraper's
+ * For unknown IDs, inserts a minimal placeholder row so app-side financial
+ * calculations can use the organic rank immediately — matching the scraper's
  * ensureRankCategoriesExist behaviour.
  *
  * All ranks from SP-API salesRanks.classificationRanks are written as 'organic'.
@@ -232,8 +232,8 @@ export async function enrichAsinBatch(
     }
 
     // ── Step 4: write organic category ranks ───────────────────────────────
-    // These come from SP-API classificationRanks and power the product_financials
-    // view estimates. Without them, products have no row in the view (60% miss).
+    // These come from SP-API classificationRanks and feed the app-side
+    // financial builder. Without them, keyword/ASIN views lose rank context.
     await ensureOrganicCategoryRanks(db, pendingOrganicRanks, marketplace)
 
     return results

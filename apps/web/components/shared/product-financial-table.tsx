@@ -37,7 +37,9 @@ export const ProductFinancialRow = memo(function ProductFinancialRow({
     const asin = product.asin
     const rev = Number(product.monthly_revenue ?? 0)
     const net = Number(product.net_per_unit ?? 0)
-    const vel = Number(product.daily_velocity ?? 0)
+    // Prefer the raw scrape value (Amazon's "X bought in past month") over BSR estimate
+    const soldPerMonth = product.bought_past_month ?? product.monthly_units
+    const soldIsEstimate = product.bought_past_month == null && product.monthly_units != null
     const isBookmarked = useAppStore((state) => (asin ? Boolean(state.markedProducts[asin]) : false))
 
     return (
@@ -88,9 +90,12 @@ export const ProductFinancialRow = memo(function ProductFinancialRow({
                     <Caption className="text-muted-foreground tabular-nums truncate">({formatCount(product.review_count)})</Caption>
                 </div>
 
-                {/* Daily velocity */}
-                <Caption className="tabular-nums text-muted-foreground text-right">
-                    {vel > 0 ? `${formatCount(vel)}/d` : '—'}
+                {/* Sold/month — raw bought_past_month from scrape, with BSR-estimate fallback */}
+                <Caption className={cn(
+                    'tabular-nums text-right',
+                    soldIsEstimate ? 'text-muted-foreground' : '',
+                )}>
+                    {soldPerMonth != null ? `${formatCount(soldPerMonth)}/mo` : '—'}
                 </Caption>
 
                 {/* Monthly revenue */}
@@ -114,6 +119,12 @@ export const ProductFinancialRow = memo(function ProductFinancialRow({
                         <span className="flex items-center gap-1.5">
                             <Caption className="text-muted-foreground">{t('products.metaBrand')}</Caption>
                             <Caption className="text-foreground">{product.brand}</Caption>
+                        </span>
+                    )}
+                    {product.bought_past_month != null && (
+                        <span className="flex items-center gap-1.5">
+                            <Caption className="text-muted-foreground">Bought/mo</Caption>
+                            <Caption className="tabular-nums">{formatCount(product.bought_past_month)}</Caption>
                         </span>
                     )}
                     {product.pkg_weight_kg != null && (
@@ -192,7 +203,7 @@ export function ProductFinancialTable({ products }: ProductFinancialTableProps) 
                 <TableHeaderCell>{t('products.colProduct')}</TableHeaderCell>
                 <TableHeaderCell className="justify-end">{t('products.colPrice')}</TableHeaderCell>
                 <TableHeaderCell>{t('rating.card')}</TableHeaderCell>
-                <TableHeaderCell className="justify-end">{t('products.colSalesPerDay')}</TableHeaderCell>
+                <TableHeaderCell className="justify-end">{t('products.colUnits')}</TableHeaderCell>
                 <TableHeaderCell className="justify-end">{t('products.colRevenue')}</TableHeaderCell>
                 <TableHeaderCell className="justify-end">{t('products.colNet')}</TableHeaderCell>
             </TableHeader>

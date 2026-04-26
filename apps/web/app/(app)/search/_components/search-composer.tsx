@@ -58,7 +58,15 @@ export function SearchComposer({ onSubmit, isPending }: SearchComposerProps) {
     })()
 
     function updateConstraint(id: ConstraintFieldId, val: ConstraintEntry) {
-        setConstraints(cur => ({ ...cur, [id]: val }))
+        setConstraints(cur => {
+            // Remove the field entirely when both min and max are cleared —
+            // prevents ghost entries that keep canSubmit true with no real filter.
+            if (!val.min.trim() && !val.max.trim()) {
+                const { [id]: _removed, ...rest } = cur
+                return rest
+            }
+            return { ...cur, [id]: val }
+        })
     }
 
     function toggleCategory(id: AmazonCategoryId) {

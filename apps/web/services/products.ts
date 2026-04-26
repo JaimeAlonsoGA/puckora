@@ -13,7 +13,6 @@ import {
     amazonKeywordProducts,
     amazonProducts,
     productCategoryRanks,
-    productFinancialsView,
 } from '@puckora/db'
 import type {
     AmazonProduct,
@@ -24,7 +23,9 @@ import type {
     ProductFinancial,
 } from '@puckora/types'
 import { SERVICE_ERROR_PREFIXES } from '@/constants/api'
+import { AMAZON_CATEGORIES } from '@/constants/amazon-categories'
 import type { DiscoverFilters } from '@/schemas/discover'
+import { buildProductFinancial, type BsrRow } from '@/lib/financials'
 
 type AmazonProductColumnName = keyof typeof amazonProducts['_']['columns']
 
@@ -327,53 +328,157 @@ export async function getProductCategoryRanks(
 // Discover
 // ---------------------------------------------------------------------------
 
-/** Parse a Postgres NUMERIC value (Drizzle returns it as a string) to number | null. */
-function parseNum(val: string | null | undefined): number | null {
-    if (val == null) return null
-    const n = parseFloat(val)
-    return Number.isFinite(n) ? n : null
-}
-
-function mapViewRowToFinancial(
-    row: typeof productFinancialsView.$inferSelect,
-): ProductFinancial {
-    return {
-        ...row,
-        total_amazon_fees: parseNum(row.total_amazon_fees),
-        amazon_fee_pct: parseNum(row.amazon_fee_pct),
-        net_per_unit: parseNum(row.net_per_unit),
-        monthly_revenue: parseNum(row.monthly_revenue),
-        monthly_net: parseNum(row.monthly_net),
-        daily_velocity: parseNum(row.daily_velocity),
-        review_rate_per_month: parseNum(row.review_rate_per_month),
-    }
-}
-
 /**
- * Return products from the product_financials view matching the given filters.
- * Used by /search/discover.
+ * Return products matching the given discover filters.
+ *
+ * Performance strategy:
+ *
+ * The naive approach (one query with ORDER BY COALESCE(bpm*price, 0) DESC + LIMIT)
+ * causes a full bitmap-heap scan of every matching row followed by an in-memory sort.
+ * With 1.8 M rows in amazon_products and network-attached I/O on Fly.io, that easily
+ * exceeds the 30 s statement timeout.
+ *
+ * Two-arm CTE instead:
+ *  bpm_arm     – products that HAVE a scraped bought_past_month.
+ *                ORDER BY (bought_past_month::numeric * price) DESC uses the existing
+ *                `amazon_products_discover_bpm_revenue_idx` partial functional index.
+ *                PostgreSQL does an index scan + LIMIT → fetches only `sampleSize`
+ *                heap pages, not 20 K+.
+ *  fallback_arm – products whose bought_past_month is NULL/0 (the bulk of the catalog).
+ *                ORDER BY review_count DESC uses `amazon_products_review_count_idx`.
+ *                Same LIMIT trick.
+ *
+ * The outer query merges ≤ 2×sampleSize rows and sorts them; that sort is trivially fast.
+ *
+ * Category filter:
+ *  Step 1 — one cheap query resolves category display-names → DB category IDs
+ *           (amazon_categories is tiny; result is a short list of integer IDs).
+ *  Step 2 — EXISTS (… category_id IN ($ids)) uses product_category_ranks_asin_idx
+ *           instead of a per-row JOIN on amazon_categories.breadcrumb.
  */
 export async function discoverProducts(
     db: PgDb,
     filters: DiscoverFilters,
 ): Promise<ProductFinancial[]> {
-    const conditions: SQL[] = []
+    const { minPrice, maxPrice, minRating, maxRating, minReviews, maxReviews, categories, limit } =
+        filters
 
-    if (filters.minPrice != null) conditions.push(gte(productFinancialsView.price, filters.minPrice))
-    if (filters.maxPrice != null) conditions.push(lte(productFinancialsView.price, filters.maxPrice))
-    if (filters.minRating != null) conditions.push(gte(productFinancialsView.rating, filters.minRating))
-    if (filters.minReviews != null) conditions.push(gte(productFinancialsView.review_count, filters.minReviews))
-    // monthly_revenue is a numeric column — Drizzle infers it as string | null, compare as string
-    if (filters.minRevenue != null) {
-        conditions.push(gte(productFinancialsView.monthly_revenue, String(filters.minRevenue)))
+    // ── Step 1: resolve category filter ──────────────────────────────────────
+    // Pre-fetch ASINs via category_id_idx (fast index scan, early-stop at LIMIT).
+    // Then use `asin IN (asins)` in the CTE arms — Bitmap Index Scan on pkey
+    // instead of a per-row EXISTS check that forces Seq Scan on 1.8M rows.
+    let catClause = sql``
+    if (categories.length > 0) {
+        const selectedDefs = AMAZON_CATEGORIES.filter((c) => categories.includes(c.id))
+        if (selectedDefs.length === 0) return []
+
+        const allNames = selectedDefs.flatMap((c) => c.displayNames)
+        const nameList = sql.join(allNames.map((n) => sql`${n}`), sql`, `)
+
+        // Step 1a: resolve display-names → category IDs (amazon_categories is tiny; fast).
+        const catRows = await db.execute(
+            sql`SELECT id FROM amazon_categories WHERE breadcrumb[1] IN (${nameList})`,
+        )
+        const ids = (catRows.rows as { id: string }[]).map((r) => r.id)
+        if (ids.length === 0) return []
+
+        // Step 1b: pre-fetch ASINs via category_id_idx (early-stop at LIMIT, no ORDER BY).
+        // Duplicates across subcategories are fine — IN clause handles them silently.
+        const asinFetchLimit = Math.max(limit * 50, 1000)
+        const idList = sql.join(ids.map((id) => sql`${id}`), sql`, `)
+        const asinRows = await db.execute(
+            sql`SELECT asin FROM product_category_ranks WHERE category_id IN (${idList}) LIMIT ${asinFetchLimit}`,
+        )
+        const asins = (asinRows.rows as { asin: string }[]).map((r) => r.asin)
+        if (asins.length === 0) return []
+
+        const asinList = sql.join(asins.map((a) => sql`${a}`), sql`, `)
+        catClause = sql`AND p.asin IN (${asinList})`
     }
 
-    const rows = await db
-        .select()
-        .from(productFinancialsView)
-        .where(conditions.length > 0 ? and(...conditions) : undefined)
-        .orderBy(desc(productFinancialsView.monthly_revenue))
-        .limit(filters.limit)
+    // ── Step 2: build scalar WHERE (shared by both arms) ─────────────────────
+    let baseWhere = sql`p.price IS NOT NULL AND p.price > 0`
+    if (minPrice != null) baseWhere = sql`${baseWhere} AND p.price >= ${minPrice}`
+    if (maxPrice != null) baseWhere = sql`${baseWhere} AND p.price <= ${maxPrice}`
+    if (minRating != null) baseWhere = sql`${baseWhere} AND p.rating >= ${minRating}`
+    if (maxRating != null) baseWhere = sql`${baseWhere} AND p.rating <= ${maxRating}`
+    if (minReviews != null) baseWhere = sql`${baseWhere} AND p.review_count >= ${minReviews}`
+    if (maxReviews != null) baseWhere = sql`${baseWhere} AND p.review_count <= ${maxReviews}`
 
-    return rows.map(mapViewRowToFinancial)
+    // sampleSize: how many candidates to pull from each arm before the outer re-sort.
+    // Large enough to cover a wide result set; small enough that the outer sort is trivial.
+    const sampleSize = Math.max(limit * 5, 100)
+
+    // ── Step 3: two-arm CTE ───────────────────────────────────────────────────
+    const productRows = await db.execute(sql`
+        WITH
+        bpm_arm AS MATERIALIZED (
+            -- Uses amazon_products_discover_bpm_revenue_idx:
+            --   partial index on ((bought_past_month::numeric * price) DESC)
+            --   WHERE bought_past_month IS NOT NULL AND bought_past_month > 0
+            --         AND price IS NOT NULL AND price > 0
+            SELECT p.*
+            FROM amazon_products p
+            WHERE ${baseWhere}
+              AND p.bought_past_month IS NOT NULL
+              AND p.bought_past_month > 0
+              ${catClause}
+            ORDER BY (p.bought_past_month::numeric * p.price) DESC
+            LIMIT ${sampleSize}
+        ),
+        fallback_arm AS MATERIALIZED (
+            -- Uses price index or seq-scan-with-early-stop; no ORDER BY so Postgres
+            -- stops after finding sampleSize matching rows — the outer sort handles ranking.
+            SELECT p.*
+            FROM amazon_products p
+            WHERE ${baseWhere}
+              AND (p.bought_past_month IS NULL OR p.bought_past_month = 0)
+              ${catClause}
+            LIMIT ${sampleSize}
+        ),
+        combined AS (
+            SELECT * FROM bpm_arm
+            UNION ALL
+            SELECT * FROM fallback_arm
+        )
+        SELECT * FROM combined
+        ORDER BY
+            COALESCE(bought_past_month::numeric * price, 0) DESC NULLS LAST,
+            review_count DESC NULLS LAST
+        LIMIT ${limit}
+    `)
+
+    const products = productRows.rows as unknown as AmazonProduct[]
+    if (products.length === 0) return []
+
+    // Batch-fetch BSR rank for each product — used for rank/category display fields
+    // in ProductFinancial (category_id, rank, category_path). Revenue is based solely
+    // on bought_past_month; products without that badge will show null monthly_revenue.
+    const asins = products.map((p) => p.asin).filter((a): a is string => a !== null)
+    const bsrRows = await db
+        .select({
+            asin: productCategoryRanks.asin,
+            category_id: productCategoryRanks.category_id,
+            rank: productCategoryRanks.rank,
+            rank_type: productCategoryRanks.rank_type,
+            observed_at: productCategoryRanks.observed_at,
+            category_depth: amazonCategories.depth,
+            category_path: amazonCategories.full_path,
+        })
+        .from(productCategoryRanks)
+        .innerJoin(amazonCategories, eq(amazonCategories.id, productCategoryRanks.category_id))
+        .where(and(
+            inArray(productCategoryRanks.asin, asins),
+            eq(productCategoryRanks.rank_type, 'best_seller'),
+        ))
+        .orderBy(asc(productCategoryRanks.asin), asc(productCategoryRanks.rank))
+
+    const bsrByAsin = new Map<string, BsrRow>()
+    for (const row of bsrRows as Array<BsrRow & { asin: string }>) {
+        if (!bsrByAsin.has(row.asin)) bsrByAsin.set(row.asin, row)
+    }
+
+    return products.map((product) =>
+        buildProductFinancial(product, bsrByAsin.get(product.asin ?? '') ?? null),
+    )
 }
