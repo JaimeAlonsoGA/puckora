@@ -60,3 +60,8 @@ export const discoverKeys = {
     bpmRefresh: (asins: string[]) => [...discoverKeys.all, 'bpmRefresh', ...asins] as const,
 }
 
+export const similarProductKeys = {
+    all: ['similar_products'] as const,
+    byAsin: (asin: string) => [...similarProductKeys.all, asin] as const,
+}
+

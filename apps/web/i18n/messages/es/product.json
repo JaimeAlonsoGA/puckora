@@ -30,6 +30,7 @@
         "position": {
             "title": "Posición en el mercado",
             "bsrRank": "Ranking BSR",
+            "category": "Categoría",
             "dailyVelocity": "Vel. diaria",
             "velocityUnits": "{count} / día",
             "monthlyRevenue": "Ingresos mensuales",
@@ -62,11 +63,21 @@
         },
         "research": {
             "section": "Estado de investigación",
+            "title": "Estado de investigación",
             "notePlaceholder": "Añade una nota de investigación…"
+        },
+        "header": {
+            "imageAlt": "Imagen del producto",
+            "untitled": "Producto sin título",
+            "reviewCount": "({count} reseñas)"
         },
         "notFound": {
             "title": "Producto no encontrado",
             "body": "El ASIN {asin} aún no está en el catálogo. Ejecuta una búsqueda o espera a que termine el enriquecimiento."
+        },
+        "related": {
+            "title": "Productos relacionados",
+            "empty": "No se encontraron productos similares"
         }
     }
 }

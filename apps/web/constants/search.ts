@@ -68,6 +68,11 @@ export const KEYWORD_SUGGESTIONS_REQUEST = {
     SIMILARITY_THRESHOLD: 0.3,
 } as const
 
+export const SIMILAR_PRODUCTS_REQUEST = {
+    FETCH_LIMIT: 6,
+    MIN_SCORE: 0.7,
+} as const
+
 export const SEARCH_RESULT_REPAIR = {
     // Cover the full 60-product search result page so a single trigger repairs everything.
     BATCH_LIMIT: 60,

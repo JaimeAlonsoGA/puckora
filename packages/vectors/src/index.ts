@@ -18,6 +18,7 @@ export {
     searchVectorDocumentsByDocument,
     searchVectorDocumentsByQuery,
 } from './core/storage'
+export type { AmazonVectorSearchRow } from './types'
 export {
     loadVectorSyncState,
     saveVectorSyncState,

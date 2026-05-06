@@ -34,6 +34,7 @@ export const QUERY_ERROR_MESSAGES = {
     KEYWORD_RESULTS_REPAIR_FAILED: 'Failed to repair keyword results',
     DISCOVER_RESULTS_FETCH_FAILED: 'Failed to fetch discover results',
     PRODUCT_FETCH_FAILED: 'Failed to fetch product',
+    SIMILAR_PRODUCTS_FETCH_FAILED: 'Failed to fetch similar products',
     USER_FETCH_FAILED: 'Failed to fetch user',
     SCRAPE_JOB_FETCH_FAILED: 'Failed to fetch scrape job',
 } as const

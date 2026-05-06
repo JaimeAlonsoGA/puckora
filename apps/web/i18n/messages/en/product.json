@@ -30,6 +30,7 @@
         "position": {
             "title": "Market position",
             "bsrRank": "BSR rank",
+            "category": "Category",
             "dailyVelocity": "Daily velocity",
             "velocityUnits": "{count} / day",
             "monthlyRevenue": "Monthly revenue",
@@ -62,11 +63,21 @@
         },
         "research": {
             "section": "Research status",
+            "title": "Research status",
             "notePlaceholder": "Add a research note…"
+        },
+        "header": {
+            "imageAlt": "Product image",
+            "untitled": "Untitled product",
+            "reviewCount": "({count} reviews)"
         },
         "notFound": {
             "title": "Product not found",
             "body": "ASIN {asin} is not in the catalog yet. Run a search or wait for enrichment to complete."
+        },
+        "related": {
+            "title": "Related products",
+            "empty": "No similar products found"
         }
     }
 }
